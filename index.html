@@ -1,0 +1,4537 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#f8e6f2">
+<title>Elif’in Kedisi</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Nunito:wght@600;700;800;900&display=swap');
+
+:root {
+  --ink: #382245;
+  --muted: #7d608c;
+  --pink-1: #ff85c0;
+  --pink-2: #e04895;
+  --purple-1: #b48aff;
+  --purple-2: #7e4ce0;
+  --shadow: 0 10px 28px rgba(96, 42, 115, 0.18);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+input {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 100vw;
+  height: 100%;
+  overflow: hidden;
+  position: fixed;
+  inset: 0;
+  overscroll-behavior: none;
+  background: #2b1936;
+  color: var(--ink);
+  font-family: 'Nunito', system-ui, -apple-system, sans-serif;
+}
+
+button, input { font: inherit; touch-action: manipulation; }
+
+button {
+  cursor: pointer;
+  border: 0;
+  outline: none;
+  position: relative;
+  transition: transform 0.14s cubic-bezier(.22,1,.36,1), filter 0.18s ease, box-shadow 0.18s ease;
+}
+button:active { transform: scale(0.95) translateY(2px); }
+
+.candy-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 20px;
+  font-weight: 900;
+  font-size: 14px;
+  letter-spacing: 0.3px;
+  color: #fff;
+  background: linear-gradient(180deg, #ff8ec7 0%, #e64998 55%, #cc3380 100%);
+  border: 2px solid #ffc7e4;
+  box-shadow: inset 0 2px 3px rgba(255,255,255,0.65), 0 5px 0 #9e1f60, 0 12px 22px rgba(204, 51, 128, 0.28);
+}
+
+.candy-btn.purple {
+  background: linear-gradient(180deg, #b892ff 0%, #8655e8 55%, #6d3cc9 100%);
+  border-color: #dfd0ff;
+  box-shadow: inset 0 2px 3px rgba(255,255,255,0.65), 0 5px 0 #4d2499, 0 12px 22px rgba(109, 60, 201, 0.26);
+}
+
+.candy-btn.pearl {
+  color: var(--ink);
+  background: linear-gradient(180deg, #ffffff 0%, #f9e6f6 100%);
+  border-color: #f2c9eb;
+  box-shadow: inset 0 2px 3px #fff, 0 4px 0 #d6b2d4, 0 8px 16px rgba(110, 55, 125, 0.14);
+}
+
+/* ==================== GİRİŞ EKRANI ==================== */
+#startScreen {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: 100vw;
+  z-index: 200;
+  display: block;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  padding: max(8px, env(safe-area-inset-top)) 12px max(28px, env(safe-area-inset-bottom));
+  background: radial-gradient(circle at 50% 22%, #fff6fc 0%, #f5dcf0 52%, #e2c6f2 100%);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+#startScreen.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(1.03);
+}
+
+.start-container {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+}
+
+.banner-stack {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: -4px;
+  width: 100%;
+}
+
+#bannerFeatherCatCanvas {
+  width: min(300px, 86vw);
+  height: auto;
+  aspect-ratio: 310 / 118;
+  display: block;
+  margin-bottom: -20px;
+  z-index: 3;
+  cursor: pointer;
+}
+
+.slanted-title {
+  margin: 0;
+  font-family: 'Great Vibes', Georgia, cursive;
+  font-weight: 400;
+  font-size: clamp(40px, 11vw, 52px);
+  line-height: 1.06;
+  padding: 0 10px;
+  transform: skewX(-10deg) rotate(-2deg);
+  background: linear-gradient(135deg, #d93888 0%, #8e44e6 55%, #d93888 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 4px 10px rgba(168, 56, 138, 0.24));
+  position: relative;
+  z-index: 2;
+}
+
+#previewCatCanvas {
+  display: block;
+  margin: 0 auto 2px;
+  width: min(215px, 60vw);
+  height: auto;
+  aspect-ratio: 224 / 196;
+  transition: width 0.25s ease;
+}
+
+#startScreen.adopting #previewCatCanvas {
+  width: min(148px, 42vw);
+}
+
+.trait-preview-pill {
+  display: inline-block;
+  max-width: 96%;
+  margin-bottom: 8px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1.5px solid #f0c2e6;
+  font-size: 11px;
+  font-weight: 800;
+  color: #6b2d82;
+}
+
+.menu-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+#adoptCard {
+  display: none;
+  width: 100%;
+  background: rgba(255, 250, 254, 0.97);
+  border: 2.5px solid #ffd6ef;
+  border-radius: 24px;
+  padding: 10px 12px 0;
+  text-align: left;
+  box-shadow: var(--shadow);
+}
+
+#adoptCard.active { display: block; }
+
+.lbl-sm {
+  display: block;
+  font-size: 11px;
+  font-weight: 900;
+  color: var(--muted);
+  margin: 6px 0 4px;
+}
+
+.name-inp {
+  width: 100%;
+  padding: 7px 11px;
+  border-radius: 12px;
+  border: 2px solid #f0c9e6;
+  background: #fff;
+  font-weight: 800;
+  font-size: 13px;
+  color: var(--ink);
+  outline: none;
+}
+
+.breed-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  max-height: 82px;
+  overflow-y: auto;
+  touch-action: pan-y;
+  padding: 2px 0;
+}
+
+.gem-chip {
+  padding: 5px 9px;
+  border-radius: 11px;
+  background: linear-gradient(180deg, #fff 0%, #f6e3f4 100%);
+  border: 1.5px solid #ebc5e6;
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.gem-chip.active {
+  background: linear-gradient(180deg, #ff7ec0 0%, #d9418f 100%);
+  border-color: #ffb8dd;
+  color: #fff;
+  box-shadow: 0 3px 8px rgba(217, 65, 143, 0.28);
+}
+
+.breed-trait-note {
+  margin-top: 5px;
+  padding: 6px 9px;
+  border-radius: 11px;
+  background: #fdf2fa;
+  border: 1px solid #f0cde8;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #5d3670;
+  line-height: 1.35;
+}
+
+.dual-eyes-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.eye-group {
+  background: #fdf2fa;
+  border: 1.5px solid #f2d3eb;
+  border-radius: 13px;
+  padding: 6px 8px;
+}
+
+.eye-group span {
+  display: block;
+  font-size: 10px;
+  font-weight: 900;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.eye-dots {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.eye-orb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 5px rgba(80, 35, 95, 0.22);
+}
+
+.eye-orb.active {
+  outline: 2.5px solid #d93888;
+  transform: scale(1.15);
+}
+
+.adopt-sticky-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 12;
+  display: flex;
+  gap: 8px;
+  margin: 10px -12px 0;
+  padding: 10px 12px 13px;
+  background: rgba(255, 250, 254, 0.98);
+  border-top: 1.5px solid #f5d3ed;
+  border-radius: 0 0 22px 22px;
+}
+
+/* ==================== ANA OYUN ALANI ==================== */
+#gameApp {
+  position: relative;
+  width: 100%;
+  max-width: 100vw;
+  height: 100%;
+  overflow: hidden;
+}
+
+#worldCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+}
+
+#speechBubble {
+  position: absolute;
+  z-index: 25;
+  transform: translate(-50%, -100%);
+  background: linear-gradient(180deg, #ffffff 0%, #fff0fa 100%);
+  border: 2px solid #f7c6e8;
+  color: var(--ink);
+  padding: 5px 12px;
+  border-radius: 15px;
+  font-size: 11px;
+  font-weight: 900;
+  max-width: 84vw;
+  text-align: center;
+  white-space: normal;
+  box-shadow: 0 6px 16px rgba(95, 40, 110, 0.18);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+#speechBubble.show { opacity: 1; }
+
+#sleepCountdownTag {
+  position: absolute;
+  z-index: 26;
+  transform: translate(-50%, -100%);
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 13px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(46, 26, 74, 0.94), rgba(92, 48, 138, 0.94));
+  border: 2px solid #d8b8ff;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 900;
+  box-shadow: 0 8px 20px rgba(24, 10, 44, 0.35);
+  pointer-events: none;
+}
+#sleepCountdownTag.show { display: inline-flex; }
+
+/* ==================== ÜST HUD (EKRANA TAM SIĞAN ESNEK YAPI) ==================== */
+.hud-top {
+  position: absolute;
+  top: max(6px, env(safe-area-inset-top));
+  left: 6px;
+  right: 6px;
+  max-width: calc(100vw - 12px);
+  z-index: 40;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+  pointer-events: none;
+}
+
+.hud-top > * { pointer-events: auto; }
+
+.profile-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 34px;
+  padding: 0 9px 0 5px;
+  border-radius: 99px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(250,232,248,0.95) 100%);
+  border: 2px solid #f7c8eb;
+  box-shadow: var(--shadow);
+  font-size: 11.5px;
+  font-weight: 900;
+  cursor: pointer;
+  max-width: 100%;
+}
+
+.stage-gem {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff7ec0, #8655e8);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 10.5px;
+  flex-shrink: 0;
+}
+
+.coin-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: #9e4786;
+  font-size: 11px;
+  padding-left: 5px;
+  border-left: 1.5px solid #ecc6e5;
+}
+
+.hud-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  max-width: 100%;
+}
+
+.stats-pct-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 3px;
+  padding: 3px 6px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(250,232,248,0.95) 100%);
+  border: 2px solid #f7c8eb;
+  box-shadow: var(--shadow);
+  max-width: 100%;
+}
+
+.stat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2.5px;
+  padding: 2px 5px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1.5px solid #f2d5ec;
+  font-size: 10px;
+  font-weight: 900;
+  color: var(--ink);
+}
+
+.stat-chip svg {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+
+.stat-chip.low {
+  background: #ffe3ec;
+  border-color: #ff477e;
+  color: #b81448;
+  animation: pulseLow 1.1s infinite alternate;
+}
+
+@keyframes pulseLow {
+  from { transform: scale(1); }
+  to { transform: scale(1.06); }
+}
+
+.circle-candy-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #ff96cc 0%, #c855d4 100%);
+  border: 2px solid #ffd4ee;
+  color: #fff;
+  box-shadow: inset 0 2px 2px rgba(255,255,255,0.65), 0 4px 12px rgba(165, 58, 155, 0.28);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.circle-candy-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ==================== MAKYAJ & GÜZELLİK LİSTELİ RENK PANELİ ==================== */
+.cosmetic-list-panel {
+  position: absolute;
+  top: 86px;
+  right: 8px;
+  width: min(176px, 46vw);
+  max-height: calc(100vh - 205px);
+  z-index: 39;
+  display: none;
+  flex-direction: column;
+  background: rgba(255, 248, 253, 0.96);
+  border: 2px solid #f5c4e8;
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.cosmetic-list-panel.show { display: flex; }
+
+.cosmetic-panel-hdr {
+  padding: 7px 10px;
+  font-size: 11px;
+  font-weight: 900;
+  color: #6b2d82;
+  background: linear-gradient(180deg, #fff 0%, #fae3f5 100%);
+  border-bottom: 1.5px solid #f2cbe8;
+  text-align: center;
+}
+
+.cosmetic-list-scroll {
+  overflow-y: auto;
+  touch-action: pan-y;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.swatch-list-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1.5px solid #eed0ea;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--ink);
+  text-align: left;
+}
+
+.swatch-list-row.active {
+  background: linear-gradient(135deg, #ff7ec0, #8655e8);
+  border-color: #ffcce8;
+  color: #fff;
+}
+
+.swatch-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1.5px solid #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.22);
+  flex-shrink: 0;
+}
+
+/* ==================== ALT ARAÇ & ODA ÇUBUKLARI (EKRANA TAM SIĞAN DÜZEN) ==================== */
+.bottom-docks-wrapper {
+  position: absolute;
+  bottom: max(8px, env(safe-area-inset-bottom));
+  left: 6px;
+  right: 6px;
+  max-width: calc(100vw - 12px);
+  z-index: 40;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.bottom-docks-wrapper > * { pointer-events: auto; }
+
+.dock-bottom-left, .dock-bottom-right {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  min-height: 42px;
+  padding: 4px 6px;
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(248,228,246,0.94) 100%);
+  border: 2px solid #f5c4e8;
+  box-shadow: var(--shadow);
+  max-width: 100%;
+}
+
+.glossy-tool-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 32px;
+  padding: 0 9px;
+  border-radius: 99px;
+  background: linear-gradient(180deg, #ffffff 0%, #f5dff2 100%);
+  border: 1.5px solid #ecc0e6;
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 900;
+  box-shadow: 0 2px 0 #d9b2d5;
+}
+
+.glossy-tool-btn svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.glossy-tool-btn.active {
+  background: linear-gradient(180deg, #ff7ec0 0%, #9b51e0 100%);
+  border-color: #ffc7e6;
+  color: #fff;
+  box-shadow: inset 0 1.5px 2px rgba(255,255,255,0.65), 0 3px 8px rgba(155, 81, 224, 0.35);
+}
+
+.glossy-tool-btn.jewelry-special {
+  background: linear-gradient(180deg, #ffe3f3 0%, #e5c2ff 100%);
+  border-color: #f0a8dc;
+  color: #5a226e;
+}
+
+.inv-badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 99px;
+  background: #d93888;
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 900;
+}
+
+.room-orb {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #fff 0%, #f5e2f3 100%);
+  border: 1.5px solid #eac2e4;
+  color: #8c5c9c;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.room-orb svg {
+  width: 16px;
+  height: 16px;
+}
+
+.room-orb.active {
+  background: linear-gradient(180deg, #ff7ec0 0%, #8655e8 100%);
+  border-color: #ffd1ea;
+  color: #fff;
+  box-shadow: inset 0 1.5px 2px rgba(255,255,255,0.65), 0 4px 10px rgba(134, 85, 232, 0.35);
+}
+
+.room-orb::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: 40px;
+  right: 0;
+  background: linear-gradient(135deg, #c93b84, #7742c9);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 9px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+}
+
+.room-orb:hover::after, .room-orb.active::after { opacity: 1; }
+
+/* ==================== MODALLAR ==================== */
+.modal-mask {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: 100vw;
+  z-index: 250;
+  background: rgba(45, 20, 58, 0.52);
+  backdrop-filter: blur(5px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+}
+
+.modal-mask.open { display: flex; }
+
+.modal-window {
+  width: 100%;
+  max-width: 390px;
+  max-height: 84vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  touch-action: pan-y;
+  background: linear-gradient(180deg, #fffafe 0%, #fceef9 100%);
+  border: 2.5px solid #f7c6ea;
+  border-radius: 26px;
+  padding: 16px;
+  box-shadow: 0 22px 50px rgba(45, 16, 62, 0.35);
+}
+
+.modal-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  gap: 8px;
+}
+
+.modal-bar h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 900;
+  color: #5c256e;
+}
+
+.x-pill {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #ff94ca, #d94a94);
+  color: #fff;
+  font-weight: 900;
+  font-size: 12px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.opt-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 0;
+  border-bottom: 1.5px solid #f2d8ed;
+  font-size: 13px;
+}
+.opt-row:last-child { border-bottom: 0; }
+.opt-row small { display: block; font-size: 11px; color: var(--muted); }
+
+.switch-candy {
+  width: 46px;
+  height: 25px;
+  border-radius: 99px;
+  background: #dec6dc;
+  padding: 2.5px;
+  position: relative;
+  flex-shrink: 0;
+}
+.switch-candy::after {
+  content: "";
+  display: block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.18);
+  transition: transform 0.2s;
+}
+.switch-candy.on { background: linear-gradient(90deg, #ff7ec0, #8655e8); }
+.switch-candy.on::after { transform: translateX(21px); }
+
+/* Yemek Marketi & Envanter Dolabı */
+.shop-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.item-card {
+  background: #fff;
+  border: 2px solid #f5d3ed;
+  border-radius: 18px;
+  padding: 10px 8px;
+  text-align: center;
+  position: relative;
+}
+
+.owned-tag {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: #f5d8f0;
+  color: #6e2882;
+  font-size: 9.5px;
+  font-weight: 900;
+  padding: 2px 6px;
+  border-radius: 99px;
+}
+
+.item-card .svg-wrap {
+  width: 32px;
+  height: 32px;
+  margin: 0 auto 4px;
+  display: grid;
+  place-items: center;
+}
+
+.item-card b { display: block; font-size: 11.5px; }
+.item-card small { display: block; font-size: 10px; color: var(--muted); margin: 2px 0 7px; }
+.item-card button {
+  width: 100%;
+  padding: 7px 4px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #ff7ec0 0%, #8655e8 100%);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+/* Takı & Aksesuar Dolabı */
+.acc-section { margin-bottom: 12px; }
+.acc-section b {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 900;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.acc-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.acc-btn {
+  padding: 7px 10px;
+  border-radius: 13px;
+  background: #fff;
+  border: 1.5px solid #ecc6e6;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--ink);
+}
+.acc-btn.active {
+  background: linear-gradient(135deg, #ff7ec0, #8655e8);
+  border-color: #ffcce8;
+  color: #fff;
+  box-shadow: 0 3px 8px rgba(134, 85, 232, 0.28);
+}
+
+@media (max-width: 640px) {
+  #hudAge { display: none; }
+  .glossy-tool-btn { padding: 0 7px; font-size: 10px; height: 30px; }
+  .room-orb { width: 29px; height: 29px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ==================== GİRİŞ EKRANI ==================== -->
+<section id="startScreen">
+  <div class="start-container">
+    <div class="banner-stack">
+      <canvas id="bannerFeatherCatCanvas" width="620" height="236"></canvas>
+      <h1 class="slanted-title">Elif’in Kedisi</h1>
+    </div>
+
+    <canvas id="previewCatCanvas" width="480" height="420"></canvas>
+    <div class="trait-preview-pill" id="previewTraitPill">Pamuk Prenses • Kucak Canlısı & Uzun Tüylü</div>
+
+    <div class="menu-col" id="mainMenuBox">
+      <button type="button" class="candy-btn" id="btnResume" onclick="resumeGame()" style="display:none">
+        Devam Et (<span id="resumeLabel">Pamuk</span>)
+      </button>
+      <button type="button" class="candy-btn purple" onclick="openAdoptCard(true)">
+        Oyuna Başla (Yavru Seç)
+      </button>
+      <button type="button" class="candy-btn pearl" onclick="openModal('startSettingsModal')">
+        Ayarlar
+      </button>
+    </div>
+
+    <div id="adoptCard">
+      <label class="lbl-sm">Kedinin Adı</label>
+      <input class="name-inp" id="catNameInput" maxlength="14" value="Pamuk" placeholder="Kedine isim ver...">
+
+      <label class="lbl-sm">Kedi Cinsi (Tüylü, Pembe & Tüysüz Sfenks)</label>
+      <div class="breed-list" id="breedChips"></div>
+      <div class="breed-trait-note" id="adoptTraitDesc"></div>
+
+      <label class="lbl-sm">Göz Rengi (Bir Kez Seçilir ve Kalıcı Olur)</label>
+      <div class="dual-eyes-grid">
+        <div class="eye-group">
+          <span>Sol Göz</span>
+          <div class="eye-dots" id="leftEyeDots"></div>
+        </div>
+        <div class="eye-group">
+          <span>Sağ Göz</span>
+          <div class="eye-dots" id="rightEyeDots"></div>
+        </div>
+      </div>
+
+      <div class="adopt-sticky-actions">
+        <button type="button" class="candy-btn pearl" style="flex:1; padding:10px;" onclick="openAdoptCard(false)">Geri</button>
+        <button type="button" class="candy-btn" style="flex:2; padding:10px;" onclick="confirmAdopt()">Yavruyu Sahiplen</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== ANA OYUN EKRANI ==================== -->
+<div id="gameApp">
+  <canvas id="worldCanvas"></canvas>
+  <div id="speechBubble">Mrrr...</div>
+  <div id="sleepCountdownTag">Uyuyor: <span id="sleepTimerText">02:30:00</span></div>
+
+  <!-- Üst HUD (Ekrana Tam Sığan % Durum Çubukları) -->
+  <header class="hud-top">
+    <div class="profile-pill" onclick="openGrowthModal()">
+      <div class="stage-gem" id="hudBadge">Y</div>
+      <span id="hudName">Pamuk</span>
+      <span style="color:var(--muted); font-size:10.5px;" id="hudAge">Yavru • 0 Gün</span>
+      <span class="coin-box" id="hudCoinBox"></span>
+    </div>
+
+    <div class="hud-right">
+      <div class="stats-pct-bar" id="statsPctBar"></div>
+      <button type="button" class="circle-candy-btn" id="btnTopSettings" onclick="openModal('gameSettingsModal')"></button>
+    </div>
+  </header>
+
+  <!-- Güzellik Odası Listeli Renk Seçici Panel -->
+  <aside class="cosmetic-list-panel" id="cosmeticListPanel">
+    <div class="cosmetic-panel-hdr" id="cosmeticPanelTitle">Renk Seç</div>
+    <div class="cosmetic-list-scroll" id="cosmeticListScroll"></div>
+  </aside>
+
+  <!-- Alt Araç ve Oda Seçici Dock (Ekrana Tam Sığan Flex Düzen) -->
+  <div class="bottom-docks-wrapper">
+    <div class="dock-bottom-left" id="bottomLeftDock"></div>
+    <nav class="dock-bottom-right" id="bottomRightDock"></nav>
+  </div>
+</div>
+
+<!-- ==================== BAŞLANGIÇ AYARLARI MODALI ==================== -->
+<div class="modal-mask" id="startSettingsModal">
+  <div class="modal-window">
+    <div class="modal-bar">
+      <h3>Başlangıç Ayarları</h3>
+      <button type="button" class="x-pill" onclick="closeModal('startSettingsModal')">X</button>
+    </div>
+    <div class="opt-row">
+      <div><b>Mırıltı, Esneme & Sesler</b><small>Mırlama, miyav, esneme ve pençe sesleri</small></div>
+      <button type="button" class="switch-candy on" id="swStartAudio" onclick="toggleAudio()"></button>
+    </div>
+    <div class="opt-row">
+      <div><b>Mırıltı Karakteri</b><small>Yavru / Derin / Keyifli</small></div>
+      <button type="button" class="gem-chip active" id="btnPurrMode" onclick="cyclePurrMode()">Yumuşak Yavru</button>
+    </div>
+    <div class="opt-row">
+      <div><b>Kayıtlı Oyunu Sıfırla</b><small>Tüm ilerlemeyi temizler</small></div>
+      <button type="button" class="gem-chip" onclick="wipeSaveData()">Temizle</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== OYUN İÇİ AYARLAR MODALI ==================== -->
+<div class="modal-mask" id="gameSettingsModal">
+  <div class="modal-window">
+    <div class="modal-bar">
+      <h3>Oyun İçi Ayarlar</h3>
+      <button type="button" class="x-pill" onclick="closeModal('gameSettingsModal')">X</button>
+    </div>
+    <div class="opt-row">
+      <div><b>Mırıltı & Sesler</b><small>Sesi aç veya kapat</small></div>
+      <button type="button" class="switch-candy on" id="swGameAudio" onclick="toggleAudio()"></button>
+    </div>
+    <div class="opt-row">
+      <div><b>Kedinin Adını Değiştir</b><small id="lblNameEdit">Pamuk</small></div>
+      <button type="button" class="gem-chip active" onclick="editPetName()">Değiştir</button>
+    </div>
+    <div class="opt-row">
+      <div><b>Giriş Ekranına Dön</b><small>İlerleme otomatik kaydedilir</small></div>
+      <button type="button" class="gem-chip" onclick="returnMenu()">Ana Menü</button>
+    </div>
+    <div class="opt-row">
+      <div><b>Sıfırdan Yeni Yavru</b><small>Yeni kediyle baştan başla</small></div>
+      <button type="button" class="gem-chip" onclick="restartNewKitten()">Sıfırdan Başla</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== YEMEK MARKETİ MODALI (SATIN ALMA) ==================== -->
+<div class="modal-mask" id="foodShopModal">
+  <div class="modal-window">
+    <div class="modal-bar">
+      <h3>Yemek Marketi (<span id="shopCoinsText">200</span> Altın)</h3>
+      <button type="button" class="x-pill" onclick="closeModal('foodShopModal')">X</button>
+    </div>
+    <p style="font-size:11px; color:var(--muted); margin:0 0 10px;">Satın aldığın yemekler Yemek Dolabına eklenir, istediğin zaman seçip yedirebilirsin.</p>
+    <div class="shop-cards" id="foodCardsGrid"></div>
+  </div>
+</div>
+
+<!-- ==================== YEMEK DOLABI / ENVANTER MODALI (SEÇİP YEDİRME) ==================== -->
+<div class="modal-mask" id="foodPantryModal">
+  <div class="modal-window">
+    <div class="modal-bar">
+      <h3>Yemek Dolabım (Seç & Yedir)</h3>
+      <button type="button" class="x-pill" onclick="closeModal('foodPantryModal')">X</button>
+    </div>
+    <div id="foodPantryContent"></div>
+  </div>
+</div>
+
+<!-- ==================== TAKI & AKSESUAR DOLABI MODALI (SADECE GÜZELLİK SALONUNDA) ==================== -->
+<div class="modal-mask" id="jewelryModal">
+  <div class="modal-window">
+    <div class="modal-bar">
+      <h3>Takı & Aksesuar Dolabı</h3>
+      <button type="button" class="x-pill" onclick="closeModal('jewelryModal')">X</button>
+    </div>
+    <div id="jewelryOptionsContainer"></div>
+    <button type="button" class="candy-btn pearl" style="padding:9px; font-size:12px; margin-top:4px;" onclick="clearAllAccessories()">
+      Tüm Takıları Çıkar
+    </button>
+  </div>
+</div>
+
+<!-- ==================== BÜYÜME & KARAKTER KARTI MODALI ==================== -->
+<div class="modal-mask" id="growthModal">
+  <div class="modal-window">
+    <div class="modal-bar">
+      <h3>Kedi Kimliği & Karakter Özelliği</h3>
+      <button type="button" class="x-pill" onclick="closeModal('growthModal')">X</button>
+    </div>
+    <div id="growthDetailsBox" style="font-size:13px; line-height:1.6;"></div>
+  </div>
+</div>
+
+<script>
+/* ==========================================================================
+   0. BÜYÜTEÇ ENGELLEME
+   ========================================================================== */
+document.addEventListener('contextmenu', (e) => {
+  if (!e.target.closest('input')) e.preventDefault();
+});
+document.addEventListener('gesturestart', (e) => e.preventDefault());
+document.addEventListener('gesturechange', (e) => e.preventDefault());
+document.addEventListener('touchmove', (e) => {
+  if (e.touches && e.touches.length > 1) e.preventDefault();
+}, { passive: false });
+
+/* ==========================================================================
+   1. ÖZEL ÇİZİM SVG İKONLAR
+   ========================================================================== */
+const SVG_ICONS = {
+  coin: `<svg viewBox="0 0 24 24" width="13" height="13"><circle cx="12" cy="12" r="9" fill="#ffd25a" stroke="#d48817" stroke-width="2"/><circle cx="12" cy="12" r="5" fill="none" stroke="#fff3b8" stroke-width="1.5"/></svg>`,
+  settings: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1l2.1-2.1M17 7l2.1-2.1"/></svg>`,
+  hunger: `<svg viewBox="0 0 24 24" fill="#f59e0b"><path d="M12 3c4.5 0 8 3 8 6.5 0 2.5-1.8 4.5-4.2 5.2L15 20H9l-.8-5.3C5.8 14 4 12 4 9.5 4 6 7.5 3 12 3z"/></svg>`,
+  happy: `<svg viewBox="0 0 24 24" fill="#ec4899"><path d="M12 20.5s-7.5-4.7-7.5-10.2C4.5 7.4 6.8 5.2 9.5 5.2c1.6 0 2.5.8 2.5.8s.9-.8 2.5-.8c2.7 0 5 2.2 5 5.1 0 5.5-7.5 10.2-7.5 10.2z"/></svg>`,
+  energy: `<svg viewBox="0 0 24 24" fill="#8b5cf6"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg>`,
+  clean: `<svg viewBox="0 0 24 24" fill="#06b6d4"><path d="M12 3l1.8 4.6L18.5 9l-4.7 1.4L12 15l-1.8-4.6L5.5 9l4.7-1.4L12 3z"/><circle cx="18" cy="17" r="2.2"/></svg>`,
+  toilet: `<svg viewBox="0 0 24 24" fill="#10b981"><path d="M12 3c3.5 4.2 6 7.4 6 10.5a6 6 0 1 1-12 0C6 10.4 8.5 7.2 12 3z"/></svg>`,
+  ball: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><circle cx="12" cy="12" r="8.5"/><path d="M6.5 8.5c3.2 1.2 7.8 1.2 11 0M6.5 15.5c3.2-1.2 7.8-1.2 11 0"/></svg>`,
+  pom: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><circle cx="12" cy="13" r="6"/><path d="M12 7V3M8 8L5 5M16 8l3-3M7 13H3M21 13h-4"/></svg>`,
+  laser: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><circle cx="12" cy="12" r="3.5" fill="currentColor"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M5 19l2-2"/></svg>`,
+  shop: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M6 8h12l1 12H5L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>`,
+  pantry: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M4 12h16M9 8v1M9 15v1"/></svg>`,
+  water: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M12 3c4 4.8 6.5 8 6.5 11a6.5 6.5 0 1 1-13 0c0-3 2.5-6.2 6.5-11z"/></svg>`,
+  loofah: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="10" r="4"/><circle cx="15" cy="10" r="4"/><circle cx="12" cy="15" r="4.5"/></svg>`,
+  shower: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M4 11h16a8 8 0 0 0-16 0z"/><path d="M8 15v3M12 15v4M16 15v3"/></svg>`,
+  towel: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><rect x="5" y="4" width="14" height="16" rx="3"/><path d="M5 14h14"/></svg>`,
+  litter: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M3 13h18l-2 6H5l-2-6z"/><path d="M7 13c2-2 4-2 5 0s3 2 5 0"/></svg>`,
+  scoop: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M15 4l5 5-7 7H8v-5l7-7z"/><path d="M4 20l4-4"/></svg>`,
+  bed: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M3 18v-5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5"/><path d="M3 15h18"/><path d="M7 11V8a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3"/></svg>`,
+  lamp: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M7 12l2-7h6l2 7H7z"/><path d="M12 12v7M8 19h8"/></svg>`,
+  brush: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M14 4l6 6-8 8H6v-6l8-8z"/><path d="M4 20l3-3"/></svg>`,
+  palette: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1.5" fill="currentColor"/><circle cx="15" cy="10" r="1.5" fill="currentColor"/><circle cx="12" cy="15" r="1.5" fill="currentColor"/></svg>`,
+  liner: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M4 20L19 5l2 2L6 22H4v-2z"/></svg>`,
+  gloss: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><rect x="8" y="10" width="8" height="10" rx="2"/><path d="M10 10V5l4-1v6"/></svg>`,
+  gem: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round"><path d="M6 4h12l4 6-10 11L2 10l4-6z"/></svg>`,
+  cotton: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><circle cx="12" cy="12" r="8"/><path d="M9 12h6M12 9v6"/></svg>`,
+  crown: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round"><path d="M3 18h18l-2-10-4.5 4L12 5l-2.5 7L5 8l-2 10z"/></svg>`,
+  foodRoom: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M4 14h16l-1.5 5h-13z"/><path d="M7 14c1-3 9-3 10 0"/></svg>`,
+  bathRoom: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M4 12h16v3a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5v-3z"/><path d="M7 12V6a2 2 0 0 1 4 0"/></svg>`,
+  studioRoom: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><rect x="5" y="3" width="14" height="18" rx="4"/><path d="M9 8l6 6M11 7l3 3"/></svg>`
+};
+
+/* ==========================================================================
+   2. KEDİ SES MOTORU
+   ========================================================================== */
+class FelineSoundEngine {
+  constructor() { this.ctx = null; }
+
+  ensure() {
+    if (!this.ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) this.ctx = new AC();
+    }
+    if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+  }
+
+  purr(zone = 'head', speed = 1) {
+    if (!state.settings.sound) return;
+    this.ensure();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+    const styleMod = state.settings.purrMode === 'deep' ? 0.82 : state.settings.purrMode === 'trill' ? 1.24 : 1.0;
+    const ageMod = state.growth < 1000 ? 1.15 : state.growth < 3000 ? 1.03 : 0.92;
+
+    let freq = 25 * styleMod * ageMod;
+    let lfoRate = 24;
+    let dur = 0.25;
+    let peak = 0.16;
+
+    if (zone === 'chin') { freq = 32 * styleMod * ageMod; lfoRate = 30; dur = 0.21; peak = 0.2; }
+    else if (zone === 'belly') { freq = 37 * styleMod * ageMod; lfoRate = 34; dur = 0.17; peak = 0.14; }
+
+    const osc = this.ctx.createOscillator();
+    const sub = this.ctx.createOscillator();
+    const lfo = this.ctx.createOscillator();
+    const lfoGain = this.ctx.createGain();
+    const filter = this.ctx.createBiquadFilter();
+    const master = this.ctx.createGain();
+
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(freq + Math.min(5, speed * 1.5), now);
+    sub.type = 'triangle';
+    sub.frequency.setValueAtTime(freq * 0.5, now);
+
+    lfo.type = 'sine';
+    lfo.frequency.setValueAtTime(lfoRate, now);
+    lfoGain.gain.setValueAtTime(0.085, now);
+
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(zone === 'chin' ? 265 : 195, now);
+    filter.Q.setValueAtTime(3.0, now);
+
+    master.gain.setValueAtTime(0.001, now);
+    master.gain.exponentialRampToValueAtTime(peak, now + 0.05);
+    master.gain.exponentialRampToValueAtTime(0.001, now + dur);
+
+    lfo.connect(lfoGain); lfoGain.connect(master.gain);
+    osc.connect(filter); sub.connect(filter);
+    filter.connect(master); master.connect(this.ctx.destination);
+
+    osc.start(now); sub.start(now); lfo.start(now);
+    osc.stop(now + dur + 0.02); sub.stop(now + dur + 0.02); lfo.stop(now + dur + 0.02);
+  }
+
+  meow(mood = 'normal') {
+    if (!state.settings.sound) return;
+    this.ensure();
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const filter = this.ctx.createBiquadFilter();
+    const gain = this.ctx.createGain();
+
+    const pitch = state.growth < 1000 ? 1.32 : state.growth < 3000 ? 1.08 : 0.92;
+    let f1 = 440 * pitch, f2 = 630 * pitch, f3 = 350 * pitch, dur = 0.4;
+    if (mood === 'surprised') { f1 = 540 * pitch; f2 = 790 * pitch; f3 = 580 * pitch; dur = 0.22; }
+    if (mood === 'happy') { f1 = 490 * pitch; f2 = 690 * pitch; f3 = 510 * pitch; dur = 0.34; }
+    if (mood === 'angry') { f1 = 310 * pitch; f2 = 430 * pitch; f3 = 210 * pitch; dur = 0.36; }
+    if (mood === 'yawn') { f1 = 380 * pitch; f2 = 590 * pitch; f3 = 220 * pitch; dur = 0.85; }
+
+    osc.type = mood === 'yawn' ? 'triangle' : 'sawtooth';
+    osc.frequency.setValueAtTime(f1, now);
+    osc.frequency.exponentialRampToValueAtTime(f2, now + dur * 0.35);
+    osc.frequency.exponentialRampToValueAtTime(f3, now + dur);
+
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(mood === 'angry' ? 740 : 940, now);
+    filter.Q.setValueAtTime(2.6, now);
+
+    gain.gain.setValueAtTime(0.001, now);
+    gain.gain.exponentialRampToValueAtTime(mood === 'yawn' ? 0.07 : 0.1, now + 0.08);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+
+    osc.connect(filter); filter.connect(gain); gain.connect(this.ctx.destination);
+    osc.start(now); osc.stop(now + dur + 0.02);
+  }
+
+  clawSwat() {
+    if (!state.settings.sound) return;
+    this.ensure();
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+    const bufferSize = Math.floor(this.ctx.sampleRate * 0.16);
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = buffer;
+
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(1850, now);
+    filter.frequency.exponentialRampToValueAtTime(580, now + 0.16);
+
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(0.16, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+
+    noise.connect(filter); filter.connect(gain); gain.connect(this.ctx.destination);
+    noise.start(now);
+  }
+
+  sfx(kind) {
+    if (!state.settings.sound) return;
+    this.ensure();
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    if (kind === 'bubble') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(440, now);
+      osc.frequency.exponentialRampToValueAtTime(920, now + 0.11);
+      gain.gain.setValueAtTime(0.045, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+    } else if (kind === 'water') {
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(290 + Math.random() * 190, now);
+      osc.frequency.exponentialRampToValueAtTime(150, now + 0.09);
+      gain.gain.setValueAtTime(0.035, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+    } else if (kind === 'bounce') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(240, now);
+      osc.frequency.exponentialRampToValueAtTime(110, now + 0.09);
+      gain.gain.setValueAtTime(0.05, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+    } else if (kind === 'eat') {
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(185, now);
+      osc.frequency.exponentialRampToValueAtTime(95, now + 0.08);
+      gain.gain.setValueAtTime(0.055, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+    } else {
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(760, now);
+      osc.frequency.setValueAtTime(1020, now + 0.07);
+      gain.gain.setValueAtTime(0.065, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+    }
+    osc.connect(gain); gain.connect(this.ctx.destination);
+    osc.start(now); osc.stop(now + 0.24);
+  }
+}
+
+const audio = new FelineSoundEngine();
+
+/* ==========================================================================
+   3. GERÇEK KEDİ IRKLARI & ÖZELLİKLERİ
+   ========================================================================== */
+const CAT_BREEDS = [
+  {
+    id: 'pink_princess', name: 'Pamuk Prenses', coat: 'long',
+    trait: 'kucak', traitTitle: 'Kucak Canlısı & Uzun Tüylü',
+    traitDesc: 'İpek gibi uzun tüylü ve çok uysaldır. Okşandığında yüksek sesle mırlar ve çok hızlı mutlu olur.',
+    base: '#f2b8d2', under: '#c4799b', tip: '#fff5fa', stripe: '#b35c86', nose: '#de5b92', pattern: 'solid'
+  },
+  {
+    id: 'sphynx_pink', name: 'Sfenks (Tüysüz)', coat: 'hairless',
+    trait: 'warmth', traitTitle: 'Tüysüz & Sıcakkanlı',
+    traitDesc: 'Tüysüz kadife derili ve kırışık alınlıdır. Çabuk üşür, uyku odasında lambayı açmanı çok sever!',
+    base: '#ebb8b5', under: '#bf8584', tip: '#fce1df', stripe: '#a66b6a', nose: '#d1717e', pattern: 'sphynx'
+  },
+  {
+    id: 'sphynx_velvet', name: 'Koyu Sfenks (Tüysüz)', coat: 'hairless',
+    trait: 'warmth', traitTitle: 'Tüysüz & Oyuncu',
+    traitDesc: 'Tüysüz atletik yapıdadır. Sıcaklığı sever ve sahibinin yanından hiç ayrılmaz.',
+    base: '#85757d', under: '#54474e', tip: '#b3a2ab', stripe: '#3d3238', nose: '#524048', pattern: 'sphynx'
+  },
+  {
+    id: 'persian_white', name: 'İran Kedisi (Tüylü)', coat: 'long',
+    trait: 'proud', traitTitle: 'Asil & Uzun Tüylü',
+    traitDesc: 'Yoğun kabarık kürklüdür. Havaya kaldırılmayı sevmez; kaldırırsan pençesiyle uyarır!',
+    base: '#f5efe9', under: '#cfc5bc', tip: '#ffffff', stripe: '#b8ada3', nose: '#e889a3', pattern: 'solid'
+  },
+  {
+    id: 'van_cat', name: 'Van Kedisi', coat: 'long',
+    trait: 'water_lover', traitTitle: 'Su Sever & Çevik',
+    traitDesc: 'Suyu seven tek kedidir! Banyoda duş tutulduğunda kaçmak yerine ekstra mutlu olur.',
+    base: '#f7f3f0', under: '#d6cdc5', tip: '#ffffff', stripe: '#cf7436', nose: '#eb8ca8', pattern: 'van'
+  },
+  {
+    id: 'bengal', name: 'Bengal (Avcı)', coat: 'short',
+    trait: 'hunter', traitTitle: 'Leopar Avcı & Atik',
+    traitDesc: 'Vahşi rozet desenlidir. Topu ve lazeri en hızlı o yakalar ama karnına dokunursan pençe atar!',
+    base: '#d4903f', under: '#8f5516', tip: '#f7c67e', stripe: '#4d2907', nose: '#bd606d', pattern: 'bengal'
+  },
+  {
+    id: 'siamese', name: 'Siyam', coat: 'short',
+    trait: 'talkative', traitTitle: 'Konuşkan & Meraklı',
+    traitDesc: 'Sık sık miyavlayarak seninle sohbet eder, ilgi bekler ve oyun oynamaya bayılır.',
+    base: '#ebd9c3', under: '#bfa688', tip: '#fff9f0', stripe: '#422e22', nose: '#4a3326', pattern: 'siamese'
+  },
+  {
+    id: 'british', name: 'British Shorthair', coat: 'short',
+    trait: 'proud', traitTitle: 'Peluş & Özgür Ruhlu',
+    traitDesc: 'Sık kadife kısa tüylüdür. Yanaklarının kaşınmasını sever ama karnına dokunulmasından hoşlanmaz.',
+    base: '#758091', under: '#485161', tip: '#a6b1c4', stripe: '#424b59', nose: '#5e5a69', pattern: 'solid'
+  },
+  {
+    id: 'ginger', name: 'Turuncu Tekir', coat: 'short',
+    trait: 'hunter', traitTitle: 'Enerjik & Avcı',
+    traitDesc: 'Klasik tekir çizgilidir. Top getirme oyununda ekstra altın kazandırır.',
+    base: '#de8a40', under: '#9e5014', tip: '#ffc78f', stripe: '#853c0b', nose: '#de7890', pattern: 'tabby'
+  },
+  {
+    id: 'strawberry_milk', name: 'Çilekli Süt', coat: 'short',
+    trait: 'sweet', traitTitle: 'Tatlı & İştahlı',
+    traitDesc: 'Pembe-beyaz kürklüdür. Yemek odasında ödül mamalarına ekstra mutluluk verir.',
+    base: '#f0a3c4', under: '#bf6b8f', tip: '#ffffff', stripe: '#ffffff', nose: '#de5b92', pattern: 'bicolor'
+  },
+  {
+    id: 'scottish', name: 'Scottish Fold', coat: 'short',
+    trait: 'sweet', traitTitle: 'Kıvrık Kulaklı & Uysal',
+    traitDesc: 'Öne kıvrık kulaklarıyla çok sevimlidir, çene altının kaşınmasına bayılır.',
+    base: '#d9cbc0', under: '#a89688', tip: '#f5ede6', stripe: '#8f7d70', nose: '#de829c', pattern: 'fold'
+  },
+  {
+    id: 'calico', name: 'Calico (Üç Renk)', coat: 'short',
+    trait: 'proud', traitTitle: 'Özgür & Karakterli',
+    traitDesc: 'Üç renkli şans kedisidir. Kendi sınırları vardır, istemediği hareketlerde patisiyle uyarır.',
+    base: '#f7f2ed', under: '#d4cabf', tip: '#ffffff', stripe: '#d9742b', nose: '#e889a3', pattern: 'calico'
+  },
+  {
+    id: 'tuxedo', name: 'Smokin', coat: 'short',
+    trait: 'talkative', traitTitle: 'Zeki & Hareketli',
+    traitDesc: 'Siyah-beyaz smokin kürklüdür. Oyunlarda çok zeki ve hızlıdır.',
+    base: '#2b2833', under: '#15131c', tip: '#575266', stripe: '#ffffff', nose: '#3b3445', pattern: 'tuxedo'
+  }
+];
+
+const EYE_PALETTE = [
+  { id: 'emerald', name: 'Zümrüt', iris: '#56b866', rim: '#1a4f24', inner: '#d9f29b' },
+  { id: 'sky', name: 'Buz Mavi', iris: '#57aee8', rim: '#194b78', inner: '#cceeff' },
+  { id: 'amber', name: 'Kehribar', iris: '#e39627', rim: '#784104', inner: '#fff0a6' },
+  { id: 'copper', name: 'Bakır', iris: '#d15f2a', rim: '#6b2106', inner: '#ffcf96' },
+  { id: 'rose', name: 'Gül Pembe', iris: '#e667a4', rim: '#80194b', inner: '#ffd6eb' },
+  { id: 'violet', name: 'Menekşe', iris: '#9663de', rim: '#3f1a75', inner: '#e6d4ff' }
+];
+
+function seededRand(seed) {
+  let s = seed >>> 0;
+  return () => {
+    s += 0x6D2B79F5;
+    let t = Math.imul(s ^ (s >>> 15), 1 | s);
+    t ^= t + Math.imul(t ^ (t >>> 7), 61 | t);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/* ==========================================================================
+   4. FOTOGERÇEKÇİ ANATOMİK KEDİ MOTORU
+   ========================================================================== */
+class PhotorealisticFelineEngine {
+  constructor() {
+    this.cache = new Map();
+    this.skinNoise = this.buildSkinGrainPattern();
+  }
+
+  buildSkinGrainPattern() {
+    const c = document.createElement('canvas');
+    c.width = 96; c.height = 96;
+    const ctx = c.getContext('2d');
+    const img = ctx.createImageData(96, 96);
+    const rand = seededRand(991);
+    for (let i = 0; i < img.data.length; i += 4) {
+      const v = rand() > 0.5 ? 255 : 0;
+      img.data[i] = v; img.data[i + 1] = v; img.data[i + 2] = v;
+      img.data[i + 3] = 11;
+    }
+    ctx.putImageData(img, 0, 0);
+    return c;
+  }
+
+  getBreed(id) { return CAT_BREEDS.find(b => b.id === id) || CAT_BREEDS[0]; }
+
+  getSprites(breedId) {
+    if (this.cache.has(breedId)) return this.cache.get(breedId);
+    const b = this.getBreed(breedId);
+    const sprites = {
+      body: this.bakeBody(b),
+      head: this.bakeHead(b),
+      earL: this.bakeEar(b, -1),
+      earR: this.bakeEar(b, 1),
+      frontLegL: this.bakeFrontLeg(b, -1),
+      frontLegR: this.bakeFrontLeg(b, 1),
+      hindLegL: this.bakeHindLeg(b, -1),
+      hindLegR: this.bakeHindLeg(b, 1),
+      tail: this.bakeTailTuft(b)
+    };
+    this.cache.set(breedId, sprites);
+    return sprites;
+  }
+
+  paintVolumetricFur(ctx, rand, breed, region, count, bounds) {
+    if (breed.coat === 'hairless') return;
+    const isLong = breed.coat === 'long';
+    const baseLen = isLong ? 22 : 10.5;
+    const totalHairs = isLong ? Math.floor(count * 1.3) : count;
+
+    ctx.save();
+    ctx.lineCap = 'round';
+
+    for (let i = 0; i < totalHairs; i++) {
+      const rx = rand() * 2 - 1;
+      const ry = rand() * 2 - 1;
+      if (rx * rx + ry * ry > 1.04) continue;
+
+      const x = bounds.cx + rx * bounds.rx;
+      const y = bounds.cy + ry * bounds.ry;
+
+      let ang;
+      if (region === 'head') {
+        const distCenter = Math.hypot(rx, ry + 0.12);
+        if (distCenter < 0.25) ang = -Math.PI * 0.5 + rx * 0.45;
+        else if (ry < -0.18) ang = -Math.PI * 0.5 + rx * 0.72;
+        else ang = Math.atan2(ry + 0.18, rx * 1.35);
+      } else if (region === 'chest') {
+        ang = Math.PI * 0.5 + rx * 0.28;
+      } else {
+        ang = Math.PI * 0.5 + rx * 0.42;
+      }
+      ang += (rand() - 0.5) * 0.18;
+
+      const lenFactor = region === 'head' && Math.hypot(rx, ry + 0.12) < 0.28 ? 0.42 : 1.0;
+      const len = baseLen * lenFactor * (0.7 + rand() * 0.65);
+
+      const toneRoll = rand();
+      let col = toneRoll < 0.34 ? breed.under : toneRoll < 0.76 ? breed.base : breed.tip;
+      if (ry < -0.45 && rand() > 0.35) col = breed.tip;
+
+      if (breed.pattern === 'tabby') {
+        const foreheadM = region === 'head' && ry < -0.18 && ry > -0.78 && Math.abs(rx) < 0.45 && Math.sin(rx * 24 + Math.abs(ry) * 7) > 0.3;
+        const cheekStripes = region === 'head' && ry > -0.05 && Math.abs(rx) > 0.32 && Math.sin(ry * 26 - Math.abs(rx) * 4) > 0.32;
+        const bodyStripes = region === 'body' && Math.sin(ry * 17 + Math.abs(rx) * 8) > 0.38;
+        if (foreheadM || cheekStripes || bodyStripes) col = breed.stripe;
+      } else if (breed.pattern === 'bengal') {
+        const rosette = Math.sin(rx * 12 + 0.5) * Math.cos(ry * 12 - 0.3) > 0.38;
+        if (rosette) col = breed.stripe;
+      }
+
+      ctx.strokeStyle = col;
+      ctx.globalAlpha = isLong ? (0.16 + rand() * 0.18) : (0.15 + rand() * 0.16);
+      ctx.lineWidth = isLong ? (0.75 + rand() * 0.55) : (0.65 + rand() * 0.45);
+
+      const curve = (rand() - 0.5) * 0.25;
+      const mx = x + Math.cos(ang + curve) * (len * 0.52);
+      const my = y + Math.sin(ang + curve) * (len * 0.52);
+      const ex = x + Math.cos(ang) * len;
+      const ey = y + Math.sin(ang) * len;
+
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.quadraticCurveTo(mx, my, ex, ey);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  paintOuterFurTufts(ctx, rand, breed, pts, dirFn) {
+    if (breed.coat === 'hairless') return;
+    const isLong = breed.coat === 'long';
+    const maxLen = isLong ? 20 : 7.5;
+
+    ctx.save();
+    ctx.lineCap = 'round';
+    for (let i = 0; i < pts.length; i++) {
+      const p = pts[i];
+      const baseAng = dirFn(p.x, p.y);
+      const tuftCount = isLong ? 4 : 3;
+      for (let k = 0; k < tuftCount; k++) {
+        const a = baseAng + (rand() - 0.5) * 0.48;
+        const l = maxLen * (0.55 + rand() * 0.7);
+        ctx.strokeStyle = rand() > 0.42 ? breed.base : (rand() > 0.5 ? breed.tip : breed.under);
+        ctx.globalAlpha = 0.55 + rand() * 0.35;
+        ctx.lineWidth = isLong ? 1.15 : 0.9;
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.quadraticCurveTo(
+          p.x + Math.cos(a + 0.15) * (l * 0.55),
+          p.y + Math.sin(a + 0.15) * (l * 0.55),
+          p.x + Math.cos(a) * l,
+          p.y + Math.sin(a) * l
+        );
+        ctx.stroke();
+      }
+    }
+    ctx.restore();
+  }
+
+  bakeBody(breed) {
+    const c = document.createElement('canvas');
+    c.width = 440; c.height = 400;
+    const ctx = c.getContext('2d');
+    const rand = seededRand(711);
+
+    const drawTorsoPath = () => {
+      ctx.beginPath();
+      ctx.moveTo(220, 108);
+      ctx.bezierCurveTo(266, 108, 286, 158, 294, 218);
+      ctx.bezierCurveTo(300, 276, 276, 326, 236, 330);
+      ctx.lineTo(204, 330);
+      ctx.bezierCurveTo(164, 326, 140, 276, 146, 218);
+      ctx.bezierCurveTo(154, 158, 174, 108, 220, 108);
+      ctx.closePath();
+    };
+
+    const bg = ctx.createRadialGradient(220, 172, 20, 220, 228, 148);
+    bg.addColorStop(0, breed.tip);
+    bg.addColorStop(0.5, breed.base);
+    bg.addColorStop(1, breed.under);
+    ctx.fillStyle = bg;
+    drawTorsoPath();
+    ctx.fill();
+
+    ctx.save();
+    drawTorsoPath();
+    ctx.clip();
+
+    if (breed.pattern === 'tuxedo' || breed.pattern === 'bicolor') {
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath(); ctx.ellipse(220, 202, 48, 92, 0, 0, Math.PI * 2); ctx.fill();
+    } else if (breed.pattern === 'calico') {
+      ctx.fillStyle = '#d9742b';
+      ctx.beginPath(); ctx.ellipse(166, 210, 42, 56, 0.3, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#26232b';
+      ctx.beginPath(); ctx.ellipse(274, 240, 40, 52, -0.2, 0, Math.PI * 2); ctx.fill();
+    }
+
+    if (breed.coat === 'hairless') {
+      ctx.drawImage(this.skinNoise, 120, 100, 200, 240);
+      ctx.strokeStyle = breed.under;
+      ctx.globalAlpha = 0.36;
+      ctx.lineWidth = 2.6;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(186, 152); ctx.quadraticCurveTo(220, 165, 254, 152);
+      ctx.moveTo(178, 174); ctx.quadraticCurveTo(220, 189, 262, 174);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+
+    const neckAO = ctx.createRadialGradient(220, 112, 12, 220, 130, 80);
+    neckAO.addColorStop(0, 'rgba(20, 8, 26, 0.36)');
+    neckAO.addColorStop(1, 'rgba(20, 8, 26, 0)');
+    ctx.fillStyle = neckAO;
+    ctx.fillRect(120, 95, 200, 110);
+
+    this.paintVolumetricFur(ctx, rand, breed, 'body', 6800, { cx: 220, cy: 224, rx: 86, ry: 112 });
+
+    if (breed.coat !== 'hairless') {
+      this.paintVolumetricFur(ctx, rand, { ...breed, base: breed.tip, under: breed.base }, 'chest', 2200, { cx: 220, cy: 174, rx: 52, ry: 54 });
+    }
+
+    ctx.restore();
+
+    const edgePts = [];
+    for (let t = 0; t < 1; t += 0.02) {
+      const a = t * Math.PI * 2;
+      edgePts.push({ x: 220 + Math.cos(a) * 76, y: 225 + Math.sin(a) * 105 });
+    }
+    this.paintOuterFurTufts(ctx, rand, breed, edgePts, (x, y) => Math.atan2(y - 225, x - 220));
+
+    return c;
+  }
+
+  bakeHindLeg(breed, side) {
+    const c = document.createElement('canvas');
+    c.width = 160; c.height = 190;
+    const ctx = c.getContext('2d');
+    const rand = seededRand(side === -1 ? 611 : 612);
+
+    ctx.save();
+    ctx.translate(80, 40);
+
+    const drawHaunchAndFoot = () => {
+      ctx.beginPath();
+      ctx.moveTo(-side * 12, 0);
+      ctx.bezierCurveTo(side * 42, -8, side * 66, 46, side * 56, 102);
+      ctx.quadraticCurveTo(side * 52, 122, side * 68, 130);
+      ctx.bezierCurveTo(side * 76, 144, side * 14, 146, side * 10, 130);
+      ctx.quadraticCurveTo(side * 14, 114, -side * 16, 78);
+      ctx.closePath();
+    };
+
+    const g = ctx.createRadialGradient(side * 22, 55, 8, side * 28, 72, 86);
+    g.addColorStop(0, breed.tip);
+    g.addColorStop(0.55, breed.base);
+    g.addColorStop(1, breed.under);
+    ctx.fillStyle = g;
+    drawHaunchAndFoot();
+    ctx.fill();
+
+    ctx.save();
+    drawHaunchAndFoot();
+    ctx.clip();
+
+    const ao = ctx.createLinearGradient(-side * 18, 40, side * 24, 60);
+    ao.addColorStop(0, 'rgba(20, 8, 28, 0.38)');
+    ao.addColorStop(1, 'rgba(20, 8, 28, 0)');
+    ctx.fillStyle = ao;
+    ctx.fillRect(-40, 0, 120, 150);
+
+    if (breed.pattern === 'tuxedo' || breed.pattern === 'bicolor') {
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath(); ctx.ellipse(side * 42, 132, 28, 14, 0, 0, Math.PI * 2); ctx.fill();
+    } else if (breed.pattern === 'siamese') {
+      ctx.fillStyle = '#3b281e';
+      ctx.beginPath(); ctx.ellipse(side * 42, 132, 28, 14, 0, 0, Math.PI * 2); ctx.fill();
+    }
+
+    if (breed.coat === 'hairless') {
+      ctx.strokeStyle = breed.under;
+      ctx.globalAlpha = 0.35;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(side * 12, 48); ctx.quadraticCurveTo(side * 34, 62, side * 24, 88);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+
+    this.paintVolumetricFur(ctx, rand, breed, 'body', 1600, { cx: side * 28, cy: 68, rx: 38, ry: 66 });
+    ctx.restore();
+
+    ctx.strokeStyle = 'rgba(35, 16, 42, 0.42)';
+    ctx.lineWidth = 1.9;
+    ctx.lineCap = 'round';
+    [24, 38, 52].forEach(pxOff => {
+      ctx.beginPath();
+      ctx.moveTo(side * pxOff, 122);
+      ctx.lineTo(side * (pxOff + 2), 140);
+      ctx.stroke();
+    });
+
+    ctx.restore();
+    return c;
+  }
+
+  bakeFrontLeg(breed, side) {
+    const c = document.createElement('canvas');
+    c.width = 130; c.height = 195;
+    const ctx = c.getContext('2d');
+    const rand = seededRand(side === -1 ? 621 : 622);
+
+    ctx.save();
+    ctx.translate(65, 22);
+
+    const drawForeleg = () => {
+      ctx.beginPath();
+      ctx.moveTo(-24, 0);
+      ctx.bezierCurveTo(-28, 42, -21, 92, -18, 126);
+      ctx.bezierCurveTo(-28, 134, -32, 152, -18, 156);
+      ctx.lineTo(18, 156);
+      ctx.bezierCurveTo(32, 152, 28, 134, 18, 126);
+      ctx.bezierCurveTo(21, 92, 28, 42, 24, 0);
+      ctx.closePath();
+    };
+
+    const g = ctx.createLinearGradient(-22, 10, 22, 150);
+    g.addColorStop(0, breed.base);
+    g.addColorStop(0.55, breed.tip);
+    g.addColorStop(1, breed.under);
+    ctx.fillStyle = g;
+    drawForeleg();
+    ctx.fill();
+
+    ctx.save();
+    drawForeleg();
+    ctx.clip();
+
+    const cyl = ctx.createLinearGradient(-26, 0, 26, 0);
+    cyl.addColorStop(0, 'rgba(20, 8, 28, 0.28)');
+    cyl.addColorStop(0.45, 'rgba(255, 255, 255, 0.16)');
+    cyl.addColorStop(1, 'rgba(20, 8, 28, 0.32)');
+    ctx.fillStyle = cyl;
+    ctx.fillRect(-35, 0, 70, 165);
+
+    if (breed.pattern === 'tuxedo' || breed.pattern === 'bicolor') {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(-35, 112, 70, 50);
+    } else if (breed.pattern === 'siamese') {
+      ctx.fillStyle = '#3b281e';
+      ctx.fillRect(-35, 106, 70, 56);
+    }
+
+    this.paintVolumetricFur(ctx, rand, breed, 'body', 1400, { cx: 0, cy: 78, rx: 24, ry: 74 });
+    ctx.restore();
+
+    ctx.strokeStyle = 'rgba(35, 16, 42, 0.44)';
+    ctx.lineWidth = 2.0;
+    ctx.lineCap = 'round';
+    [-11, 0, 11].forEach(tx => {
+      ctx.beginPath();
+      ctx.moveTo(tx, 134);
+      ctx.quadraticCurveTo(tx * 1.1, 146, tx * 1.15, 155);
+      ctx.stroke();
+    });
+
+    ctx.restore();
+    return c;
+  }
+
+  bakeEar(breed, side) {
+    const c = document.createElement('canvas');
+    c.width = 180; c.height = 180;
+    const ctx = c.getContext('2d');
+    const rand = seededRand(side === -1 ? 501 : 502);
+
+    const isFold = breed.pattern === 'fold';
+    const isHairless = breed.coat === 'hairless';
+    const earCol = (breed.pattern === 'siamese' || breed.pattern === 'van') ? breed.stripe : breed.base;
+
+    ctx.save();
+    ctx.translate(90, 130);
+
+    if (isFold) {
+      ctx.fillStyle = earCol;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.quadraticCurveTo(side * 66, -18, side * 72, 34);
+      ctx.quadraticCurveTo(side * 42, 38, side * 12, 14);
+      ctx.closePath();
+      ctx.fill();
+    } else {
+      const topY = isHairless ? -112 : -98;
+      const tipX = side * (isHairless ? 58 : 48);
+      const outerX = side * (isHairless ? 78 : 66);
+
+      const eg = ctx.createLinearGradient(tipX, topY, 0, 12);
+      eg.addColorStop(0, breed.pattern === 'siamese' ? '#362319' : breed.tip);
+      eg.addColorStop(1, earCol);
+      ctx.fillStyle = eg;
+
+      ctx.beginPath();
+      ctx.moveTo(outerX, 14);
+      ctx.quadraticCurveTo(outerX + side * 6, -54, tipX, topY);
+      ctx.quadraticCurveTo(side * 12, -68, -side * 14, -14);
+      ctx.closePath();
+      ctx.fill();
+
+      const ig = ctx.createLinearGradient(tipX, topY + 20, side * 12, 6);
+      ig.addColorStop(0, isHairless ? '#eb9ca4' : '#f2adc4');
+      ig.addColorStop(1, isHairless ? '#b5636d' : '#c96b8c');
+      ctx.fillStyle = ig;
+      ctx.beginPath();
+      ctx.moveTo(outerX - side * 12, 4);
+      ctx.quadraticCurveTo(outerX - side * 8, -46, tipX - side * 4, topY + 20);
+      ctx.quadraticCurveTo(side * 16, -54, 0, -10);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.strokeStyle = 'rgba(105, 42, 62, 0.28)';
+      ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      ctx.moveTo(side * 16, -4);
+      ctx.quadraticCurveTo(side * 34, -12, side * 48, 2);
+      ctx.stroke();
+
+      if (!isHairless) {
+        ctx.strokeStyle = 'rgba(255, 250, 252, 0.72)';
+        ctx.lineWidth = 1.1;
+        for (let t = 0; t < 18; t++) {
+          const sx = side * (10 + rand() * 32);
+          const sy = -4 - rand() * 24;
+          ctx.beginPath();
+          ctx.moveTo(sx, sy);
+          ctx.lineTo(sx + side * (8 + rand() * 12), sy - 14 - rand() * 14);
+          ctx.stroke();
+        }
+      }
+    }
+    ctx.restore();
+    return c;
+  }
+
+  bakeHead(breed) {
+    const c = document.createElement('canvas');
+    c.width = 440; c.height = 400;
+    const ctx = c.getContext('2d');
+    const rand = seededRand(812);
+    const isHairless = breed.coat === 'hairless';
+
+    const drawSkull = () => {
+      ctx.beginPath();
+      ctx.moveTo(220, 108);
+      ctx.bezierCurveTo(272, 108, 314, 130, 332, 174);
+      ctx.bezierCurveTo(348, 212, 334, 258, 288, 284);
+      ctx.bezierCurveTo(260, 300, 238, 310, 220, 310);
+      ctx.bezierCurveTo(202, 310, 180, 300, 152, 284);
+      ctx.bezierCurveTo(106, 258, 92, 212, 108, 174);
+      ctx.bezierCurveTo(126, 130, 168, 108, 220, 108);
+      ctx.closePath();
+    };
+
+    const hg = ctx.createRadialGradient(220, 190, 22, 220, 214, 144);
+    hg.addColorStop(0, breed.tip);
+    hg.addColorStop(0.58, breed.base);
+    hg.addColorStop(1, breed.under);
+    ctx.fillStyle = hg;
+    drawSkull();
+    ctx.fill();
+
+    ctx.save();
+    drawSkull();
+    ctx.clip();
+
+    if (breed.pattern === 'siamese') {
+      const mask = ctx.createRadialGradient(220, 228, 14, 220, 228, 88);
+      mask.addColorStop(0, '#362319');
+      mask.addColorStop(0.68, 'rgba(66, 46, 34, 0.88)');
+      mask.addColorStop(1, 'rgba(66, 46, 34, 0)');
+      ctx.fillStyle = mask;
+      ctx.beginPath(); ctx.ellipse(220, 228, 90, 66, 0, 0, Math.PI * 2); ctx.fill();
+    } else if (breed.pattern === 'van') {
+      ctx.fillStyle = breed.stripe;
+      ctx.beginPath(); ctx.ellipse(164, 124, 42, 30, -0.2, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(276, 124, 42, 30, 0.2, 0, Math.PI * 2); ctx.fill();
+    } else if (breed.pattern === 'calico') {
+      ctx.fillStyle = '#d9742b';
+      ctx.beginPath(); ctx.ellipse(152, 146, 52, 42, -0.2, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#26232b';
+      ctx.beginPath(); ctx.ellipse(288, 156, 48, 40, 0.2, 0, Math.PI * 2); ctx.fill();
+    } else if (breed.pattern === 'bicolor') {
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.moveTo(220, 192); ctx.lineTo(294, 306); ctx.lineTo(146, 306);
+      ctx.closePath(); ctx.fill();
+    }
+
+    if (isHairless) {
+      ctx.drawImage(this.skinNoise, 100, 100, 240, 220);
+      ctx.strokeStyle = breed.under;
+      ctx.globalAlpha = 0.45;
+      ctx.lineWidth = 2.3;
+      ctx.lineCap = 'round';
+      for (let w = 0; w < 3; w++) {
+        const wy = 138 + w * 11;
+        ctx.beginPath();
+        ctx.moveTo(188, wy);
+        ctx.quadraticCurveTo(220, wy + 6, 252, wy);
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    this.paintVolumetricFur(ctx, rand, breed, 'head', 8500, { cx: 220, cy: 212, rx: 120, ry: 102 });
+
+    [-46, 46].forEach(ox => {
+      const sock = ctx.createRadialGradient(220 + ox, 196, 8, 220 + ox, 196, 34);
+      sock.addColorStop(0, 'rgba(24, 12, 32, 0.34)');
+      sock.addColorStop(1, 'rgba(24, 12, 32, 0)');
+      ctx.fillStyle = sock;
+      ctx.beginPath(); ctx.ellipse(220 + ox, 196, 34, 24, 0, 0, Math.PI * 2); ctx.fill();
+    });
+
+    const bridge = ctx.createLinearGradient(220, 174, 220, 242);
+    bridge.addColorStop(0, 'rgba(255,255,255,0.28)');
+    bridge.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = bridge;
+    ctx.beginPath(); ctx.ellipse(220, 208, 17, 34, 0, 0, Math.PI * 2); ctx.fill();
+
+    const muz = ctx.createRadialGradient(220, 246, 5, 220, 250, 50);
+    muz.addColorStop(0, breed.pattern === 'siamese' ? '#422e22' : (isHairless ? breed.tip : '#ffffff'));
+    muz.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = muz;
+    ctx.beginPath();
+    ctx.ellipse(203, 250, 25, 18, 0, 0, Math.PI * 2);
+    ctx.ellipse(237, 250, 25, 18, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = 'rgba(65, 38, 58, 0.25)';
+    [-1, 1].forEach(side => {
+      for (let row = 0; row < 3; row++) {
+        for (let col = 0; col < 3; col++) {
+          ctx.beginPath();
+          ctx.arc(220 + side * (16 + col * 7), 245 + row * 4.5, 1.1, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+    });
+
+    ctx.restore();
+
+    const cheekPts = [];
+    for (let a = -0.35; a <= Math.PI + 0.35; a += 0.055) {
+      cheekPts.push({ x: 220 + Math.cos(a) * 116, y: 212 + Math.sin(a) * 95 });
+    }
+    this.paintOuterFurTufts(ctx, rand, breed, cheekPts, (x, y) => Math.atan2(y - 208, x - 220));
+
+    return c;
+  }
+
+  bakeTailTuft(breed) {
+    const c = document.createElement('canvas');
+    c.width = 76; c.height = 76;
+    const ctx = c.getContext('2d');
+    const col = (breed.pattern === 'siamese' || breed.pattern === 'van') ? breed.stripe : breed.base;
+    const g = ctx.createRadialGradient(38, 38, 2, 38, 38, 28);
+    g.addColorStop(0, breed.tip);
+    g.addColorStop(0.62, col);
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(38, 38, 28, 0, Math.PI * 2); ctx.fill();
+    return c;
+  }
+}
+
+const realCatEngine = new PhotorealisticFelineEngine();
+
+/* ==========================================================================
+   5. OYUN DURUMU, ZENGİN MAKYAJ RENKLERİ, ENVANTER & TAKI KATALOĞU
+   ========================================================================== */
+const STORAGE_KEY = 'elifinKedisi_v6';
+
+const FOOD_ITEMS = [
+  { id: 'milk', name: 'Ilık Yavru Sütü', icon: 'water', price: 10, hunger: 16, happy: 6, growth: 1.2, bladder: 34, bowel: 6, desc: '+16 Tokluk' },
+  { id: 'kibble', name: 'Kıtır Kuru Mama', icon: 'foodRoom', price: 15, hunger: 26, happy: 5, growth: 1.6, bladder: 8, bowel: 26, desc: '+26 Tokluk' },
+  { id: 'wet', name: 'Tavuklu Yaş Mama', icon: 'shop', price: 25, hunger: 38, happy: 10, growth: 2.4, bladder: 16, bowel: 36, desc: '+38 Tokluk' },
+  { id: 'shrimp', name: 'Pembe Karides', icon: 'happy', price: 30, hunger: 22, happy: 22, growth: 2.2, bladder: 10, bowel: 24, desc: '+22 Mutluluk' },
+  { id: 'salmon', name: 'Taze Somon', icon: 'hunger', price: 40, hunger: 55, happy: 18, growth: 3.5, bladder: 15, bowel: 45, desc: '+55 Tokluk' }
+];
+
+// 6. MADDE: Güzellik Odasına Çoğu Renk ve Listeli Seçim Eklendi
+const COSMETIC_TOOLS = {
+  blush_brush: {
+    label: 'Allık Renkleri',
+    swatches: [
+      { id: 'baby_pink', name: 'Bebek Pembesi', color: 'rgba(255, 130, 190, 0.56)' },
+      { id: 'peach', name: 'Şeftali Işıltısı', color: 'rgba(255, 152, 122, 0.55)' },
+      { id: 'coral', name: 'Mercan', color: 'rgba(255, 108, 108, 0.55)' },
+      { id: 'rose', name: 'Gül Kurusu', color: 'rgba(219, 68, 126, 0.56)' },
+      { id: 'lilac', name: 'Lavanta Lila', color: 'rgba(186, 125, 252, 0.54)' },
+      { id: 'berry', name: 'Ahududu', color: 'rgba(196, 43, 114, 0.58)' },
+      { id: 'apricot', name: 'Kayısı', color: 'rgba(252, 168, 104, 0.54)' },
+      { id: 'flamingo', name: 'Flamingo Pembe', color: 'rgba(255, 82, 162, 0.58)' },
+      { id: 'plum', name: 'Mürdüm', color: 'rgba(148, 56, 132, 0.55)' },
+      { id: 'bronze', name: 'Altın Bronz', color: 'rgba(209, 134, 78, 0.54)' }
+    ]
+  },
+  eyeshadow_brush: {
+    label: 'Göz Farı Paleti',
+    swatches: [
+      { id: 'pink_shimmer', name: 'Pembe Sim', color: 'rgba(255, 110, 185, 0.65)' },
+      { id: 'purple_velvet', name: 'Mor Kadife', color: 'rgba(155, 95, 240, 0.65)' },
+      { id: 'gold_glam', name: 'Altın Işıltı', color: 'rgba(245, 185, 66, 0.65)' },
+      { id: 'aqua_pearl', name: 'Turkuaz İnci', color: 'rgba(64, 198, 224, 0.62)' },
+      { id: 'emerald', name: 'Zümrüt Yeşili', color: 'rgba(46, 184, 114, 0.62)' },
+      { id: 'sapphire', name: 'Safir Mavi', color: 'rgba(66, 118, 235, 0.65)' },
+      { id: 'ruby', name: 'Yakut Kırmızısı', color: 'rgba(224, 48, 92, 0.64)' },
+      { id: 'silver_ice', name: 'Gümüş Buz', color: 'rgba(185, 200, 222, 0.66)' },
+      { id: 'copper', name: 'Bakır Parıltı', color: 'rgba(214, 108, 54, 0.64)' },
+      { id: 'smoky', name: 'Dumanlı Gece', color: 'rgba(58, 44, 74, 0.65)' },
+      { id: 'champagne', name: 'Şampanya', color: 'rgba(247, 212, 176, 0.66)' }
+    ]
+  },
+  eyeliner_pen: {
+    label: 'Eyeliner Renkleri',
+    swatches: [
+      { id: 'black', name: 'Gece Siyahı', color: '#22122b' },
+      { id: 'plum', name: 'Koyu Mürdüm', color: '#6e1e5c' },
+      { id: 'silver', name: 'Simli Gümüş', color: '#9ba8bd' },
+      { id: 'gold', name: 'Altın Çizgi', color: '#d99b1e' },
+      { id: 'navy', name: 'Lacivert', color: '#1b3678' },
+      { id: 'emerald', name: 'Zümrüt', color: '#166e46' },
+      { id: 'magenta', name: 'Fuşya Pembe', color: '#d92682' },
+      { id: 'white', name: 'İnci Beyazı', color: '#ffffff' }
+    ]
+  },
+  gloss_wand: {
+    label: 'Parlatıcı Renkleri',
+    swatches: [
+      { id: 'strawberry', name: 'Çilek Pembe', color: '#ff4d94' },
+      { id: 'berry', name: 'Böğürtlen', color: '#b52b79' },
+      { id: 'pearl', name: 'İnci Pembe', color: '#ff94c8' },
+      { id: 'cherry', name: 'Kiraz Kırmızısı', color: '#db1f48' },
+      { id: 'peach', name: 'Şeftali Nektarı', color: '#ff8866' },
+      { id: 'lavender', name: 'Lavanta Parıltı', color: '#a864e8' },
+      { id: 'caramel', name: 'Karamel', color: '#c46c43' },
+      { id: 'ruby', name: 'Yakut', color: '#9e143b' }
+    ]
+  },
+  gem_applicator: {
+    label: 'Yüz Taşları',
+    swatches: [
+      { id: 'heart', name: 'Pembe Kalp', color: '#ff4d94' },
+      { id: 'star', name: 'Altın Yıldız', color: '#ffd447' },
+      { id: 'pearl', name: 'İnci Damlası', color: '#f5ebff' },
+      { id: 'moon', name: 'Mor Ay Kristali', color: '#b589ff' },
+      { id: 'diamond', name: 'Elmas Taş', color: '#7ce8ff' },
+      { id: 'emerald_gem', name: 'Zümrüt Taş', color: '#38d986' },
+      { id: 'ruby_gem', name: 'Yakut Taş', color: '#ff2e55' },
+      { id: 'flower_gem', name: 'Çiçek Kristali', color: '#ff9ee0' }
+    ]
+  },
+  cotton_pad: {
+    label: 'Makyajı Sil',
+    swatches: []
+  }
+};
+
+const JEWELRY_CATALOG = {
+  head: {
+    title: 'Baş & Kulak Takıları',
+    items: [
+      { id: 'none', name: 'Yok' },
+      { id: 'tiara', name: 'İnci Kraliçe Tacı' },
+      { id: 'bow', name: 'Saten Fiyonk' },
+      { id: 'flower_crown', name: 'Çiçekli Bahar Tacı' },
+      { id: 'butterfly_clip', name: 'Kelebek Toka' },
+      { id: 'halo', name: 'Işıltılı Hale' }
+    ]
+  },
+  neck: {
+    title: 'Boyun & Tasma Takıları',
+    items: [
+      { id: 'none', name: 'Yok' },
+      { id: 'heart_collar', name: 'Kalpli Pembe Tasma' },
+      { id: 'bell_collar', name: 'Altın Çıngıraklı Tasma' },
+      { id: 'pearl_necklace', name: 'İnci Kolye' },
+      { id: 'velvet_bowtie', name: 'Mor Kadife Papyon' }
+    ]
+  },
+  eyewear: {
+    title: 'Gözlük & Yüz Aksesuarı',
+    items: [
+      { id: 'none', name: 'Yok' },
+      { id: 'heart_glasses', name: 'Kalp Güneş Gözlüğü' },
+      { id: 'star_glasses', name: 'Yıldız Çerçeve Gözlük' }
+    ]
+  },
+  paw: {
+    title: 'Pati Bileklikleri',
+    items: [
+      { id: 'none', name: 'Yok' },
+      { id: 'gold_anklet', name: 'Altın Pati Bilekliği' },
+      { id: 'pink_ribbon', name: 'Pembe Kurdele Bileklik' }
+    ]
+  }
+};
+
+const defaultState = () => ({
+  name: 'Pamuk',
+  breed: 'pink_princess',
+  leftEye: 'emerald',
+  rightEye: 'sky',
+  coins: 200,
+  trust: 55,
+  growth: 0,
+  stats: { hunger: 75, happy: 85, energy: 90, clean: 90, toilet: 15 },
+  digestion: { foodLoad: 0, waterLoad: 0 },
+  foodInventory: { milk: 2, kibble: 1 }, // Başlangıç yemek dolabı stoğu
+  room: 'play',
+  makeup: { blush: null, eyeshadow: null, eyeliner: null, gloss: null, gem: null },
+  accessories: { head: 'none', neck: 'none', eyewear: 'none', paw: 'none' },
+  settings: { sound: true, purrMode: 'soft' },
+  roomData: {
+    bowlFood: null,
+    waterLevel: 75,
+    bubbles: [],
+    drops: [],
+    litterDirty: false,
+    lampOn: false,
+    sleeping: false,
+    sleepEndTime: 0,
+    sleepTotalMs: 0
+  }
+});
+
+let state = defaultState();
+let adoptDraft = { breed: 'pink_princess', leftEye: 'emerald', rightEye: 'sky' };
+let selectedSwatch = {
+  blush_brush: 'baby_pink',
+  eyeshadow_brush: 'pink_shimmer',
+  eyeliner_pen: 'black',
+  gloss_wand: 'strawberry',
+  gem_applicator: 'heart'
+};
+
+function loadSaved() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return false;
+    const p = JSON.parse(raw);
+    state = {
+      ...defaultState(),
+      ...p,
+      stats: { ...defaultState().stats, ...(p.stats || {}) },
+      digestion: { ...defaultState().digestion, ...(p.digestion || {}) },
+      foodInventory: { ...(p.foodInventory || { milk: 1 }) },
+      makeup: { ...defaultState().makeup, ...(p.makeup || {}) },
+      accessories: { ...defaultState().accessories, ...(p.accessories || {}) },
+      settings: { ...defaultState().settings, ...(p.settings || {}) },
+      roomData: {
+        ...defaultState().roomData,
+        ...(p.roomData || {}),
+        bubbles: Array.isArray(p.roomData?.bubbles) ? p.roomData.bubbles : [],
+        drops: Array.isArray(p.roomData?.drops) ? p.roomData.drops : []
+      }
+    };
+    return true;
+  } catch (e) { return false; }
+}
+
+function saveGame() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+}
+
+function getGrowthStage() {
+  const g = state.growth;
+  if (g < 1000) {
+    const t = g / 1000;
+    return { label: 'Yavru', scale: 0.66 + t * 0.13, headBoost: 1.13 - t * 0.05, next: 1000, days: Math.floor(g / 60) };
+  }
+  if (g < 3000) {
+    const t = (g - 1000) / 2000;
+    return { label: 'Genç', scale: 0.79 + t * 0.15, headBoost: 1.08 - t * 0.05, next: 3000, days: Math.floor(g / 60) };
+  }
+  if (g < 7000) {
+    const t = (g - 3000) / 4000;
+    return { label: 'Yetişkin', scale: 0.94 + t * 0.08, headBoost: 1.03 - t * 0.03, next: 7000, days: Math.floor(g / 60) };
+  }
+  return { label: 'Görkemli', scale: 1.04, headBoost: 1.0, next: 12000, days: Math.floor(g / 60) };
+}
+
+function addGrowthSlow(pts) {
+  const prev = getGrowthStage().label;
+  state.growth += pts;
+  const now = getGrowthStage().label;
+  if (prev !== now) {
+    audio.meow('happy');
+    showSpeech(`Büyüdüm! Artık ${now} kediyim!`);
+  }
+}
+
+/* ==========================================================================
+   6. FOTOGERÇEKÇİ KEDİ RENDER (1. MADDE DÜZELTİLDİ: İKİ AYAK ÜSTÜNDE ÖN AYAKLAR NET GÖRÜNÜR!)
+   ========================================================================== */
+const cat = {
+  x: window.innerWidth * 0.5,
+  y: window.innerHeight * 0.79,
+  vx: 0,
+  vy: 0,
+  angle: 0,
+  vAngle: 0,
+  squishX: 1,
+  squishY: 1,
+  mode: 'idle', // idle | petting | grabbed | airborne | walking | walk_to_bed | hunt_crouch | chase_ball | return_ball | stalk_laser | standing_catch
+  huntTimer: 0,
+  targetX: null,
+  petZone: 'head',
+  annoyance: 0,
+  swipeAnim: 0,
+  scratchMarks: [],
+  expr: 'normal',
+  mouthOpen: 0,
+  yawnTimer: 0,
+  standReach: 0,
+  laserShield: 0,
+  blink: 0,
+  blinkTimer: 150,
+  earTwitchL: 0,
+  earTwitchR: 0,
+  lookX: 0,
+  lookY: 0,
+  headTilt: 0,
+  tailTime: 0,
+  fxList: [],
+  lastPurr: 0,
+  dizzyTime: 0,
+  shakeTracker: { lastDir: 0, reversals: 0, lastTime: 0 }
+};
+
+const playBall = {
+  x: window.innerWidth * 0.25,
+  y: window.innerHeight * 0.79,
+  vx: 0,
+  vy: 0,
+  rot: 0,
+  squish: 1,
+  trail: [],
+  state: 'idle' // idle | held | air | carried | hogged (kedinin bırakmadığı durum!)
+};
+
+const featherPom = {
+  x: window.innerWidth * 0.74,
+  y: window.innerHeight * 0.79,
+  vx: 0,
+  vy: 0,
+  rot: 0,
+  state: 'idle'
+};
+
+let activeTool = null;
+let pointer = { x: window.innerWidth * 0.5, y: window.innerHeight * 0.5, down: false };
+let ptrHistory = [];
+
+function triggerYawn() {
+  if (state.roomData.sleeping || cat.yawnTimer > 0) return;
+  cat.yawnTimer = 72;
+  cat.expr = 'yawn';
+  audio.meow('yawn');
+  showSpeech('Haaahhh... Çok uykum geldi...');
+}
+
+function triggerClawSwipe(reason = 'Bu hareketi sevmedim! (Pençe attı)') {
+  cat.swipeAnim = 1.0;
+  cat.expr = 'angry';
+  cat.annoyance = 0;
+  audio.clawSwat();
+  audio.meow('angry');
+  showSpeech(reason);
+
+  cat.scratchMarks.push({
+    x: cat.x + (Math.random() - 0.5) * 38,
+    y: cat.y - 125 * getGrowthStage().scale,
+    rot: (Math.random() - 0.5) * 0.55,
+    life: 1.0
+  });
+}
+
+function renderPhotorealisticCat(ctx, cx, cy, overrideCfg = null) {
+  const st = overrideCfg ? overrideCfg.stage : getGrowthStage();
+  const breedId = overrideCfg ? overrideCfg.breed : state.breed;
+  const lEyeId = overrideCfg ? overrideCfg.leftEye : state.leftEye;
+  const rEyeId = overrideCfg ? overrideCfg.rightEye : state.rightEye;
+  const isSleeping = !overrideCfg && state.roomData.sleeping;
+  const bannerReach = overrideCfg && overrideCfg.bannerReach ? overrideCfg.bannerReach : 0;
+
+  const breed = realCatEngine.getBreed(breedId);
+  const sprites = realCatEngine.getSprites(breedId);
+  const lEye = EYE_PALETTE.find(e => e.id === lEyeId) || EYE_PALETTE[0];
+  const rEye = EYE_PALETTE.find(e => e.id === rEyeId) || EYE_PALETTE[1];
+
+  const breath = Math.sin(performance.now() * (isSleeping ? 0.003 : 0.0055)) * 0.015;
+  const crouch = (cat.mode === 'hunt_crouch' || cat.mode === 'stalk_laser') ? 0.88 : 1.0;
+  const standFactor = overrideCfg ? 0 : cat.standReach;
+
+  const sx = st.scale * cat.squishX * (crouch < 1 ? 1.06 : 1) * (1 - standFactor * 0.05);
+  const sy = st.scale * (cat.squishY + breath) * crouch * (1 + standFactor * 0.14);
+
+  ctx.save();
+  ctx.translate(cx, cy);
+
+  // Zemin Temas Gölgesi
+  const floorY = window.innerHeight * 0.79;
+  const hAbove = overrideCfg ? 0 : Math.max(0, floorY - cy);
+  const shScale = Math.max(0.35, 1 - hAbove / 320) * st.scale;
+  ctx.fillStyle = 'rgba(36, 14, 48, 0.25)';
+  ctx.beginPath();
+  ctx.ellipse(0, hAbove + 4, (isSleeping ? 105 : 88) * shScale, 15 * shScale, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // YATAKTA KIVRILMIŞ UYKU POZİSYONU
+  if (isSleeping) {
+    ctx.scale(st.scale, st.scale);
+
+    ctx.save();
+    ctx.translate(48, -14);
+    ctx.rotate(0.4);
+    for (let i = 0; i <= 16; i++) {
+      const t = i / 16;
+      const bx = Math.cos(t * 2.5) * 44;
+      const by = Math.sin(t * 2.5) * 20;
+      ctx.save(); ctx.translate(bx, by); ctx.scale(0.65 * (1 - t * 0.4), 0.65 * (1 - t * 0.4));
+      ctx.drawImage(sprites.tail, -38, -38);
+      ctx.restore();
+    }
+    ctx.restore();
+
+    ctx.save();
+    ctx.translate(16, -24);
+    ctx.rotate(Math.PI * 0.44);
+    ctx.scale(0.88, 1.05 + breath * 2);
+    ctx.drawImage(sprites.body, -220, -240);
+    ctx.restore();
+
+    ctx.save();
+    ctx.translate(-56, -22);
+    ctx.rotate(Math.PI * 0.48);
+    ctx.scale(0.82, 0.82);
+    ctx.drawImage(sprites.frontLegL, -65, -22);
+    ctx.restore();
+
+    ctx.save();
+    ctx.translate(-44, -52);
+    ctx.rotate(-0.18);
+    ctx.scale(0.95, 0.95);
+    ctx.drawImage(sprites.earL, -138, -198);
+    ctx.drawImage(sprites.earR, -42, -198);
+    ctx.drawImage(sprites.head, -220, -214);
+
+    [-44, 44].forEach(ex => {
+      ctx.strokeStyle = '#3d224a';
+      ctx.lineWidth = 3.2; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.arc(ex, -10, 14, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke();
+    });
+    ctx.fillStyle = breed.nose;
+    ctx.beginPath();
+    ctx.moveTo(-8, 22); ctx.quadraticCurveTo(0, 19, 8, 22); ctx.quadraticCurveTo(0, 31, -8, 22);
+    ctx.fill();
+    ctx.restore();
+
+    ctx.restore();
+    return;
+  }
+
+  ctx.rotate((cat.angle * Math.PI) / 180);
+  ctx.scale(sx, sy);
+
+  // 1. KUYRUK
+  const tailSpeed = cat.expr === 'angry' ? 0.24 : (cat.mode === 'hunt_crouch' || standFactor > 0.2 ? 0.16 : 0.055);
+  cat.tailTime += tailSpeed;
+  const wagAmp = cat.expr === 'angry' ? 40 : (cat.mode === 'petting' ? 24 : 14);
+  const wag = Math.sin(cat.tailTime) * wagAmp;
+  const p0 = { x: 52, y: -48 };
+  const p1 = { x: 112 + wag * 0.4, y: -76 };
+  const p2 = { x: 124 + wag, y: -136 };
+  const p3 = { x: 98 + wag * 1.25, y: -178 };
+
+  const tailSegs = breed.coat === 'hairless' ? 24 : 20;
+  for (let i = 0; i <= tailSegs; i++) {
+    const t = i / tailSegs;
+    const inv = 1 - t;
+    const bx = inv * inv * inv * p0.x + 3 * inv * inv * t * p1.x + 3 * inv * t * t * p2.x + t * t * t * p3.x;
+    const by = inv * inv * inv * p0.y + 3 * inv * inv * t * p1.y + 3 * inv * t * t * p2.y + t * t * t * p3.y;
+    const baseThick = breed.coat === 'hairless' ? 0.50 : (breed.coat === 'long' ? 0.94 : 0.72);
+    const sc = baseThick * (1 - t * 0.48);
+    ctx.save();
+    ctx.translate(bx, by);
+    ctx.scale(sc, sc);
+    ctx.drawImage(sprites.tail, -38, -38);
+    ctx.restore();
+  }
+
+  // 2. ARKA BACAKLAR & ARKA PATİLER (İki ayak üstüne kalktığında dikleşerek ağırlığı taşır!)
+  const hindStretch = standFactor * 0.28;
+  ctx.save();
+  ctx.translate(-56, -138 - standFactor * 22);
+  ctx.scale(1, 1 + hindStretch);
+  ctx.drawImage(sprites.hindLegL, -80, -40);
+  ctx.restore();
+
+  ctx.save();
+  ctx.translate(56, -138 - standFactor * 22);
+  ctx.scale(1, 1 + hindStretch);
+  ctx.drawImage(sprites.hindLegR, -80, -40);
+  ctx.restore();
+
+  // 3. ANA GÖVDE
+  ctx.save();
+  ctx.translate(0, -standFactor * 28);
+  ctx.drawImage(sprites.body, -220, -292);
+  ctx.restore();
+
+  // 4. BOYUN TAKILARI
+  if (!overrideCfg && state.accessories.neck !== 'none') {
+    drawNeckAccessory(ctx, state.accessories.neck, -standFactor * 28);
+  }
+
+  // 5. KAFA GRUBU + KULAKLAR + YÜZ İFADELERİ + MAKYAJ + TAKILAR
+  // (Ön bacaklar iki ayak üstüne kalktığında veya pati uzattığında kafanın/gövdenin ÖNÜNDE görünmesi için önce kafayı çiziyoruz!)
+  ctx.save();
+  const headDrop = (cat.expr === 'eat') ? 22 : (cat.mode === 'hunt_crouch' ? 12 : -standFactor * 36);
+  ctx.translate(0, -176 + headDrop);
+  ctx.rotate(cat.headTilt);
+  ctx.scale(st.headBoost, st.headBoost);
+
+  const angryEarRot = (cat.expr === 'angry' || cat.laserShield > 0.3) ? 0.48 : 0;
+  ctx.save();
+  ctx.translate(-48, -68);
+  ctx.rotate(-angryEarRot - cat.earTwitchL);
+  ctx.drawImage(sprites.earL, -90, -130);
+  ctx.restore();
+
+  ctx.save();
+  ctx.translate(48, -68);
+  ctx.rotate(angryEarRot + cat.earTwitchR);
+  ctx.drawImage(sprites.earR, -90, -130);
+  ctx.restore();
+
+  ctx.drawImage(sprites.head, -220, -214);
+
+  // MAKYAJ KATMANI
+  if (!overrideCfg) {
+    const mk = state.makeup;
+    if (mk.blush) {
+      [-58, 58].forEach(bx => {
+        const bg = ctx.createRadialGradient(bx, 18, 2, bx, 18, 25);
+        bg.addColorStop(0, mk.blush);
+        bg.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = bg;
+        ctx.beginPath(); ctx.ellipse(bx, 18, 25, 15, 0, 0, Math.PI * 2); ctx.fill();
+      });
+    }
+    if (mk.eyeshadow) {
+      [-1, 1].forEach(side => {
+        ctx.save();
+        ctx.translate(side * 44, -14);
+        ctx.rotate(side * -0.13);
+        ctx.fillStyle = mk.eyeshadow;
+        ctx.beginPath();
+        ctx.ellipse(0, -11, 21, 8, 0, Math.PI, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      });
+    }
+    if (mk.eyeliner) {
+      [-1, 1].forEach(side => {
+        ctx.save();
+        ctx.translate(side * 44, -14);
+        ctx.rotate(side * -0.13);
+        ctx.strokeStyle = mk.eyeliner;
+        ctx.lineWidth = 3.1; ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 22, 15, 0, Math.PI * 1.08, Math.PI * 1.92);
+        ctx.lineTo(side * 29, -8);
+        ctx.stroke();
+        ctx.restore();
+      });
+    }
+  }
+
+  // GÖZLER
+  const isHunting = ['hunt_crouch', 'chase_ball', 'stalk_laser', 'standing_catch'].includes(cat.mode) || activeTool === 'laser';
+  const isDark = state.room === 'sleep' && !state.roomData.lampOn;
+  const pupilW = (isHunting || isDark || cat.expr === 'surprised' || cat.expr === 'angry') ? 12.2 : 4.2;
+
+  [lEye, rEye].forEach((eyeCfg, idx) => {
+    const side = idx === 0 ? -1 : 1;
+    const ex = side * 44;
+    ctx.save();
+    ctx.translate(ex, -14);
+    ctx.rotate(side * -0.13);
+
+    if (cat.laserShield > 0.25 || cat.expr === 'squint_laser') {
+      ctx.strokeStyle = '#382045';
+      ctx.lineWidth = 3.8; ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(-14, -4); ctx.lineTo(4, 2); ctx.lineTo(-14, 8);
+      ctx.stroke();
+      ctx.restore();
+      return;
+    }
+
+    if (cat.expr === 'happy' || cat.expr === 'love' || cat.expr === 'yawn') {
+      ctx.strokeStyle = '#382045';
+      ctx.lineWidth = 3.8; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.arc(0, 5, 14, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke();
+      ctx.restore();
+      return;
+    }
+
+    if (cat.blink > 0.75) {
+      ctx.strokeStyle = '#42264f';
+      ctx.lineWidth = 3.2; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.arc(0, -2, 14, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke();
+      ctx.restore();
+      return;
+    }
+
+    if (cat.expr === 'dizzy') {
+      ctx.strokeStyle = '#42264f';
+      ctx.lineWidth = 3.0;
+      ctx.beginPath();
+      ctx.moveTo(-8, -8); ctx.lineTo(8, 8);
+      ctx.moveTo(8, -8); ctx.lineTo(-8, 8);
+      ctx.stroke();
+      ctx.restore();
+      return;
+    }
+
+    const drawAlmondEye = () => {
+      ctx.beginPath();
+      ctx.moveTo(-22, 1);
+      ctx.quadraticCurveTo(0, -20, 22, 1);
+      ctx.quadraticCurveTo(0, 20, -22, 1);
+      ctx.closePath();
+    };
+
+    ctx.fillStyle = '#1b1024';
+    drawAlmondEye();
+    ctx.fill();
+
+    ctx.fillStyle = '#d98296';
+    ctx.beginPath();
+    ctx.arc(-side * 19, 1.5, 2.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.save();
+    drawAlmondEye();
+    ctx.clip();
+
+    const ig = ctx.createRadialGradient(cat.lookX * 0.4, cat.lookY * 0.4, 2, 0, 0, 20);
+    ig.addColorStop(0, eyeCfg.inner);
+    ig.addColorStop(0.35, eyeCfg.iris);
+    ig.addColorStop(0.84, eyeCfg.rim);
+    ig.addColorStop(1, '#12091c');
+    ctx.fillStyle = ig;
+    ctx.beginPath(); ctx.arc(0, 0, 21, 0, Math.PI * 2); ctx.fill();
+
+    ctx.strokeStyle = 'rgba(255,255,255,0.24)';
+    ctx.lineWidth = 0.85;
+    for (let a = 0; a < Math.PI * 2; a += 0.3) {
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(a) * 4, Math.sin(a) * 4);
+      ctx.lineTo(Math.cos(a) * 19, Math.sin(a) * 19);
+      ctx.stroke();
+    }
+
+    const lidShade = ctx.createLinearGradient(0, -18, 0, 2);
+    lidShade.addColorStop(0, 'rgba(12, 6, 20, 0.58)');
+    lidShade.addColorStop(1, 'rgba(12, 6, 20, 0)');
+    ctx.fillStyle = lidShade;
+    ctx.fillRect(-24, -20, 48, 22);
+
+    ctx.fillStyle = '#0c0612';
+    ctx.beginPath();
+    ctx.ellipse(cat.lookX, cat.lookY, pupilW, 14.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    if (cat.expr === 'angry') {
+      ctx.fillStyle = breed.under;
+      ctx.beginPath();
+      ctx.moveTo(-23, -17);
+      ctx.lineTo(23, side === -1 ? -4 : -19);
+      ctx.lineTo(23, -23);
+      ctx.lineTo(-23, -23);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    ctx.fillStyle = 'rgba(255,255,255,0.95)';
+    ctx.beginPath(); ctx.ellipse(-5.5 + cat.lookX * 0.4, -5.5 + cat.lookY * 0.4, 5.0, 3.4, -0.35, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.75)';
+    ctx.beginPath(); ctx.arc(5.5 + cat.lookX * 0.4, 4.5 + cat.lookY * 0.4, 1.9, 0, Math.PI * 2); ctx.fill();
+
+    ctx.restore();
+    ctx.restore();
+  });
+
+  // BURUN & AĞIZ
+  const glossCol = (!overrideCfg && state.makeup.gloss) ? state.makeup.gloss : null;
+  const noseCol = glossCol || breed.nose;
+
+  ctx.fillStyle = noseCol;
+  ctx.beginPath();
+  ctx.moveTo(-9, 22);
+  ctx.quadraticCurveTo(0, 18.5, 9, 22);
+  ctx.quadraticCurveTo(5.5, 30, 0, 31.5);
+  ctx.quadraticCurveTo(-5.5, 30, -9, 22);
+  ctx.fill();
+
+  ctx.fillStyle = 'rgba(35, 12, 22, 0.58)';
+  ctx.beginPath();
+  ctx.ellipse(-4.5, 25.5, 2.1, 1.3, 0.35, 0, Math.PI * 2);
+  ctx.ellipse(4.5, 25.5, 2.1, 1.3, -0.35, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = 'rgba(255,255,255,0.68)';
+  ctx.beginPath(); ctx.ellipse(0, 21.5, 4.5, 1.4, 0, 0, Math.PI * 2); ctx.fill();
+
+  let mOpen = cat.mouthOpen;
+  if (cat.yawnTimer > 0) mOpen = Math.sin((cat.yawnTimer / 72) * Math.PI);
+  else if (cat.expr === 'eat') mOpen = 0.35 + Math.abs(Math.sin(performance.now() * 0.02)) * 0.45;
+  else if (cat.expr === 'surprised' || cat.expr === 'angry') mOpen = 0.55;
+
+  ctx.strokeStyle = glossCol || '#59374a';
+  ctx.lineWidth = glossCol ? 2.6 : 2.0; ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(0, 31.5); ctx.lineTo(0, 36);
+  ctx.moveTo(0, 36); ctx.quadraticCurveTo(-9, 43, -17, 37);
+  ctx.moveTo(0, 36); ctx.quadraticCurveTo(9, 43, 17, 37);
+  ctx.stroke();
+
+  if (mOpen > 0.06) {
+    const mh = 18 * mOpen;
+    const mw = 11 + 4 * mOpen;
+    ctx.fillStyle = '#5c1832';
+    ctx.beginPath(); ctx.ellipse(0, 38 + mh * 0.45, mw, mh * 0.72, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#ff7da8';
+    ctx.beginPath(); ctx.ellipse(0, 39 + mh * 0.58, mw * 0.72, mh * 0.46, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    [-7, 7].forEach(tx => {
+      ctx.beginPath();
+      ctx.moveTo(tx - 2, 36);
+      ctx.lineTo(tx, 36 + Math.min(5, mh * 0.35));
+      ctx.lineTo(tx + 2, 36);
+      ctx.closePath();
+      ctx.fill();
+    });
+  }
+
+  // Bıyıklar
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.84)';
+  ctx.lineWidth = 1.35;
+  [-1, 1].forEach(side => {
+    for (let w = 0; w < 3; w++) {
+      ctx.beginPath();
+      ctx.moveTo(side * 28, 28 + w * 4.5);
+      ctx.quadraticCurveTo(side * 76, 22 + w * 7.5, side * 124, 18 + w * 12);
+      ctx.stroke();
+    }
+    ctx.beginPath();
+    ctx.moveTo(side * 34, -36);
+    ctx.quadraticCurveTo(side * 46, -54, side * 56, -64);
+    ctx.stroke();
+  });
+
+  // MAKYAJ YÜZ TAŞI & BAŞ/GÖZLÜK TAKILARI
+  if (!overrideCfg) {
+    if (state.makeup.gem) {
+      const gm = state.makeup.gem;
+      if (gm === 'heart') drawVectorHeart(ctx, 62, 16, 10, '#ff4d94');
+      else if (gm === 'star') drawVectorStar(ctx, 62, 16, 11, '#ffd447');
+      else if (gm === 'pearl') {
+        ctx.fillStyle = '#fff5fc'; ctx.strokeStyle = '#d8a6ff'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(62, 16, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      } else if (gm === 'moon') {
+        ctx.fillStyle = '#b589ff';
+        ctx.beginPath(); ctx.arc(62, 16, 8, 0.4, Math.PI * 1.6); ctx.fill();
+      } else if (gm === 'diamond') {
+        drawVectorDiamond(ctx, 62, 16, 11, '#7ce8ff');
+      } else if (gm === 'emerald_gem') {
+        drawVectorDiamond(ctx, 62, 16, 11, '#38d986');
+      } else if (gm === 'ruby_gem') {
+        drawVectorDiamond(ctx, 62, 16, 11, '#ff2e55');
+      } else if (gm === 'flower_gem') {
+        drawVectorHeart(ctx, 62, 16, 10, '#ff9ee0');
+      }
+    }
+    if (state.accessories.head !== 'none') drawHeadAccessory(ctx, state.accessories.head);
+    if (state.accessories.eyewear !== 'none') drawEyewearAccessory(ctx, state.accessories.eyewear);
+  }
+
+  ctx.restore(); // Kafa grubu bitti
+
+  // 6. ÖN BACAKLAR & PATİLER (EN ÖN KATMAN! İki ayak üstüne kalktığında iki ön ayak omuzdan öne/yukarı açık şekilde net görünür!)
+  const pawLift = (cat.mode === 'grabbed' || cat.mode === 'airborne') ? 10 : 0;
+
+  // Sol Ön Bacak
+  ctx.save();
+  if (standFactor > 0.03) {
+    // İki ayak üstüne kalktığında omuzdan yana ve yukarı doğru uzanır, patiler net görünür!
+    const reachWave = Math.sin(performance.now() * 0.016) * 0.18;
+    ctx.translate(-52, -182 - standFactor * 16);
+    ctx.rotate(1.95 * standFactor + reachWave * standFactor);
+    ctx.scale(1.06, 1.08);
+    ctx.drawImage(sprites.frontLegL, -65, -22);
+  } else if (cat.laserShield > 0.05) {
+    ctx.translate(-42, -155);
+    ctx.rotate(-2.25 * cat.laserShield);
+    ctx.drawImage(sprites.frontLegL, -65, -22);
+  } else {
+    ctx.translate(-34, -148 + pawLift);
+    ctx.rotate(0.05);
+    ctx.drawImage(sprites.frontLegL, -65, -22);
+  }
+  if (!overrideCfg && state.accessories.paw !== 'none') drawPawAccessory(ctx, state.accessories.paw);
+  ctx.restore();
+
+  // Sağ Ön Bacak (Banner tüy yumağına uzanma veya iki ayak üstünde uzanma dahil!)
+  ctx.save();
+  if (bannerReach > 0.02) {
+    // 2. MADDE DÜZELTİLDİ: Banner kedisinin ön bacağı kendi omuz eklemine bağlı kalarak tüy yumağına uzanır!
+    const reach = Math.sin(bannerReach * Math.PI);
+    ctx.translate(44, -154);
+    ctx.rotate(-2.05 * reach);
+    ctx.drawImage(sprites.frontLegR, -65, -22);
+  } else if (cat.swipeAnim > 0) {
+    const swing = Math.sin(cat.swipeAnim * Math.PI);
+    ctx.translate(36, -155);
+    ctx.rotate(1.65 * swing);
+    ctx.drawImage(sprites.frontLegR, -65, -22);
+
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2.4;
+    ctx.lineCap = 'round';
+    [-12, -4, 4, 12].forEach(cxOff => {
+      ctx.beginPath();
+      ctx.moveTo(cxOff, 148);
+      ctx.quadraticCurveTo(cxOff - 4, 164, cxOff - 10, 172);
+      ctx.stroke();
+    });
+  } else if (standFactor > 0.03) {
+    // Sağ ön bacak da omuzdan yana/yukarı açılarak iki ön pati birden görünür!
+    const reachWave = Math.cos(performance.now() * 0.016) * 0.18;
+    ctx.translate(52, -182 - standFactor * 16);
+    ctx.rotate(-1.95 * standFactor + reachWave * standFactor);
+    ctx.scale(1.06, 1.08);
+    ctx.drawImage(sprites.frontLegR, -65, -22);
+  } else {
+    ctx.translate(34, -148 + pawLift);
+    ctx.rotate(-0.05);
+    ctx.drawImage(sprites.frontLegR, -65, -22);
+  }
+  if (!overrideCfg && state.accessories.paw !== 'none') drawPawAccessory(ctx, state.accessories.paw);
+  ctx.restore();
+
+  // 7. BANYO KÖPÜKLERİ & SU DAMLALARI
+  if (!overrideCfg) {
+    state.roomData.bubbles.forEach(b => {
+      const bg = ctx.createRadialGradient(b.x - b.r * 0.3, b.y - b.r * 0.3, 1, b.x, b.y, b.r);
+      bg.addColorStop(0, 'rgba(255,255,255,0.98)');
+      bg.addColorStop(0.65, `hsla(${b.hue}, 90%, 88%, 0.78)`);
+      bg.addColorStop(1, `hsla(${(b.hue + 60) % 360}, 85%, 80%, 0.92)`);
+      ctx.fillStyle = bg;
+      ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,0.9)';
+      ctx.beginPath(); ctx.arc(b.x - b.r * 0.32, b.y - b.r * 0.32, b.r * 0.24, 0, Math.PI * 2); ctx.fill();
+    });
+
+    state.roomData.drops.forEach(d => {
+      ctx.fillStyle = 'rgba(120, 215, 255, 0.85)';
+      ctx.beginPath();
+      ctx.moveTo(d.x, d.y - 6);
+      ctx.quadraticCurveTo(d.x + 5, d.y + 2, d.x, d.y + 5);
+      ctx.quadraticCurveTo(d.x - 5, d.y + 2, d.x, d.y - 6);
+      ctx.fill();
+    });
+  }
+
+  ctx.restore();
+}
+
+/* ==========================================================================
+   TAKILARIN & YÜZ TAŞLARININ VEKTÖR ÇİZİMİ
+   ========================================================================== */
+function drawHeadAccessory(ctx, id) {
+  ctx.save();
+  ctx.translate(0, -88);
+  if (id === 'tiara') {
+    ctx.fillStyle = '#ffd65c'; ctx.strokeStyle = '#c98a14'; ctx.lineWidth = 2.2;
+    ctx.beginPath();
+    ctx.moveTo(-28, 10); ctx.lineTo(-24, -14); ctx.lineTo(-11, -1);
+    ctx.lineTo(0, -22); ctx.lineTo(11, -1); ctx.lineTo(24, -14); ctx.lineTo(28, 10);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#ff6bb5'; ctx.beginPath(); ctx.arc(0, -5, 4.5, 0, Math.PI * 2); ctx.fill();
+  } else if (id === 'bow') {
+    ctx.fillStyle = '#ff6bb5'; ctx.strokeStyle = '#c92e7c'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.bezierCurveTo(-30, -24, -34, 24, 0, 5); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.bezierCurveTo(30, -24, 34, 24, 0, 5); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#ffb8dc'; ctx.beginPath(); ctx.arc(0, 2, 7.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  } else if (id === 'flower_crown') {
+    [-36, -18, 0, 18, 36].forEach((fx, idx) => {
+      const fy = Math.abs(fx) * 0.18;
+      ctx.fillStyle = idx % 2 === 0 ? '#ff85c0' : '#d8b4fe';
+      for (let p = 0; p < 5; p++) {
+        const a = (p / 5) * Math.PI * 2;
+        ctx.beginPath(); ctx.arc(fx + Math.cos(a) * 6, fy + Math.sin(a) * 6, 4.5, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.fillStyle = '#ffe066'; ctx.beginPath(); ctx.arc(fx, fy, 3.5, 0, Math.PI * 2); ctx.fill();
+    });
+  } else if (id === 'butterfly_clip') {
+    ctx.translate(46, -6); ctx.rotate(0.35);
+    ctx.fillStyle = '#b48aff'; ctx.strokeStyle = '#6d3cc9'; ctx.lineWidth = 1.8;
+    ctx.beginPath(); ctx.ellipse(-9, -4, 11, 7, -0.4, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(9, -4, 11, 7, 0.4, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#ff85c0';
+    ctx.beginPath(); ctx.ellipse(-7, 6, 8, 5, 0.4, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(7, 6, 8, 5, -0.4, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  } else if (id === 'halo') {
+    ctx.translate(0, -26);
+    ctx.strokeStyle = '#ffe066'; ctx.shadowColor = '#ffd43b'; ctx.shadowBlur = 12; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.ellipse(0, 0, 34, 9, 0, 0, Math.PI * 2); ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawNeckAccessory(ctx, id, yOff) {
+  ctx.save();
+  ctx.translate(0, -138 + yOff);
+  if (id === 'heart_collar') {
+    ctx.strokeStyle = '#ff5ca8'; ctx.lineWidth = 9; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.arc(0, -24, 48, 0.32, Math.PI - 0.32); ctx.stroke();
+    drawVectorHeart(ctx, 0, 28, 12, '#ff2e88');
+  } else if (id === 'bell_collar') {
+    ctx.strokeStyle = '#9b51e0'; ctx.lineWidth = 9; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.arc(0, -24, 48, 0.32, Math.PI - 0.32); ctx.stroke();
+    ctx.fillStyle = '#ffd447'; ctx.strokeStyle = '#b88209'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(0, 27, 9, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  } else if (id === 'pearl_necklace') {
+    for (let i = -5; i <= 5; i++) {
+      const a = Math.PI * 0.5 + i * 0.18;
+      const px = Math.cos(a) * 48;
+      const py = -22 + Math.sin(a) * 48;
+      ctx.fillStyle = '#fff9fd'; ctx.strokeStyle = '#e0b8dc'; ctx.lineWidth = 1.4;
+      ctx.beginPath(); ctx.arc(px, py, 5.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    }
+  } else if (id === 'velvet_bowtie') {
+    ctx.translate(0, 22);
+    ctx.fillStyle = '#8655e8'; ctx.strokeStyle = '#4d2499'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-24, -12); ctx.lineTo(-24, 12); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(24, -12); ctx.lineTo(24, 12); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#ff85c0'; ctx.beginPath(); ctx.arc(0, 0, 6, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.restore();
+}
+
+function drawEyewearAccessory(ctx, id) {
+  ctx.save();
+  ctx.translate(0, -14);
+  ctx.strokeStyle = '#ff5ca8'; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(-16, 0); ctx.lineTo(16, 0); ctx.stroke();
+  [-44, 44].forEach(ex => {
+    if (id === 'heart_glasses') drawVectorHeart(ctx, ex, 6, 26, 'rgba(255, 92, 168, 0.42)');
+    else if (id === 'star_glasses') drawVectorStar(ctx, ex, 0, 26, 'rgba(180, 138, 255, 0.48)');
+  });
+  ctx.restore();
+}
+
+function drawPawAccessory(ctx, id) {
+  ctx.save();
+  ctx.translate(0, 122);
+  if (id === 'gold_anklet') {
+    ctx.strokeStyle = '#ffd447'; ctx.lineWidth = 4.5;
+    ctx.beginPath(); ctx.moveTo(-19, 0); ctx.lineTo(19, 0); ctx.stroke();
+    ctx.fillStyle = '#ff6bb5'; ctx.beginPath(); ctx.arc(0, 4, 4, 0, Math.PI * 2); ctx.fill();
+  } else if (id === 'pink_ribbon') {
+    ctx.strokeStyle = '#ff7ec0'; ctx.lineWidth = 5;
+    ctx.beginPath(); ctx.moveTo(-19, 0); ctx.lineTo(19, 0); ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawVectorHeart(ctx, x, y, size, color) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(0, size * 0.4);
+  ctx.bezierCurveTo(-size, -size * 0.4, -size * 0.5, -size, 0, -size * 0.35);
+  ctx.bezierCurveTo(size * 0.5, -size, size, -size * 0.4, 0, size * 0.4);
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawVectorStar(ctx, x, y, r, color) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  for (let i = 0; i < 4; i++) {
+    const a = (i * Math.PI) / 2;
+    ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r);
+    ctx.lineTo(Math.cos(a + Math.PI / 4) * (r * 0.32), Math.sin(a + Math.PI / 4) * (r * 0.32));
+  }
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawVectorDiamond(ctx, x, y, r, color) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = color;
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 1.4;
+  ctx.beginPath();
+  ctx.moveTo(0, -r);
+  ctx.lineTo(r * 0.75, 0);
+  ctx.lineTo(0, r);
+  ctx.lineTo(-r * 0.75, 0);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  ctx.restore();
+}
+
+/* ==========================================================================
+   7. OYUN ADI ÜSTÜNDEKİ TÜY YUMAĞI KEDİSİ (2. MADDE: ÖN AYAK YERİNDEN ÇIKMAZ!)
+   ========================================================================== */
+let featherPendulum = { angle: 0.42, vel: 0, pawReach: 0, feathers: [] };
+
+function drawBannerFeatherCat() {
+  const c = document.getElementById('bannerFeatherCatCanvas');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  const w = c.width, h = c.height;
+  ctx.clearRect(0, 0, w, h);
+
+  const grav = -0.019 * Math.sin(featherPendulum.angle);
+  featherPendulum.vel = (featherPendulum.vel + grav) * 0.994;
+  featherPendulum.angle += featherPendulum.vel;
+
+  const anchorX = w * 0.62;
+  const anchorY = 6;
+  const cordLen = 128;
+  const pomX = anchorX + Math.sin(featherPendulum.angle) * cordLen;
+  const pomY = anchorY + Math.cos(featherPendulum.angle) * cordLen;
+
+  if (pomX < anchorX - 18 && featherPendulum.vel < 0 && featherPendulum.pawReach < 0.15) {
+    featherPendulum.pawReach = 1.0;
+    featherPendulum.vel = 0.042;
+    for (let i = 0; i < 3; i++) {
+      featherPendulum.feathers.push({
+        x: pomX, y: pomY,
+        vx: (Math.random() - 0.3) * 2.2, vy: -0.8 - Math.random() * 1.4,
+        rot: Math.random() * Math.PI, life: 1.0
+      });
+    }
+  }
+  featherPendulum.pawReach = Math.max(0, featherPendulum.pawReach - 0.055);
+
+  ctx.strokeStyle = '#d14797';
+  ctx.lineWidth = 2.6;
+  ctx.beginPath();
+  ctx.moveTo(anchorX, anchorY);
+  ctx.quadraticCurveTo((anchorX + pomX) * 0.5 + 8, (anchorY + pomY) * 0.5, pomX, pomY);
+  ctx.stroke();
+
+  ctx.save();
+  ctx.translate(pomX, pomY);
+  ctx.rotate(featherPendulum.angle * 1.8);
+  [
+    { a: -0.45, len: 34, col: '#ff85c0' },
+    { a: 0.0, len: 40, col: '#b48aff' },
+    { a: 0.45, len: 32, col: '#ffc2e2' }
+  ].forEach(f => {
+    ctx.save(); ctx.rotate(f.a); ctx.fillStyle = f.col;
+    ctx.beginPath(); ctx.ellipse(0, f.len * 0.55, 5.5, f.len * 0.5, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  });
+
+  const pg = ctx.createRadialGradient(-4, -4, 2, 0, 0, 18);
+  pg.addColorStop(0, '#fff5fb'); pg.addColorStop(0.55, '#ff80bf'); pg.addColorStop(1, '#9b51e0');
+  ctx.fillStyle = pg;
+  ctx.beginPath(); ctx.arc(0, 0, 17, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+
+  const catX = w * 0.37;
+  const catY = h * 0.88;
+  const lookDx = Math.max(-4, Math.min(4, (pomX - catX) * 0.035));
+  const lookDy = Math.max(-3, Math.min(3, (pomY - (catY - 60)) * 0.035));
+
+  ctx.save();
+  ctx.translate(catX, catY);
+  ctx.scale(0.42, 0.42);
+  const prevLX = cat.lookX, prevLY = cat.lookY, prevTilt = cat.headTilt;
+  cat.lookX = lookDx; cat.lookY = lookDy; cat.headTilt = lookDx * 0.04;
+
+  // Kedinin kendi omuz eklemine bağlı ön bacak animasyonu `bannerReach` üzerinden içeride çizilir!
+  renderPhotorealisticCat(ctx, 0, 0, {
+    stage: { scale: 1.0, headBoost: 1.14 },
+    breed: adoptDraft.breed,
+    leftEye: adoptDraft.leftEye,
+    rightEye: adoptDraft.rightEye,
+    bannerReach: featherPendulum.pawReach
+  });
+
+  cat.lookX = prevLX; cat.lookY = prevLY; cat.headTilt = prevTilt;
+  ctx.restore();
+
+  for (let i = featherPendulum.feathers.length - 1; i >= 0; i--) {
+    const fl = featherPendulum.feathers[i];
+    fl.x += fl.vx; fl.y += fl.vy; fl.vy += 0.03; fl.rot += 0.04; fl.life -= 0.022;
+    if (fl.life <= 0) { featherPendulum.feathers.splice(i, 1); continue; }
+    ctx.save(); ctx.globalAlpha = fl.life; ctx.translate(fl.x, fl.y); ctx.rotate(fl.rot);
+    ctx.fillStyle = '#ffb8de'; ctx.beginPath(); ctx.ellipse(0, 0, 7, 2.5, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+}
+
+document.getElementById('bannerFeatherCatCanvas').addEventListener('pointerdown', () => {
+  featherPendulum.vel += (featherPendulum.angle > 0 ? -0.065 : 0.065);
+  audio.meow('happy');
+});
+
+/* ==========================================================================
+   8. ODA SAHNELERİ & OYUNCAKLAR
+   ========================================================================== */
+function drawRoomScene(ctx, w, h) {
+  const room = state.room;
+  const horizon = h * 0.66;
+
+  const palettes = {
+    play: { w1: '#fceef7', w2: '#efd8f2', f1: '#d9a982', f2: '#b37f57' },
+    food: { w1: '#fdf3f8', w2: '#f2dff0', f1: '#d6dfe6', f2: '#b4c3cf' },
+    bath: { w1: '#eaf6fc', w2: '#d2eaf7', f1: '#bce2f2', f2: '#92c7de' },
+    toilet: { w1: '#f0f7f4', w2: '#dcebe4', f1: '#dcd4ca', f2: '#bdb3a6' },
+    sleep: state.roomData.lampOn
+      ? { w1: '#f5e8fc', w2: '#e3cef5', f1: '#a88ec2', f2: '#82669e' }
+      : { w1: '#281c3d', w2: '#3b2957', f1: '#2f2047', f2: '#1d132e' },
+    studio: { w1: '#fff0f9', w2: '#f2d9f7', f1: '#e6c2ec', f2: '#c798d4' }
+  };
+
+  const t = palettes[room] || palettes.play;
+  const wg = ctx.createLinearGradient(0, 0, 0, horizon);
+  wg.addColorStop(0, t.w1); wg.addColorStop(1, t.w2);
+  ctx.fillStyle = wg; ctx.fillRect(0, 0, w, horizon);
+
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.fillRect(0, horizon - 12, w, 12);
+
+  const fg = ctx.createLinearGradient(0, horizon, 0, h);
+  fg.addColorStop(0, t.f1); fg.addColorStop(1, t.f2);
+  ctx.fillStyle = fg; ctx.fillRect(0, horizon, w, h - horizon);
+
+  if (room === 'studio') {
+    const mx = w * 0.44, my = h * 0.34;
+    const mw = Math.min(230, w * 0.56), mh = Math.min(165, h * 0.26);
+    ctx.fillStyle = '#fff5fc';
+    ctx.strokeStyle = '#e066a8';
+    ctx.lineWidth = 6;
+    ctx.beginPath(); ctx.roundRect(mx - mw * 0.5, my - mh * 0.5, mw, mh, 26); ctx.fill(); ctx.stroke();
+
+    for (let b = -4; b <= 4; b++) {
+      const bx = mx + b * (mw * 0.1);
+      ctx.fillStyle = '#fffbe6';
+      ctx.shadowColor = '#ffd43b'; ctx.shadowBlur = 10;
+      ctx.beginPath(); ctx.arc(bx, my - mh * 0.5, 4.5, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.shadowBlur = 0;
+
+    ctx.fillStyle = '#e0569c';
+    ctx.beginPath(); ctx.ellipse(w * 0.45, h * 0.81, 120, 24, 0, 0, Math.PI * 2); ctx.fill();
+    return;
+  }
+
+  const winX = w * 0.72, winY = h * 0.14, winW = Math.min(125, w * 0.23), winH = Math.min(140, h * 0.21);
+  ctx.fillStyle = (room === 'sleep' && !state.roomData.lampOn) ? '#151029' : '#e3f5ff';
+  ctx.beginPath(); ctx.roundRect(winX, winY, winW, winH, 18); ctx.fill();
+  ctx.strokeStyle = (room === 'sleep' && !state.roomData.lampOn) ? '#685291' : '#ffffff';
+  ctx.lineWidth = 5; ctx.stroke();
+
+  if (room === 'play') {
+    ctx.fillStyle = 'rgba(245, 178, 220, 0.48)';
+    ctx.beginPath(); ctx.ellipse(w * 0.5, h * 0.81, Math.min(215, w * 0.36), 34, 0, 0, Math.PI * 2); ctx.fill();
+
+    if (activeTool === 'laser') {
+      ctx.fillStyle = '#ff2457';
+      ctx.shadowColor = '#ff2457';
+      ctx.shadowBlur = 16;
+      ctx.beginPath(); ctx.arc(pointer.x, pointer.y, 6.5, 0, Math.PI * 2); ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+  } else if (room === 'food') {
+    const bx = w * 0.28, by = h * 0.80;
+    ctx.fillStyle = '#eb6aa4';
+    ctx.beginPath();
+    ctx.moveTo(bx - 28, by + 12); ctx.lineTo(bx - 20, by - 6);
+    ctx.lineTo(bx + 20, by - 6); ctx.lineTo(bx + 28, by + 12);
+    ctx.closePath(); ctx.fill();
+
+    if (state.roomData.bowlFood) {
+      ctx.fillStyle = state.roomData.bowlFood.id === 'milk' ? '#ffffff' : '#b86835';
+      ctx.beginPath(); ctx.ellipse(bx, by - 6, 18, 6.5, 0, Math.PI, Math.PI * 2); ctx.fill();
+    }
+
+    const wx = bx + 78;
+    ctx.fillStyle = '#9264e0';
+    ctx.beginPath();
+    ctx.moveTo(wx - 25, by + 12); ctx.lineTo(wx - 18, by - 5);
+    ctx.lineTo(wx + 18, by - 5); ctx.lineTo(wx + 25, by + 12);
+    ctx.closePath(); ctx.fill();
+
+    if (state.roomData.waterLevel > 0) {
+      ctx.fillStyle = '#bfeaff';
+      ctx.beginPath(); ctx.ellipse(wx, by - 4, 16, 4.5, 0, 0, Math.PI * 2); ctx.fill();
+    }
+  } else if (room === 'bath') {
+    const tx = w * 0.24, ty = h * 0.77;
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath(); ctx.roundRect(tx - 60, ty - 26, 120, 48, [6, 6, 24, 24]); ctx.fill();
+    ctx.strokeStyle = '#cbe2eb'; ctx.lineWidth = 3; ctx.stroke();
+  } else if (room === 'toilet') {
+    const lx = w * 0.28, ly = h * 0.79;
+    ctx.fillStyle = '#8b72a8';
+    ctx.beginPath(); ctx.roundRect(lx - 55, ly - 16, 110, 34, [6, 6, 15, 15]); ctx.fill();
+    ctx.fillStyle = state.roomData.litterDirty ? '#b89f7d' : '#ede4d3';
+    ctx.beginPath(); ctx.ellipse(lx, ly - 14, 49, 8.5, 0, 0, Math.PI * 2); ctx.fill();
+  } else if (room === 'sleep') {
+    const sx = w * 0.52, sy = h * 0.80;
+    ctx.fillStyle = '#9b6bc2';
+    ctx.beginPath(); ctx.ellipse(sx, sy, 126, 32, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#f5d5eb';
+    ctx.beginPath(); ctx.ellipse(sx, sy - 4, 96, 22, 0, 0, Math.PI * 2); ctx.fill();
+
+    const lampX = w * 0.22, lampY = h * 0.62;
+    ctx.strokeStyle = '#685282'; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.moveTo(lampX, lampY + 42); ctx.lineTo(lampX, lampY); ctx.stroke();
+    ctx.fillStyle = state.roomData.lampOn ? '#ffe794' : '#735b8f';
+    ctx.beginPath();
+    ctx.moveTo(lampX - 20, lampY); ctx.lineTo(lampX - 11, lampY - 22);
+    ctx.lineTo(lampX + 11, lampY - 22); ctx.lineTo(lampX + 20, lampY);
+    ctx.closePath(); ctx.fill();
+  }
+}
+
+function drawPlayToys(ctx) {
+  if (state.room !== 'play') return;
+  const floorY = window.innerHeight * 0.79;
+
+  // 1. Oyun Topu
+  playBall.trail.forEach((tr, i) => {
+    ctx.fillStyle = `rgba(255, 130, 195, ${(i / playBall.trail.length) * 0.35})`;
+    ctx.beginPath();
+    ctx.arc(tr.x, tr.y, 12 * (i / playBall.trail.length), 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  ctx.save();
+  ctx.translate(playBall.x, playBall.y);
+  const dist = Math.max(0, floorY - playBall.y);
+  ctx.fillStyle = 'rgba(45, 20, 60, 0.22)';
+  ctx.beginPath(); ctx.ellipse(0, dist + 15, 16, 5, 0, 0, Math.PI * 2); ctx.fill();
+
+  ctx.rotate(playBall.rot);
+  ctx.scale(playBall.squish, 2 - playBall.squish);
+  const bg = ctx.createRadialGradient(-5, -5, 2, 0, 0, 18);
+  bg.addColorStop(0, '#ffb8df'); bg.addColorStop(0.55, '#eb549e'); bg.addColorStop(1, '#8c38c9');
+  ctx.fillStyle = bg;
+  ctx.beginPath(); ctx.arc(0, 0, 18, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,0.75)'; ctx.lineWidth = 2.4;
+  ctx.beginPath(); ctx.arc(0, 0, 11, -0.4, 2.0); ctx.stroke();
+  ctx.restore();
+
+  // 2. Tüy Yumağı
+  ctx.save();
+  ctx.translate(featherPom.x, featherPom.y);
+  const fDist = Math.max(0, floorY - featherPom.y);
+  ctx.fillStyle = 'rgba(45, 20, 60, 0.2)';
+  ctx.beginPath(); ctx.ellipse(0, fDist + 14, 15, 4.5, 0, 0, Math.PI * 2); ctx.fill();
+
+  ctx.rotate(featherPom.rot);
+  [
+    { a: -0.5, len: 28, col: '#ff85c0' },
+    { a: 0.0, len: 34, col: '#b48aff' },
+    { a: 0.5, len: 28, col: '#ffc2e2' }
+  ].forEach(f => {
+    ctx.save(); ctx.rotate(f.a); ctx.fillStyle = f.col;
+    ctx.beginPath(); ctx.ellipse(0, -f.len * 0.55, 4.5, f.len * 0.5, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  });
+
+  const pg = ctx.createRadialGradient(-3, -3, 2, 0, 0, 15);
+  pg.addColorStop(0, '#fff5fb'); pg.addColorStop(0.55, '#ff7ec0'); pg.addColorStop(1, '#8655e8');
+  ctx.fillStyle = pg;
+  ctx.beginPath(); ctx.arc(0, 0, 14, 0, Math.PI * 2); ctx.fill();
+
+  ctx.strokeStyle = '#ffd6ec'; ctx.lineWidth = 1.2;
+  for (let a = 0; a < Math.PI * 2; a += 0.4) {
+    ctx.beginPath();
+    ctx.moveTo(Math.cos(a) * 11, Math.sin(a) * 11);
+    ctx.lineTo(Math.cos(a + 0.15) * 19, Math.sin(a + 0.15) * 19);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawActiveToolCursor(ctx) {
+  if (!activeTool) return;
+  const x = pointer.x, y = pointer.y;
+
+  if (state.room === 'bath') {
+    ctx.save();
+    ctx.translate(x, y);
+    if (activeTool === 'loofah') {
+      const cols = ['#ff96ca', '#d8a6ff', '#ffc4e1', '#b8e8ff'];
+      for (let i = 0; i < 6; i++) {
+        const a = (i / 6) * Math.PI * 2;
+        ctx.fillStyle = cols[i % cols.length];
+        ctx.beginPath(); ctx.arc(Math.cos(a) * 11, Math.sin(a) * 11, 13, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.fillStyle = 'rgba(255,255,255,0.88)';
+      ctx.beginPath(); ctx.arc(-6, -8, 6, 0, Math.PI * 2); ctx.fill();
+    } else if (activeTool === 'shower') {
+      ctx.fillStyle = '#f5e6f7'; ctx.strokeStyle = '#9c68b8'; ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.roundRect(-22, -14, 44, 18, 9); ctx.fill(); ctx.stroke();
+      if (pointer.down) {
+        ctx.strokeStyle = 'rgba(115, 210, 255, 0.9)'; ctx.lineWidth = 2.4;
+        for (let s = -15; s <= 15; s += 6) {
+          ctx.beginPath(); ctx.moveTo(s, 6); ctx.lineTo(s + (Math.random() - 0.5) * 8, 56 + Math.random() * 18); ctx.stroke();
+        }
+      }
+    } else if (activeTool === 'towel') {
+      ctx.fillStyle = '#ffd9ee'; ctx.strokeStyle = '#d96ba8'; ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.roundRect(-26, -16, 52, 32, 10); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-24, 0); ctx.lineTo(24, 0); ctx.stroke();
+    }
+    ctx.restore();
+  } else if (state.room === 'studio' && COSMETIC_TOOLS[activeTool]) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(-0.45);
+    const swList = COSMETIC_TOOLS[activeTool].swatches;
+    const swObj = swList.find(s => s.id === selectedSwatch[activeTool]) || swList[0];
+    const col = swObj ? swObj.color : '#ffffff';
+
+    if (activeTool === 'cotton_pad') {
+      ctx.fillStyle = '#ffffff'; ctx.strokeStyle = '#f0c2e6'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(0, 0, 18, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    } else {
+      ctx.fillStyle = '#8655e8';
+      ctx.beginPath(); ctx.roundRect(-4, 4, 8, 38, 4); ctx.fill();
+      ctx.fillStyle = '#ffd447';
+      ctx.fillRect(-4.5, -4, 9, 8);
+      ctx.fillStyle = col;
+      ctx.beginPath(); ctx.ellipse(0, -13, 8, 11, 0, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.restore();
+  }
+}
+
+/* ==========================================================================
+   9. ETKİLEŞİMLER, TOPU BIRAKMAMA & SALLAYINCA NADİREN BIRAKMA
+   ========================================================================== */
+function spawnEffect(x, y, type, color = '#ff6bb5') {
+  cat.fxList.push({
+    x: x + (Math.random() - 0.5) * 26,
+    y,
+    vx: (Math.random() - 0.5) * 1.5,
+    vy: -1.4 - Math.random() * 1.2,
+    size: 7 + Math.random() * 5,
+    rot: Math.random() * Math.PI,
+    vRot: (Math.random() - 0.5) * 0.08,
+    life: 1,
+    type,
+    color
+  });
+}
+
+function isOnCat(px, py) {
+  const st = getGrowthStage();
+  return Math.hypot(px - cat.x, py - (cat.y - 110 * st.scale)) < 120 * st.scale;
+}
+
+function initInteractions() {
+  const canvas = document.getElementById('worldCanvas');
+
+  canvas.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    audio.ensure();
+    pointer = { x: e.clientX, y: e.clientY, down: true };
+    ptrHistory = [{ x: e.clientX, y: e.clientY, t: performance.now() }];
+    try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
+
+    // 1. Oyun Odasında Topu veya Tüy Yumağını Tutma
+    if (state.room === 'play') {
+      // Kedi topu ağzında inatla tutuyorsa ('hogged'), topu direkt çekip alamazsın; kediyi sallaman gerekir!
+      if (playBall.state === 'hogged' && Math.hypot(e.clientX - playBall.x, e.clientY - playBall.y) < 48) {
+        audio.meow('angry');
+        showSpeech('Hırrr! Top benim, bırakmam! (Kediyi tut ve sağa sola salla!)');
+        cat.mode = 'grabbed';
+        cat.shakeTracker = { lastDir: 0, reversals: 0, lastTime: performance.now() };
+        return;
+      }
+
+      if ((playBall.state === 'idle' || playBall.state === 'air') &&
+          Math.hypot(e.clientX - playBall.x, e.clientY - playBall.y) < 52) {
+        playBall.state = 'held';
+        playBall.vx = 0; playBall.vy = 0;
+        activeTool = 'ball';
+        renderBottomDocks();
+        return;
+      }
+      if ((featherPom.state === 'idle' || featherPom.state === 'air') &&
+          Math.hypot(e.clientX - featherPom.x, e.clientY - featherPom.y) < 52) {
+        featherPom.state = 'held';
+        featherPom.vx = 0; featherPom.vy = 0;
+        activeTool = 'pom';
+        renderBottomDocks();
+        return;
+      }
+    }
+
+    if (state.room === 'bath' && activeTool) {
+      performBathRub(e.clientX, e.clientY);
+      return;
+    }
+
+    if (state.room === 'studio' && activeTool) {
+      applyCosmeticStroke(e.clientX, e.clientY);
+      return;
+    }
+
+    if (state.roomData.sleeping && isOnCat(e.clientX, e.clientY)) {
+      wakeCatUp(true);
+      return;
+    }
+
+    if (isOnCat(e.clientX, e.clientY)) {
+      // Eğer kedi topu ağzında tutuyorsa ('hogged'), dokununca kediyi tutma moduna geçsin ki sağa sola sallanabilsin!
+      if (playBall.state === 'hogged') {
+        cat.mode = 'grabbed';
+        cat.shakeTracker = { lastDir: 0, reversals: 0, lastTime: performance.now() };
+        showSpeech('Mrrp! Topumu vermem ki!');
+        return;
+      }
+      const relY = (e.clientY - (cat.y - 210 * getGrowthStage().scale)) / (210 * getGrowthStage().scale);
+      cat.petZone = relY < 0.45 ? 'head' : relY < 0.65 ? 'chin' : 'belly';
+      cat.mode = 'petting';
+      petStroke(e.clientX, e.clientY, 1);
+    } else if (state.room === 'sleep' && Math.hypot(e.clientX - window.innerWidth * 0.22, e.clientY - window.innerHeight * 0.60) < 48) {
+      state.roomData.lampOn = !state.roomData.lampOn;
+      if (state.roomData.lampOn && realCatEngine.getBreed(state.breed).trait === 'warmth') {
+        showSpeech('Sıcak lamba için teşekkürler! Çok üşümüştüm.');
+        state.stats.happy = Math.min(100, state.stats.happy + 8);
+        updateHUD();
+      }
+      saveGame();
+    }
+  });
+
+  canvas.addEventListener('pointermove', (e) => {
+    const now = performance.now();
+    pointer.x = e.clientX;
+    pointer.y = e.clientY;
+    ptrHistory.push({ x: e.clientX, y: e.clientY, t: now });
+    if (ptrHistory.length > 6) ptrHistory.shift();
+
+    const prev = ptrHistory[Math.max(0, ptrHistory.length - 2)];
+    const dt = Math.max(8, now - prev.t);
+    const dx = e.clientX - prev.x;
+    const dy = e.clientY - prev.y;
+    const speed = Math.hypot(dx, dy) / dt;
+
+    if (playBall.state === 'held') {
+      playBall.x = e.clientX;
+      playBall.y = e.clientY;
+      playBall.rot += dx * 0.03;
+      return;
+    }
+
+    if (featherPom.state === 'held') {
+      featherPom.x = e.clientX;
+      featherPom.y = e.clientY;
+      featherPom.rot = Math.sin(now * 0.015) * 0.35;
+
+      const floorY = window.innerHeight * 0.79;
+      if (featherPom.y < floorY - 70 && Math.abs(featherPom.x - cat.x) < 185) {
+        cat.mode = 'standing_catch';
+        cat.x += (featherPom.x - cat.x) * 0.06;
+        if (Math.random() < 0.06) {
+          state.stats.happy = Math.min(100, state.stats.happy + 1);
+          addGrowthSlow(0.15);
+          updateHUD();
+        }
+      } else if (cat.mode === 'standing_catch') {
+        cat.mode = 'idle';
+      }
+      return;
+    }
+
+    if (state.room === 'bath' && activeTool && pointer.down) {
+      performBathRub(e.clientX, e.clientY);
+      return;
+    }
+
+    if (state.room === 'studio' && activeTool && pointer.down) {
+      applyCosmeticStroke(e.clientX, e.clientY);
+      return;
+    }
+
+    if (state.room === 'play' && activeTool === 'laser') {
+      const eyeY = cat.y - 175 * getGrowthStage().scale;
+      const distToEyes = Math.hypot(e.clientX - cat.x, e.clientY - eyeY);
+
+      if (distToEyes < 78) {
+        cat.expr = 'squint_laser';
+        cat.laserShield = Math.min(1, cat.laserShield + 0.18);
+        cat.headTilt = (e.clientX >= cat.x ? -0.35 : 0.35);
+        cat.lookX = e.clientX >= cat.x ? -5 : 5;
+        cat.lookY = 4;
+        cat.mode = 'idle';
+        if (Math.random() < 0.04) showSpeech('Işık gözümü alıyor, tutma!');
+        return;
+      } else {
+        cat.laserShield = Math.max(0, cat.laserShield - 0.12);
+        if (cat.expr === 'squint_laser') cat.expr = 'normal';
+        cat.headTilt = 0;
+        if (cat.mode === 'idle' || cat.mode === 'stalk_laser') {
+          cat.mode = 'stalk_laser';
+          cat.targetX = Math.max(80, Math.min(window.innerWidth - 80, e.clientX));
+        }
+      }
+    }
+
+    if (cat.laserShield <= 0.1) {
+      cat.lookX = Math.max(-5, Math.min(5, (e.clientX - cat.x) * 0.025));
+      cat.lookY = Math.max(-4, Math.min(4, (e.clientY - (cat.y - 135)) * 0.025));
+    }
+
+    if (cat.mode === 'petting') {
+      const floorY = window.innerHeight * 0.79;
+      const breed = realCatEngine.getBreed(state.breed);
+      if (state.room !== 'bath' && e.clientY < floorY - 175 && dy < -10) {
+        if (breed.trait === 'proud' && state.trust < 80) {
+          cat.mode = 'idle';
+          triggerClawSwipe('Beni havaya kaldırma! (Pençe attı)');
+        } else {
+          cat.mode = 'grabbed';
+          cat.expr = 'surprised';
+          cat.shakeTracker = { lastDir: 0, reversals: 0, lastTime: now };
+          audio.meow('surprised');
+          showSpeech('Miyav! Havadayım!');
+        }
+      } else {
+        petStroke(e.clientX, e.clientY, speed);
+      }
+    } else if (cat.mode === 'grabbed') {
+      cat.x = Math.max(75, Math.min(window.innerWidth - 75, e.clientX));
+      cat.y = Math.max(130, Math.min(window.innerHeight - 30, e.clientY + 95));
+      cat.vx = (dx / dt) * 17;
+      cat.vy = (dy / dt) * 17;
+      cat.angle = Math.max(-32, Math.min(32, cat.vx * 1.3));
+
+      // 5. MADDE: Kediyi sağa sola sallayınca nadir olasılıkla (%25) topu bırakması!
+      if (playBall.state === 'hogged' && Math.abs(dx) > 6) {
+        const dir = Math.sign(dx);
+        if (cat.shakeTracker.lastDir !== 0 && dir !== cat.shakeTracker.lastDir && (now - cat.shakeTracker.lastTime) < 420) {
+          cat.shakeTracker.reversals++;
+          cat.shakeTracker.lastTime = now;
+          if (cat.shakeTracker.reversals >= 4) {
+            cat.shakeTracker.reversals = 0;
+            // Her zaman değil, nadir (%25 ihtimalle) bırakır!
+            if (Math.random() < 0.25) {
+              playBall.state = 'air';
+              playBall.vx = dir * 10;
+              playBall.vy = -7;
+              audio.meow('surprised');
+              showSpeech('Eyvah! Sallayınca topu ağzımdan düşürdüm!');
+            } else {
+              audio.meow('angry');
+              showSpeech('Sallasan da bırakmam, benim topum!');
+            }
+          }
+        } else if (cat.shakeTracker.lastDir === 0) {
+          cat.shakeTracker.lastDir = dir;
+          cat.shakeTracker.lastTime = now;
+        }
+      }
+    }
+  });
+
+  const onPtrUp = () => {
+    pointer.down = false;
+
+    if (playBall.state === 'held') {
+      let vx = 0, vy = 0;
+      if (ptrHistory.length >= 2) {
+        const first = ptrHistory[0];
+        const last = ptrHistory[ptrHistory.length - 1];
+        const span = Math.max(12, last.t - first.t);
+        vx = ((last.x - first.x) / span) * 22;
+        vy = ((last.y - first.y) / span) * 22;
+      }
+      const force = Math.hypot(vx, vy);
+      if (force < 4) {
+        vx = (playBall.x < window.innerWidth * 0.5 ? 1 : -1) * 9;
+        vy = -9;
+      }
+      playBall.vx = Math.max(-38, Math.min(38, vx));
+      playBall.vy = Math.max(-38, Math.min(-6, vy));
+      playBall.state = 'air';
+      audio.sfx('bounce');
+
+      cat.mode = 'hunt_crouch';
+      cat.huntTimer = 16;
+      cat.expr = 'normal';
+      showSpeech(force > 18 ? 'Vay ne sert attın! Yakalıyorum!' : 'Topu gördüm! Avcı moduna geçtim!');
+      return;
+    }
+
+    if (featherPom.state === 'held') {
+      let vx = 0, vy = 0;
+      if (ptrHistory.length >= 2) {
+        const first = ptrHistory[0];
+        const last = ptrHistory[ptrHistory.length - 1];
+        const span = Math.max(12, last.t - first.t);
+        vx = ((last.x - first.x) / span) * 16;
+        vy = ((last.y - first.y) / span) * 16;
+      }
+      if (Math.hypot(vx, vy) < 4) {
+        vx = (featherPom.x < window.innerWidth * 0.5 ? 1 : -1) * 10;
+        vy = -10;
+      }
+      featherPom.vx = Math.max(-24, Math.min(24, vx));
+      featherPom.vy = Math.max(-24, Math.min(-5, vy));
+      featherPom.state = 'air';
+      cat.mode = 'idle';
+      audio.sfx('bubble');
+      return;
+    }
+
+    if (cat.mode === 'grabbed') {
+      cat.mode = 'airborne';
+      cat.vx = Math.max(-26, Math.min(26, cat.vx));
+      cat.vy = Math.max(-30, Math.min(18, cat.vy));
+      cat.vAngle = cat.vx * 0.4;
+    } else if (cat.mode === 'petting') {
+      cat.mode = 'idle';
+      if (cat.expr !== 'angry') cat.expr = 'normal';
+      cat.headTilt = 0;
+    }
+  };
+
+  canvas.addEventListener('pointerup', onPtrUp);
+  canvas.addEventListener('pointercancel', onPtrUp);
+}
+
+function petStroke(px, py, speed) {
+  const breed = realCatEngine.getBreed(state.breed);
+
+  const bellySensitive = cat.petZone === 'belly' && (breed.trait === 'hunter' || breed.trait === 'proud' || state.trust < 70);
+  if (bellySensitive || speed > 2.6 || state.stats.hunger < 20) {
+    cat.annoyance += (speed > 2.6 ? 2.2 : 1.1);
+    if (cat.annoyance > 14) {
+      cat.mode = 'idle';
+      triggerClawSwipe(cat.petZone === 'belly' ? 'Karnıma dokunma! (Pençe attı)' : 'Çok sert sevdin! (Pençe attı)');
+      return;
+    }
+  } else {
+    cat.annoyance = Math.max(0, cat.annoyance - 0.5);
+  }
+
+  cat.expr = cat.petZone === 'chin' ? 'love' : 'happy';
+  cat.headTilt = Math.sin(performance.now() * 0.012) * 0.08;
+
+  const now = performance.now();
+  if (now - cat.lastPurr > 185) {
+    cat.lastPurr = now;
+    audio.purr(cat.petZone, speed);
+    if (breed.trait === 'talkative' && Math.random() < 0.22) audio.meow('happy');
+    if (Math.random() < 0.55) {
+      spawnEffect(px, py - 15, cat.petZone === 'chin' ? 'heart' : 'sparkle', cat.petZone === 'chin' ? '#ff5ca8' : '#d580ff');
+    }
+  }
+
+  const happyGain = breed.trait === 'kucak' ? 0.42 : 0.25;
+  state.stats.happy = Math.min(100, state.stats.happy + happyGain);
+  state.trust = Math.min(100, state.trust + 0.16);
+  addGrowthSlow(0.05);
+  updateHUD();
+}
+
+function applyCosmeticStroke(px, py) {
+  const st = getGrowthStage();
+  const faceDist = Math.hypot(px - cat.x, py - (cat.y - 165 * st.scale));
+  if (faceDist > 125 * st.scale) return;
+
+  const toolCfg = COSMETIC_TOOLS[activeTool];
+  if (!toolCfg) return;
+
+  if (activeTool === 'cotton_pad') {
+    state.makeup = { blush: null, eyeshadow: null, eyeliner: null, gloss: null, gem: null };
+    spawnEffect(px, py, 'sparkle', '#ffffff');
+    showSpeech('Makyajım tertemiz silindi!');
+    saveGame();
+    return;
+  }
+
+  const sw = toolCfg.swatches.find(s => s.id === selectedSwatch[activeTool]) || toolCfg.swatches[0];
+  if (!sw) return;
+
+  if (activeTool === 'blush_brush') state.makeup.blush = sw.color;
+  else if (activeTool === 'eyeshadow_brush') state.makeup.eyeshadow = sw.color;
+  else if (activeTool === 'eyeliner_pen') state.makeup.eyeliner = sw.color;
+  else if (activeTool === 'gloss_wand') state.makeup.gloss = sw.color;
+  else if (activeTool === 'gem_applicator') state.makeup.gem = sw.id;
+
+  cat.expr = 'happy';
+  if (Math.random() < 0.35) {
+    audio.sfx('bubble');
+    spawnEffect(px, py, 'sparkle', '#ff7ec0');
+  }
+  saveGame();
+}
+
+function performBathRub(px, py) {
+  const st = getGrowthStage();
+  const nearCat = Math.hypot(px - cat.x, py - (cat.y - 110 * st.scale)) < 135 * st.scale;
+  if (!nearCat) return;
+  const breed = realCatEngine.getBreed(state.breed);
+
+  if (activeTool === 'loofah') {
+    if (state.roomData.bubbles.length < 28 && Math.random() < 0.65) {
+      const lx = (px - cat.x) / st.scale + (Math.random() - 0.5) * 32;
+      const ly = (py - cat.y) / st.scale + (Math.random() - 0.5) * 32;
+      state.roomData.bubbles.push({
+        x: Math.max(-75, Math.min(75, lx)),
+        y: Math.max(-210, Math.min(-25, ly)),
+        r: 9 + Math.random() * 9,
+        hue: 290 + Math.random() * 60
+      });
+    }
+    if (Math.random() < 0.35) {
+      audio.sfx('bubble');
+      spawnEffect(px, py, 'bubble', '#ff9ee0');
+    }
+  } else if (activeTool === 'shower') {
+    if (Math.random() < 0.28) {
+      audio.sfx('water');
+      spawnEffect(px, py + 20, 'drop', '#7ad4ff');
+    }
+    if (breed.trait === 'water_lover') {
+      state.stats.happy = Math.min(100, state.stats.happy + 0.2);
+      updateHUD();
+    }
+    if (state.roomData.bubbles.length > 0 && Math.random() < 0.55) {
+      state.roomData.bubbles.pop();
+      if (state.roomData.drops.length < 18) {
+        state.roomData.drops.push({ x: (Math.random() - 0.5) * 110, y: -40 - Math.random() * 150 });
+      }
+      if (state.roomData.bubbles.length === 0) {
+        state.stats.clean = Math.min(100, state.stats.clean + 30);
+        showSpeech(breed.trait === 'water_lover' ? 'Suya bayılıyorum! Şimdi havluyla kurula.' : 'Köpükler durulandı! Şimdi havluyla kurula.');
+        updateHUD();
+      }
+    }
+  } else if (activeTool === 'towel') {
+    if (state.roomData.bubbles.length > 0) {
+      showSpeech('Önce duş başlığı ile köpükleri durula!');
+      return;
+    }
+    if (state.roomData.drops.length > 0 && Math.random() < 0.6) {
+      state.roomData.drops.pop();
+      spawnEffect(px, py, 'sparkle', '#ffd666');
+      if (state.roomData.drops.length === 0) {
+        state.stats.clean = 100;
+        state.stats.happy = Math.min(100, state.stats.happy + 10);
+        state.coins += 12;
+        addGrowthSlow(1.2);
+        cat.expr = 'happy';
+        for (let i = 0; i < 6; i++) spawnEffect(cat.x, cat.y - 120, 'sparkle', '#ff85c0');
+        showSpeech('Mis gibi ve yumuşacık oldum! +12 altın');
+        updateHUD();
+        saveGame();
+      }
+    } else if (state.roomData.drops.length === 0) {
+      cat.expr = 'happy';
+      if (Math.random() < 0.25) spawnEffect(px, py, 'sparkle', '#ff85c0');
+    }
+  }
+}
+
+/* ==========================================================================
+   10. UYKU SİSTEMİ
+   ========================================================================== */
+function startSleepSequence() {
+  if (state.roomData.sleeping) {
+    wakeCatUp(true);
+    return;
+  }
+  const bedX = window.innerWidth * 0.52;
+  cat.targetX = bedX;
+  cat.mode = 'walk_to_bed';
+  showSpeech('Yatağıma geçiyorum...');
+}
+
+function beginActualSleep() {
+  const missingEnergy = Math.max(10, 100 - state.stats.energy);
+  const totalSeconds = Math.round((missingEnergy / 95) * 9000);
+  const clampedSeconds = Math.max(600, Math.min(9000, totalSeconds));
+  state.roomData.sleeping = true;
+  state.roomData.sleepTotalMs = clampedSeconds * 1000;
+  state.roomData.sleepEndTime = Date.now() + state.roomData.sleepTotalMs;
+  cat.mode = 'idle';
+  cat.expr = 'sleep';
+  saveGame();
+}
+
+function wakeCatUp(byUser = false) {
+  state.roomData.sleeping = false;
+  state.roomData.sleepEndTime = 0;
+  cat.expr = 'normal';
+  triggerYawn();
+  if (byUser) {
+    showSpeech('Mrrp... Dokundun ve uyandım!');
+  } else {
+    state.stats.energy = 100;
+    showSpeech('Uykumu aldım! Enerjim %100!');
+  }
+  updateHUD();
+  saveGame();
+}
+
+function formatCountdown(ms) {
+  const totalSec = Math.max(0, Math.ceil(ms / 1000));
+  const hrs = Math.floor(totalSec / 3600);
+  const mins = Math.floor((totalSec % 3600) / 60);
+  const secs = totalSec % 60;
+  return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+}
+
+/* ==========================================================================
+   11. 60 FPS FİZİK & RENDER DÖNGÜSÜ
+   ========================================================================== */
+function mainLoop() {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  const floorY = h * 0.79;
+  const breed = realCatEngine.getBreed(state.breed);
+
+  cat.blinkTimer--;
+  if (cat.blinkTimer <= 0) {
+    cat.blink = 1;
+    if (cat.blinkTimer < -7) { cat.blink = 0; cat.blinkTimer = 140 + Math.random() * 140; }
+  }
+
+  if (cat.yawnTimer > 0) {
+    cat.yawnTimer--;
+    if (cat.yawnTimer === 0 && cat.expr === 'yawn') cat.expr = 'normal';
+  }
+
+  const targetStand = (cat.mode === 'standing_catch') ? 1 : 0;
+  cat.standReach += (targetStand - cat.standReach) * 0.16;
+
+  if (Math.random() < 0.012 && cat.earTwitchL === 0) cat.earTwitchL = 0.14;
+  if (Math.random() < 0.012 && cat.earTwitchR === 0) cat.earTwitchR = 0.14;
+  cat.earTwitchL *= 0.82;
+  cat.earTwitchR *= 0.82;
+
+  if (cat.swipeAnim > 0) {
+    cat.swipeAnim = Math.max(0, cat.swipeAnim - 0.065);
+    if (cat.swipeAnim === 0 && cat.expr === 'angry') cat.expr = 'normal';
+  }
+
+  const sleepTag = document.getElementById('sleepCountdownTag');
+  if (state.roomData.sleeping) {
+    const remMs = state.roomData.sleepEndTime - Date.now();
+    if (remMs <= 0) {
+      wakeCatUp(false);
+    } else {
+      sleepTag.classList.add('show');
+      sleepTag.style.left = `${cat.x}px`;
+      sleepTag.style.top = `${cat.y - 125 * getGrowthStage().scale}px`;
+      document.getElementById('sleepTimerText').textContent = formatCountdown(remMs);
+    }
+  } else {
+    sleepTag.classList.remove('show');
+  }
+
+  if (state.room === 'play') {
+    if (playBall.state === 'air') {
+      playBall.trail.push({ x: playBall.x, y: playBall.y });
+      if (playBall.trail.length > 9) playBall.trail.shift();
+
+      playBall.vy += 0.84;
+      playBall.x += playBall.vx;
+      playBall.y += playBall.vy;
+      playBall.rot += playBall.vx * 0.045;
+
+      const impactSpeed = Math.hypot(playBall.vx, playBall.vy);
+      const bounceRestitution = Math.min(0.86, 0.62 + impactSpeed * 0.008);
+
+      if (playBall.x < 32) { playBall.x = 32; playBall.vx = -playBall.vx * bounceRestitution; playBall.squish = 0.74; audio.sfx('bounce'); }
+      if (playBall.x > w - 32) { playBall.x = w - 32; playBall.vx = -playBall.vx * bounceRestitution; playBall.squish = 0.74; audio.sfx('bounce'); }
+      if (playBall.y < 76) { playBall.y = 76; playBall.vy = -playBall.vy * bounceRestitution; audio.sfx('bounce'); }
+
+      if (playBall.y >= floorY) {
+        playBall.y = floorY;
+        if (Math.abs(playBall.vy) > 3.2) {
+          playBall.vy = -playBall.vy * bounceRestitution;
+          playBall.vx *= 0.91;
+          playBall.squish = 1.32;
+          audio.sfx('bounce');
+          spawnEffect(playBall.x, floorY, 'sparkle', '#ff85c0');
+        } else {
+          playBall.vy = 0; playBall.vx *= 0.94;
+          if (Math.abs(playBall.vx) < 0.35) { playBall.vx = 0; playBall.state = 'idle'; playBall.trail = []; }
+        }
+      }
+    } else if (playBall.state === 'carried' || playBall.state === 'hogged') {
+      playBall.trail = [];
+      playBall.x = cat.x;
+      playBall.y = cat.y - 112 * getGrowthStage().scale;
+    } else {
+      playBall.trail = [];
+    }
+    playBall.squish += (1 - playBall.squish) * 0.2;
+
+    if (featherPom.state === 'air') {
+      featherPom.vy += 0.45;
+      featherPom.vx *= 0.985;
+      featherPom.x += featherPom.vx;
+      featherPom.y += featherPom.vy;
+      featherPom.rot += featherPom.vx * 0.03;
+
+      if (featherPom.x < 32) { featherPom.x = 32; featherPom.vx = -featherPom.vx * 0.65; }
+      if (featherPom.x > w - 32) { featherPom.x = w - 32; featherPom.vx = -featherPom.vx * 0.65; }
+      if (featherPom.y >= floorY) {
+        featherPom.y = floorY;
+        if (Math.abs(featherPom.vy) > 2.5) {
+          featherPom.vy = -featherPom.vy * 0.5;
+          featherPom.vx *= 0.8;
+        } else {
+          featherPom.vy = 0; featherPom.vx = 0; featherPom.state = 'idle'; featherPom.rot = 0;
+        }
+      }
+    }
+  }
+
+  const runSpeed = breed.trait === 'hunter' ? 9.5 : 7.4;
+
+  if (cat.mode === 'hunt_crouch') {
+    cat.huntTimer--;
+    cat.angle = Math.sin(performance.now() * 0.055) * 4.5;
+    if (cat.huntTimer <= 0) cat.mode = 'chase_ball';
+  } else if (cat.mode === 'chase_ball') {
+    const dx = playBall.x - cat.x;
+    if (Math.abs(dx) > 24) {
+      cat.x += Math.sign(dx) * runSpeed;
+      cat.y = floorY - Math.abs(Math.sin(performance.now() * 0.026)) * 15;
+      cat.angle = Math.sign(dx) * 7;
+    } else {
+      cat.swipeAnim = 0.75;
+      audio.clawSwat();
+      playBall.state = 'carried';
+      playBall.vx = 0; playBall.vy = 0;
+      cat.mode = 'return_ball';
+    }
+  } else if (cat.mode === 'return_ball') {
+    const dx = (w * 0.5) - cat.x;
+    if (Math.abs(dx) > 12) {
+      cat.x += Math.sign(dx) * 5.2;
+      cat.y = floorY - Math.abs(Math.sin(performance.now() * 0.02)) * 9;
+      cat.angle = Math.sign(dx) * 4;
+    } else {
+      cat.x = w * 0.5; cat.y = floorY; cat.angle = 0;
+      cat.mode = 'idle';
+      const bonus = breed.trait === 'hunter' ? 10 : 6;
+      state.stats.happy = Math.min(100, state.stats.happy + 8);
+      state.stats.energy = Math.max(0, state.stats.energy - 4);
+      state.coins += bonus;
+      addGrowthSlow(1.0);
+
+      // 5. MADDE: Bazen normal topu bırakmaz ('hogged')!
+      if (Math.random() < 0.42) {
+        playBall.state = 'hogged';
+        cat.expr = 'happy';
+        audio.meow('happy');
+        showSpeech(`Yakaladım ama bırakmam! Benim topum! (+${bonus} altın)`);
+      } else {
+        playBall.state = 'idle';
+        playBall.x = cat.x - 50; playBall.y = floorY;
+        cat.expr = 'happy';
+        audio.meow('happy');
+        for (let i = 0; i < 4; i++) spawnEffect(cat.x, cat.y - 130, 'heart', '#ff5ca8');
+        showSpeech(`Topu getirdim! +${bonus} altın`);
+      }
+      updateHUD();
+      saveGame();
+    }
+  } else if (cat.mode === 'stalk_laser' && activeTool === 'laser') {
+    const dx = pointer.x - cat.x;
+    if (Math.abs(dx) > 48) {
+      cat.x += Math.sign(dx) * (breed.trait === 'hunter' ? 5.6 : 4.3);
+      cat.y = floorY - Math.abs(Math.sin(performance.now() * 0.018)) * 6;
+      cat.angle = Math.sign(dx) * 5;
+    } else {
+      cat.vy = -12; cat.vx = Math.sign(dx) * 5;
+      cat.swipeAnim = 0.85;
+      cat.mode = 'airborne';
+      state.stats.happy = Math.min(100, state.stats.happy + 2);
+      addGrowthSlow(0.3);
+      updateHUD();
+    }
+  } else if (cat.mode === 'airborne') {
+    cat.vy += 1.15; cat.x += cat.vx; cat.y += cat.vy; cat.angle += cat.vAngle;
+    if (cat.x < 75) { cat.x = 75; cat.vx = -cat.vx * 0.55; }
+    if (cat.x > w - 75) { cat.x = w - 75; cat.vx = -cat.vx * 0.55; }
+    if (cat.y < 120) { cat.y = 120; cat.vy = -cat.vy * 0.45; }
+
+    if (cat.y >= floorY) {
+      const imp = Math.abs(cat.vy);
+      cat.y = floorY;
+      if (imp > 7) {
+        cat.vy = -imp * 0.45; cat.vx *= 0.7; cat.vAngle *= 0.35;
+        cat.squishX = 1.22; cat.squishY = 0.8;
+        if (imp > 22) {
+          cat.dizzyTime = 80; cat.expr = 'dizzy';
+          showSpeech('Mrrp! Çok hızlı savurdun!');
+        }
+      } else {
+        cat.vy = 0; cat.vx = 0; cat.angle = 0; cat.vAngle = 0;
+        cat.mode = 'idle';
+        if (cat.dizzyTime <= 0 && cat.swipeAnim === 0) cat.expr = 'normal';
+      }
+    }
+  } else if ((cat.mode === 'walking' || cat.mode === 'walk_to_bed') && cat.targetX !== null) {
+    const dx = cat.targetX - cat.x;
+    if (Math.abs(dx) > 8) {
+      cat.x += Math.sign(dx) * 4.4;
+      cat.y = floorY - Math.abs(Math.sin(performance.now() * 0.018)) * 8;
+      cat.angle = Math.sign(dx) * 4;
+    } else {
+      cat.x = cat.targetX;
+      cat.y = floorY;
+      cat.angle = 0;
+      const wasBedWalk = cat.mode === 'walk_to_bed';
+      cat.mode = 'idle';
+      cat.targetX = null;
+      if (wasBedWalk) beginActualSleep();
+    }
+  } else if (cat.mode === 'idle' || cat.mode === 'standing_catch') {
+    cat.y += (floorY - cat.y) * 0.2;
+    cat.angle += (0 - cat.angle) * 0.16;
+  }
+
+  cat.squishX += (1 - cat.squishX) * 0.16;
+  cat.squishY += (1 - cat.squishY) * 0.16;
+  if (cat.dizzyTime > 0) {
+    cat.dizzyTime--;
+    if (cat.dizzyTime === 0) cat.expr = 'normal';
+  }
+
+  const canvas = document.getElementById('worldCanvas');
+  if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+  const ctx = canvas.getContext('2d');
+  drawRoomScene(ctx, w, h);
+  renderPhotorealisticCat(ctx, cat.x, cat.y);
+  drawPlayToys(ctx);
+  drawActiveToolCursor(ctx);
+
+  for (let i = cat.scratchMarks.length - 1; i >= 0; i--) {
+    const sm = cat.scratchMarks[i];
+    sm.life -= 0.025;
+    if (sm.life <= 0) { cat.scratchMarks.splice(i, 1); continue; }
+    ctx.save();
+    ctx.translate(sm.x, sm.y);
+    ctx.rotate(sm.rot);
+    ctx.globalAlpha = sm.life;
+    ctx.strokeStyle = '#ffffff';
+    ctx.shadowColor = '#ff4d94';
+    ctx.shadowBlur = 10;
+    ctx.lineWidth = 3.5;
+    ctx.lineCap = 'round';
+    [-14, 0, 14].forEach(ox => {
+      ctx.beginPath();
+      ctx.moveTo(ox + 18, -28);
+      ctx.quadraticCurveTo(ox, 0, ox - 20, 30);
+      ctx.stroke();
+    });
+    ctx.restore();
+  }
+
+  for (let i = cat.fxList.length - 1; i >= 0; i--) {
+    const f = cat.fxList[i];
+    f.x += f.vx; f.y += f.vy; f.rot += f.vRot; f.life -= 0.022;
+    if (f.life <= 0) { cat.fxList.splice(i, 1); continue; }
+    ctx.save();
+    ctx.globalAlpha = f.life;
+    ctx.translate(f.x, f.y);
+    ctx.rotate(f.rot);
+    if (f.type === 'heart') drawVectorHeart(ctx, 0, 0, f.size, f.color);
+    else if (f.type === 'sparkle') drawVectorStar(ctx, 0, 0, f.size, f.color);
+    else if (f.type === 'bubble') {
+      ctx.strokeStyle = '#ff9ee0'; ctx.lineWidth = 1.8;
+      ctx.fillStyle = 'rgba(255, 235, 250, 0.55)';
+      ctx.beginPath(); ctx.arc(0, 0, f.size, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    } else if (f.type === 'drop') {
+      ctx.fillStyle = f.color;
+      ctx.beginPath(); ctx.arc(0, 0, f.size * 0.55, 0, Math.PI * 2); ctx.fill();
+    } else if (f.type === 'zzz') {
+      ctx.fillStyle = '#d4b8ff';
+      ctx.font = '900 14px Nunito, sans-serif';
+      ctx.fillText('Z', 0, 0);
+    }
+    ctx.restore();
+  }
+
+  const tag = document.getElementById('speechBubble');
+  tag.style.left = `${Math.max(90, Math.min(w - 90, cat.x))}px`;
+  tag.style.top = `${cat.y - 212 * getGrowthStage().scale}px`;
+
+  if (!document.getElementById('startScreen').classList.contains('hidden')) {
+    drawBannerFeatherCat();
+    const sc = document.getElementById('previewCatCanvas');
+    const sctx = sc.getContext('2d');
+    sctx.clearRect(0, 0, sc.width, sc.height);
+    renderPhotorealisticCat(sctx, sc.width * 0.5, sc.height * 0.89, {
+      stage: { scale: 0.86, headBoost: 1.13 },
+      breed: adoptDraft.breed,
+      leftEye: adoptDraft.leftEye,
+      rightEye: adoptDraft.rightEye
+    });
+  }
+
+  requestAnimationFrame(mainLoop);
+}
+
+/* ==========================================================================
+   12. ALT DOCK, GÜZELLİK SALONU LİSTELİ RENK PANELİ, TAKILAR & YEMEK DOLABI
+   ========================================================================== */
+const ROOM_TOOLS_MAP = {
+  play: [
+    { id: 'ball', icon: 'ball', label: 'Top' },
+    { id: 'pom', icon: 'pom', label: 'Tüy Yumağı' },
+    { id: 'laser', icon: 'laser', label: 'Lazer' }
+  ],
+  food: [
+    { id: 'food_shop', icon: 'shop', label: 'Market' },
+    { id: 'food_pantry', icon: 'pantry', label: 'Dolabım' },
+    { id: 'water_fill', icon: 'water', label: 'Su Koy' }
+  ],
+  bath: [
+    { id: 'loofah', icon: 'loofah', label: 'Lif' },
+    { id: 'shower', icon: 'shower', label: 'Duş' },
+    { id: 'towel', icon: 'towel', label: 'Havlu' }
+  ],
+  toilet: [
+    { id: 'litter', icon: 'litter', label: 'Kuma Gir' },
+    { id: 'scoop', icon: 'scoop', label: 'Temizle' }
+  ],
+  sleep: [
+    { id: 'bed', icon: 'bed', label: 'Yatağa Yat' },
+    { id: 'lamp', icon: 'lamp', label: 'Lamba' }
+  ],
+  studio: [
+    { id: 'blush_brush', icon: 'brush', label: 'Allık' },
+    { id: 'eyeshadow_brush', icon: 'palette', label: 'Far' },
+    { id: 'eyeliner_pen', icon: 'liner', label: 'Eyeliner' },
+    { id: 'gloss_wand', icon: 'gloss', label: 'Parlatıcı' },
+    { id: 'gem_applicator', icon: 'gem', label: 'Taş' },
+    { id: 'cotton_pad', icon: 'cotton', label: 'Sil' },
+    { id: 'jewelry_closet', icon: 'crown', label: 'Takılar' } // 4. MADDE: Takılar SADECE Güzellik Salonunda!
+  ]
+};
+
+const ROOM_TABS = [
+  { id: 'play', icon: 'ball', tip: 'Oyun Alanı' },
+  { id: 'food', icon: 'foodRoom', tip: 'Yemek Yeri' },
+  { id: 'bath', icon: 'bathRoom', tip: 'Banyo' },
+  { id: 'toilet', icon: 'litter', tip: 'Tuvalet' },
+  { id: 'sleep', icon: 'bed', tip: 'Uyuma & Yatak' },
+  { id: 'studio', icon: 'studioRoom', tip: 'Güzellik Stüdyosu' }
+];
+
+function getTotalPantryCount() {
+  return Object.values(state.foodInventory || {}).reduce((acc, v) => acc + (v || 0), 0);
+}
+
+function renderBottomDocks() {
+  const left = document.getElementById('bottomLeftDock');
+  const tools = ROOM_TOOLS_MAP[state.room] || [];
+  const totalInv = getTotalPantryCount();
+
+  left.innerHTML = tools.map(t => {
+    const isJewelry = t.id === 'jewelry_closet';
+    const badge = (t.id === 'food_pantry') ? `<span class="inv-badge">${totalInv}</span>` : '';
+    return `
+      <button type="button" class="glossy-tool-btn ${activeTool === t.id ? 'active' : ''} ${isJewelry ? 'jewelry-special' : ''}" onclick="onToolSelect('${t.id}')">
+        ${SVG_ICONS[t.icon]}<span class="t-txt">${t.label}</span>${badge}
+      </button>
+    `;
+  }).join('');
+
+  const right = document.getElementById('bottomRightDock');
+  right.innerHTML = ROOM_TABS.map(r => `
+    <button type="button" class="room-orb ${state.room === r.id ? 'active' : ''}" data-tip="${r.tip}" onclick="switchRoom('${r.id}')">
+      ${SVG_ICONS[r.icon]}
+    </button>
+  `).join('');
+
+  renderCosmeticListPanel();
+}
+
+// 6. MADDE: Güzellik Stüdyosunda Çok Renkli & Listeli Seçici Panel
+function renderCosmeticListPanel() {
+  const panel = document.getElementById('cosmeticListPanel');
+  if (state.room !== 'studio') {
+    panel.classList.remove('show');
+    return;
+  }
+
+  const toolKey = (activeTool && COSMETIC_TOOLS[activeTool] && COSMETIC_TOOLS[activeTool].swatches.length > 0)
+    ? activeTool
+    : 'blush_brush';
+
+  const toolCfg = COSMETIC_TOOLS[toolKey];
+  document.getElementById('cosmeticPanelTitle').textContent = toolCfg.label;
+  document.getElementById('cosmeticListScroll').innerHTML = toolCfg.swatches.map(s => `
+    <button type="button" class="swatch-list-row ${selectedSwatch[toolKey] === s.id ? 'active' : ''}"
+      onclick="activeTool='${toolKey}'; selectedSwatch['${toolKey}']='${s.id}'; renderBottomDocks();">
+      <span class="swatch-dot" style="background:${s.color}"></span>
+      <span>${s.name}</span>
+    </button>
+  `).join('');
+  panel.classList.add('show');
+}
+
+function switchRoom(room) {
+  state.room = room;
+  activeTool = (room === 'studio') ? 'blush_brush' : null;
+  if (room === 'studio') {
+    cat.x = window.innerWidth * 0.36;
+    showSpeech('Güzellik stüdyosuna hoş geldin! Listeden renk seçip yüzüme sür.');
+  } else {
+    cat.x = window.innerWidth * 0.5;
+  }
+  renderBottomDocks();
+  saveGame();
+}
+
+function onToolSelect(id) {
+  audio.ensure();
+  if (id === 'jewelry_closet') {
+    openJewelryCloset();
+    return;
+  }
+
+  if (['laser', 'loofah', 'shower', 'towel', 'blush_brush', 'eyeshadow_brush', 'eyeliner_pen', 'gloss_wand', 'gem_applicator', 'cotton_pad'].includes(id)) {
+    activeTool = (activeTool === id && state.room !== 'studio') ? null : id;
+    renderBottomDocks();
+    if (activeTool === 'loofah') showSpeech('Lif ile üzerimi ovup köpürt!');
+    if (activeTool === 'shower') showSpeech('Duş başlığıyla köpükleri durula!');
+    if (activeTool === 'towel') showSpeech('Havluyla beni kurula!');
+    if (activeTool === 'laser') showSpeech('Kırmızı noktayı yakalayacağım (gözüme tutma)!');
+    if (COSMETIC_TOOLS[activeTool]) showSpeech(`${COSMETIC_TOOLS[activeTool].label} seçildi! Parmağınla yüzüme uygula.`);
+    return;
+  }
+
+  if (id === 'ball') {
+    playBall.x = window.innerWidth * 0.25;
+    playBall.y = window.innerHeight * 0.79;
+    playBall.vx = 0; playBall.vy = 0;
+    playBall.state = 'idle';
+    showSpeech('Topu sert fırlatırsan daha çok seker!');
+  } else if (id === 'pom') {
+    featherPom.x = window.innerWidth * 0.74;
+    featherPom.y = window.innerHeight * 0.79;
+    featherPom.vx = 0; featherPom.vy = 0;
+    featherPom.state = 'idle';
+    showSpeech('Tüy yumağını havada tutarsan iki ayak üstüne kalkarım!');
+  } else if (id === 'food_shop') {
+    openFoodShop();
+  } else if (id === 'food_pantry') {
+    openFoodPantry();
+  } else if (id === 'water_fill') {
+    state.roomData.waterLevel = 100;
+    cat.targetX = window.innerWidth * 0.40;
+    cat.mode = 'walking';
+    setTimeout(() => {
+      cat.expr = 'eat'; audio.sfx('water');
+      state.stats.hunger = Math.min(100, state.stats.hunger + 8);
+      state.digestion.waterLoad += 38;
+      if (state.digestion.waterLoad >= 65) {
+        state.stats.toilet = Math.min(100, state.stats.toilet + 42);
+        state.digestion.waterLoad = 0;
+      }
+      updateHUD();
+      setTimeout(() => { cat.expr = 'normal'; }, 650);
+    }, 550);
+  } else if (id === 'litter') {
+    if (state.roomData.litterDirty) { showSpeech('Önce kumu temizle!'); return; }
+    if (state.stats.toilet < 25) { showSpeech('Şu an tuvaletim yok, sadece çok yiyip içince gelir!'); return; }
+    cat.targetX = window.innerWidth * 0.28;
+    cat.mode = 'walking';
+    setTimeout(() => {
+      state.stats.toilet = 0;
+      state.roomData.litterDirty = true;
+      showSpeech('Oh rahatladım! Şimdi kumu temizleyebilirsin.');
+      updateHUD();
+    }, 650);
+  } else if (id === 'scoop') {
+    if (!state.roomData.litterDirty) { showSpeech('Kum zaten tertemiz!'); return; }
+    state.roomData.litterDirty = false;
+    state.coins += 15;
+    audio.sfx('coin');
+    showSpeech('Tertemiz oldu! +15 altın');
+    updateHUD();
+  } else if (id === 'bed') {
+    startSleepSequence();
+  } else if (id === 'lamp') {
+    state.roomData.lampOn = !state.roomData.lampOn;
+  }
+
+  saveGame();
+}
+
+// 7. MADDE: Yemek Marketinden Satın Alma (Envantere Ekler) + Dolabımdan Seçip Yedirme
+function openFoodShop() {
+  document.getElementById('shopCoinsText').textContent = Math.floor(state.coins);
+  document.getElementById('foodCardsGrid').innerHTML = FOOD_ITEMS.map(f => {
+    const owned = state.foodInventory[f.id] || 0;
+    return `
+      <div class="item-card">
+        <span class="owned-tag">Dolapta: ${owned}</span>
+        <div class="svg-wrap">${SVG_ICONS[f.icon]}</div>
+        <b>${f.name}</b>
+        <small>${f.desc}</small>
+        <button type="button" onclick="buyFoodToPantry('${f.id}')">Satın Al (${f.price} Altın)</button>
+      </div>
+    `;
+  }).join('');
+  openModal('foodShopModal');
+}
+
+function buyFoodToPantry(foodId) {
+  const item = FOOD_ITEMS.find(f => f.id === foodId);
+  if (!item) return;
+  if (state.coins < item.price) {
+    showSpeech('Yeterli altının yok!');
+    return;
+  }
+  state.coins -= item.price;
+  state.foodInventory[foodId] = (state.foodInventory[foodId] || 0) + 1;
+  audio.sfx('coin');
+  updateHUD();
+  renderBottomDocks();
+  openFoodShop();
+  showSpeech(`${item.name} satın alındı ve dolaba kondu!`);
+  saveGame();
+}
+
+function openFoodPantry() {
+  const ownedItems = FOOD_ITEMS.filter(f => (state.foodInventory[f.id] || 0) > 0);
+  const box = document.getElementById('foodPantryContent');
+
+  if (ownedItems.length === 0) {
+    box.innerHTML = `
+      <p style="font-size:13px; text-align:center; color:var(--muted); padding:14px 0;">
+        Yemek dolabın şu an boş! Marketten yemek satın alıp dolabına ekleyebilirsin.
+      </p>
+      <button type="button" class="candy-btn" onclick="closeModal('foodPantryModal'); openFoodShop();">Markete Git</button>
+    `;
+  } else {
+    box.innerHTML = `<div class="shop-cards">` + ownedItems.map(f => `
+      <div class="item-card">
+        <span class="owned-tag">Adet: ${state.foodInventory[f.id]}</span>
+        <div class="svg-wrap">${SVG_ICONS[f.icon]}</div>
+        <b>${f.name}</b>
+        <small>${f.desc}</small>
+        <button type="button" onclick="feedFromPantry('${f.id}')">Seç & Yedir</button>
+      </div>
+    `).join('') + `</div>`;
+  }
+  openModal('foodPantryModal');
+}
+
+function feedFromPantry(foodId) {
+  const item = FOOD_ITEMS.find(f => f.id === foodId);
+  if (!item || (state.foodInventory[foodId] || 0) <= 0) return;
+
+  state.foodInventory[foodId]--;
+  state.roomData.bowlFood = { ...item };
+  closeModal('foodPantryModal');
+  renderBottomDocks();
+  updateHUD();
+
+  const breed = realCatEngine.getBreed(state.breed);
+  cat.targetX = window.innerWidth * 0.30;
+  cat.mode = 'walking';
+  setTimeout(() => {
+    cat.expr = 'eat';
+    audio.sfx('eat');
+    for (let i = 0; i < 4; i++) spawnEffect(cat.x, cat.y - 100, 'heart', '#ff7ec0');
+    const extraHappy = breed.trait === 'sweet' ? 8 : 0;
+    state.stats.hunger = Math.min(100, state.stats.hunger + item.hunger);
+    state.stats.happy = Math.min(100, state.stats.happy + item.happy + extraHappy);
+
+    state.digestion.foodLoad += (item.bowel || 20);
+    state.digestion.waterLoad += (item.bladder || 10);
+    if (state.digestion.foodLoad >= 65 || state.digestion.waterLoad >= 65) {
+      state.stats.toilet = Math.min(100, state.stats.toilet + 48);
+      state.digestion.foodLoad = 0;
+      state.digestion.waterLoad = 0;
+    }
+
+    addGrowthSlow(item.growth);
+    setTimeout(() => {
+      state.roomData.bowlFood = null;
+      cat.expr = 'happy';
+      showSpeech(`${item.name} çok lezzetliydi!`);
+      updateHUD();
+      saveGame();
+    }, 1000);
+  }, 600);
+}
+
+function openJewelryCloset() {
+  const container = document.getElementById('jewelryOptionsContainer');
+  container.innerHTML = Object.entries(JEWELRY_CATALOG).map(([slot, group]) => `
+    <div class="acc-section">
+      <b>${group.title}</b>
+      <div class="acc-grid">
+        ${group.items.map(it => `
+          <button type="button" class="acc-btn ${state.accessories[slot] === it.id ? 'active' : ''}"
+            onclick="equipAccessory('${slot}','${it.id}')">${it.name}</button>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+  openModal('jewelryModal');
+}
+
+function equipAccessory(slot, id) {
+  state.accessories[slot] = id;
+  for (let i = 0; i < 4; i++) spawnEffect(cat.x, cat.y - 140, 'sparkle', '#ffd447');
+  audio.sfx('coin');
+  openJewelryCloset();
+  saveGame();
+}
+
+function clearAllAccessories() {
+  state.accessories = { head: 'none', neck: 'none', eyewear: 'none', paw: 'none' };
+  openJewelryCloset();
+  saveGame();
+}
+
+/* ==========================================================================
+   13. ÜST HUD % DURUM ÇUBUKLARI & MODAL KONTROLLERİ
+   ========================================================================== */
+function updateHUD() {
+  const st = getGrowthStage();
+  document.getElementById('hudBadge').textContent = st.label[0];
+  document.getElementById('hudName').textContent = state.name;
+  document.getElementById('hudAge').textContent = `${st.label} • ${st.days} Gün`;
+  document.getElementById('hudCoinBox').innerHTML = `${SVG_ICONS.coin}<b>${Math.floor(state.coins)}</b>`;
+  document.getElementById('btnTopSettings').innerHTML = SVG_ICONS.settings;
+
+  const chips = [
+    { key: 'hunger', icon: 'hunger', label: 'Tokluk', val: Math.round(state.stats.hunger), low: state.stats.hunger < 35 },
+    { key: 'happy', icon: 'happy', label: 'Sevgi', val: Math.round(state.stats.happy), low: state.stats.happy < 35 },
+    { key: 'energy', icon: 'energy', label: 'Enerji', val: Math.round(state.stats.energy), low: state.stats.energy < 35 },
+    { key: 'clean', icon: 'clean', label: 'Temiz', val: Math.round(state.stats.clean), low: state.stats.clean < 35 },
+    { key: 'toilet', icon: 'toilet', label: 'Tuvalet', val: Math.round(state.stats.toilet), low: state.stats.toilet > 70 }
+  ];
+
+  document.getElementById('statsPctBar').innerHTML = chips.map(c => `
+    <div class="stat-chip ${c.low ? 'low' : ''}" title="${c.label}: %${c.val}">
+      ${SVG_ICONS[c.icon]}<span>%${c.val}</span>
+    </div>
+  `).join('');
+}
+
+let speechTimeout;
+function showSpeech(txt) {
+  const el = document.getElementById('speechBubble');
+  el.textContent = txt;
+  el.classList.add('show');
+  clearTimeout(speechTimeout);
+  speechTimeout = setTimeout(() => el.classList.remove('show'), 2600);
+}
+
+function initStartScreen() {
+  if (loadSaved()) {
+    document.getElementById('btnResume').style.display = 'block';
+    document.getElementById('resumeLabel').textContent = `${state.name} • ${getGrowthStage().label}`;
+  }
+
+  const selBreed = realCatEngine.getBreed(adoptDraft.breed);
+  document.getElementById('previewTraitPill').textContent = `${selBreed.name} • ${selBreed.traitTitle}`;
+  document.getElementById('adoptTraitDesc').textContent = selBreed.traitDesc;
+
+  document.getElementById('breedChips').innerHTML = CAT_BREEDS.map(b => `
+    <button type="button" class="gem-chip ${adoptDraft.breed === b.id ? 'active' : ''}" onclick="adoptDraft.breed='${b.id}'; initStartScreen();">${b.name}</button>
+  `).join('');
+
+  document.getElementById('leftEyeDots').innerHTML = EYE_PALETTE.map(e => `
+    <button type="button" class="eye-orb ${adoptDraft.leftEye === e.id ? 'active' : ''}" style="background:${e.iris}" onclick="adoptDraft.leftEye='${e.id}'; initStartScreen();"></button>
+  `).join('');
+
+  document.getElementById('rightEyeDots').innerHTML = EYE_PALETTE.map(e => `
+    <button type="button" class="eye-orb ${adoptDraft.rightEye === e.id ? 'active' : ''}" style="background:${e.iris}" onclick="adoptDraft.rightEye='${e.id}'; initStartScreen();"></button>
+  `).join('');
+
+  syncSettingsUI();
+}
+
+function openAdoptCard(open) {
+  document.getElementById('startScreen').classList.toggle('adopting', open);
+  document.getElementById('mainMenuBox').style.display = open ? 'none' : 'flex';
+  document.getElementById('adoptCard').classList.toggle('active', open);
+}
+
+function confirmAdopt() {
+  const prevSet = { ...state.settings };
+  state = defaultState();
+  state.settings = prevSet;
+  state.name = (document.getElementById('catNameInput').value || 'Pamuk').trim().slice(0, 14);
+  state.breed = adoptDraft.breed;
+  state.leftEye = adoptDraft.leftEye;
+  state.rightEye = adoptDraft.rightEye;
+  saveGame();
+  enterWorld();
+  audio.meow('happy');
+  showSpeech(`Miyav! Ben ${state.name}, minik yavru kedin!`);
+}
+
+function resumeGame() {
+  enterWorld();
+  audio.meow('normal');
+  showSpeech('Hoş geldin! Tüylerimi okşar mısın?');
+}
+
+function enterWorld() {
+  document.getElementById('startScreen').classList.add('hidden');
+  cat.x = window.innerWidth * 0.5;
+  cat.y = window.innerHeight * 0.79;
+  playBall.x = window.innerWidth * 0.25;
+  playBall.y = window.innerHeight * 0.79;
+  featherPom.x = window.innerWidth * 0.74;
+  featherPom.y = window.innerHeight * 0.79;
+  switchRoom(state.room || 'play');
+  updateHUD();
+}
+
+function openModal(id) {
+  syncSettingsUI();
+  document.getElementById('lblNameEdit').textContent = state.name;
+  document.getElementById(id).classList.add('open');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+function toggleAudio() {
+  state.settings.sound = !state.settings.sound;
+  syncSettingsUI();
+  saveGame();
+}
+
+function cyclePurrMode() {
+  const list = ['soft', 'deep', 'trill'];
+  state.settings.purrMode = list[(list.indexOf(state.settings.purrMode) + 1) % list.length];
+  syncSettingsUI();
+  audio.purr('chin', 1);
+  saveGame();
+}
+
+function syncSettingsUI() {
+  ['swStartAudio', 'swGameAudio'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('on', state.settings.sound);
+  });
+  const names = { soft: 'Yumuşak Yavru', deep: 'Derin Huzurlu', trill: 'Titreşimli Keyif' };
+  document.getElementById('btnPurrMode').textContent = names[state.settings.purrMode];
+}
+
+function editPetName() {
+  const n = prompt('Kedinin yeni adı:', state.name);
+  if (n && n.trim()) {
+    state.name = n.trim().slice(0, 14);
+    document.getElementById('lblNameEdit').textContent = state.name;
+    updateHUD();
+    saveGame();
+  }
+}
+
+function returnMenu() {
+  closeModal('gameSettingsModal');
+  saveGame();
+  openAdoptCard(false);
+  initStartScreen();
+  document.getElementById('startScreen').classList.remove('hidden');
+}
+
+function restartNewKitten() {
+  closeModal('gameSettingsModal');
+  localStorage.removeItem(STORAGE_KEY);
+  initStartScreen();
+  document.getElementById('startScreen').classList.remove('hidden');
+  openAdoptCard(true);
+}
+
+function wipeSaveData() {
+  localStorage.removeItem(STORAGE_KEY);
+  state = defaultState();
+  document.getElementById('btnResume').style.display = 'none';
+  closeModal('startSettingsModal');
+}
+
+function openGrowthModal() {
+  const st = getGrowthStage();
+  const breed = realCatEngine.getBreed(state.breed);
+  const lEye = EYE_PALETTE.find(e => e.id === state.leftEye)?.name || '';
+  const rEye = EYE_PALETTE.find(e => e.id === state.rightEye)?.name || '';
+  document.getElementById('growthDetailsBox').innerHTML = `
+    <p><b>Adı:</b> ${state.name}</p>
+    <p><b>Cinsi:</b> ${breed.name} (${breed.coat === 'hairless' ? 'Tüysüz' : breed.coat === 'long' ? 'Uzun Tüylü' : 'Kısa Tüylü'})</p>
+    <p><b>Kalıcı Göz Rengi:</b> Sol ${lEye} • Sağ ${rEye}</p>
+    <p><b>Karakter Özelliği:</b> ${breed.traitTitle}</p>
+    <p style="background:#fdf2fa; padding:8px 10px; border-radius:12px; border:1.5px solid #f2d3eb; font-size:12px;">${breed.traitDesc}</p>
+    <p><b>Gelişim Evresi:</b> ${st.label} (${st.days} Günlük)</p>
+    <p><b>Büyüme İlerlemesi:</b> ${Math.floor(state.growth)} / ${st.next} Puan</p>
+  `;
+  openModal('growthModal');
+}
+
+setInterval(() => {
+  if (!document.getElementById('startScreen').classList.contains('hidden')) return;
+  const breed = realCatEngine.getBreed(state.breed);
+
+  if (state.roomData.sleeping) {
+    const warmthBoost = (breed.trait === 'warmth' && state.roomData.lampOn) ? 1.2 : 0;
+    state.stats.energy = Math.min(100, state.stats.energy + 1.8 + warmthBoost);
+    addGrowthSlow(0.35);
+    spawnEffect(cat.x, cat.y - 120, 'zzz', '#d4b8ff');
+  } else {
+    state.stats.hunger = Math.max(0, state.stats.hunger - 0.45);
+    state.stats.happy = Math.max(0, state.stats.happy - 0.35);
+    state.stats.energy = Math.max(0, state.stats.energy - 0.3);
+    state.stats.clean = Math.max(0, state.stats.clean - 0.25);
+
+    if (state.stats.energy < 25 && Math.random() < 0.22) {
+      triggerYawn();
+    }
+  }
+  updateHUD();
+  saveGame();
+}, 4000);
+
+window.addEventListener('resize', () => {
+  cat.x = Math.max(75, Math.min(window.innerWidth - 75, cat.x));
+  cat.y = window.innerHeight * 0.79;
+});
+
+initStartScreen();
+initInteractions();
+requestAnimationFrame(mainLoop);
+</script>
+</body>
+</html>
