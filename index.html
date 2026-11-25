@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#f8e6f2">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Elif’in Kedisi">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="Elif’in Kedisi">
+<link id="appAppleIcon" rel="apple-touch-icon" sizes="512x512" href="">
+<link id="appFavicon" rel="icon" type="image/png" sizes="512x512" href="">
+<link id="appManifest" rel="manifest" href="">
 <title>Elif’in Kedisi</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Nunito:wght@600;700;800;900&display=swap');
@@ -2385,7 +2393,7 @@ const playBall = {
   rot: 0,
   squish: 1,
   trail: [],
-  state: 'idle', // 'idle' | 'held' | 'air' | 'hogged' | 'hidden'
+  state: 'idle',
   hideTimer: 0,
   nextHideCooldown: 240
 };
@@ -2396,7 +2404,7 @@ const featherPom = {
   vx: 0,
   vy: 0,
   rot: 0,
-  state: 'idle', // 'idle' | 'held' | 'air' | 'caught'
+  state: 'idle',
   caughtTimer: 0,
   lastShakeAt: 0
 };
@@ -2679,11 +2687,9 @@ function renderPhotorealisticCat(ctx, cx, cy, overrideCfg = null) {
   if (!overrideCfg && state.accessories.paw !== 'none') drawPawAccessory(ctx, state.accessories.paw);
   ctx.restore();
 
-  // Top patiler arasında tutuluyorsa doğrudan patilerin ortasında çiz
   if (isHoggingBall) {
     drawBallSprite(ctx, 0, shoulderY + 72, playBall.rot, playBall.squish, 0.92);
   }
-  // Tüy yumağı yakalandıysa patilerin önünde tut
   if (isCaughtPom) {
     drawFeatherPomSprite(ctx, 0, shoulderY + 68, featherPom.rot, 0.88);
   }
@@ -3393,7 +3399,7 @@ function drawCompanionKitten(ctx, w, h) {
 }
 
 /* ==========================================================================
-   7. GÖLGELİ BELİRİP KAYBOLAN SIRALI PATİLER
+   7. GÖLGELİ BELİRİP KAYBOLAN SIRALI PATİLER & ANA EKRAN LOGOSU
    ========================================================================== */
 let pawTrailTime = 0;
 
@@ -3431,6 +3437,59 @@ function drawSinglePawPrint(ctx, x, y, angle, scale, alpha) {
   });
 
   ctx.restore();
+}
+
+function generateHomeScreenPawIcon() {
+  try {
+    const size = 512;
+    const c = document.createElement('canvas');
+    c.width = size;
+    c.height = size;
+    const ctx = c.getContext('2d');
+
+    // Ana ekran ikonu pastel pembe-lavanta arka planı
+    const bg = ctx.createRadialGradient(size * 0.36, size * 0.28, 30, size * 0.5, size * 0.5, size * 0.72);
+    bg.addColorStop(0, '#fff7fc');
+    bg.addColorStop(0.55, '#f6d6ef');
+    bg.addColorStop(1, '#dfb9f2');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, size, size);
+
+    // İç yumuşak parlama çerçevesi
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.75)';
+    ctx.lineWidth = 18;
+    ctx.beginPath();
+    ctx.roundRect(24, 24, size - 48, size - 48, 96);
+    ctx.stroke();
+
+    // Başlığın üstündeki tek bir pati izini merkeze yüksek çözünürlükte çiz
+    drawSinglePawPrint(ctx, size * 0.5, size * 0.52, -0.14, 15.8, 1.0);
+
+    const pngUrl = c.toDataURL('image/png');
+    const appleLink = document.getElementById('appAppleIcon');
+    const favLink = document.getElementById('appFavicon');
+    const manifestLink = document.getElementById('appManifest');
+
+    if (appleLink) appleLink.href = pngUrl;
+    if (favLink) favLink.href = pngUrl;
+
+    if (manifestLink) {
+      const manifestObj = {
+        name: 'Elif’in Kedisi',
+        short_name: 'Elif’in Kedisi',
+        start_url: '.',
+        display: 'standalone',
+        background_color: '#f8e6f2',
+        theme_color: '#f8e6f2',
+        icons: [
+          { src: pngUrl, sizes: '192x192', type: 'image/png', purpose: 'any maskable' },
+          { src: pngUrl, sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
+        ]
+      };
+      const blob = new Blob([JSON.stringify(manifestObj)], { type: 'application/manifest+json' });
+      manifestLink.href = URL.createObjectURL(blob);
+    }
+  } catch (e) {}
 }
 
 function drawBannerPawTrail() {
@@ -3702,7 +3761,6 @@ function drawPlayToys(ctx) {
     ctx.fill();
   });
 
-  // Top patilerde veya saklanırken yerde ayrı çizilmez
   if (playBall.state !== 'hogged' && playBall.state !== 'hidden') {
     ctx.save();
     ctx.translate(playBall.x, playBall.y);
@@ -3713,7 +3771,6 @@ function drawPlayToys(ctx) {
     drawBallSprite(ctx, playBall.x, playBall.y, playBall.rot, playBall.squish, 1);
   }
 
-  // Tüy yumağı kedinin patilerindeyse yerde ayrıca çizilmez
   if (featherPom.state !== 'caught') {
     ctx.save();
     ctx.translate(featherPom.x, featherPom.y);
@@ -4273,111 +4330,33 @@ function performBathRub(px, py) {
         state.roomData.drops.push({ x: (Math.random() - 0.5) * 115, y: -40 - Math.random() * 170 });
       }
       if (state.roomData.bubbles.length === 0) {
-        state.stats.clean = Math.min(100, state.stats.clean + 30);
-        showSpeech('Köpükler aktı! Havluyla kurula.');
+        state.stats.clean = Math.min(100, state.stats.clean + 28);
+        state.coins += 12;
+        addGrowthSlow(3.5);
+        showSpeech('Tüm köpükler durulandı! Şimdi havluyla kurulayabilirsin.');
         updateHUD();
       }
+    } else if (state.roomData.drops.length < 24) {
+      state.roomData.drops.push({ x: (Math.random() - 0.5) * 115, y: -40 - Math.random() * 170 });
     }
   } else if (activeTool === 'towel') {
-    if (state.roomData.bubbles.length > 0) {
-      showSpeech('Önce duşla köpükleri durula!');
-      return;
-    }
     if (state.roomData.drops.length > 0) {
-      const dryCount = Math.min(state.roomData.drops.length, 2);
-      for (let d = 0; d < dryCount; d++) state.roomData.drops.pop();
-      spawnEffect(px, py, 'sparkle', '#ffd666');
+      state.roomData.drops.splice(0, 4);
+      cat.angle = Math.sin(performance.now() * 0.05) * 7;
       if (state.roomData.drops.length === 0) {
-        state.stats.clean = 100;
-        state.stats.happy = Math.min(100, state.stats.happy + 10);
-        state.coins += 14;
-        addGrowthSlow(1.2);
+        cat.angle = 0;
         cat.expr = 'happy';
-        for (let i = 0; i < 6; i++) spawnEffect(cat.x, cat.y - 105, 'sparkle', '#ff85c0');
-        showSpeech('Tertemiz oldum! +14 altın');
+        state.stats.happy = Math.min(100, state.stats.happy + 10);
+        audio.purr('head', 1.2);
+        showSpeech('Kuru ve pofuduk oldum! Mrrr...');
         updateHUD();
-        saveGame();
       }
-    } else {
-      cat.expr = 'happy';
-      if (Math.random() < 0.25) spawnEffect(px, py, 'sparkle', '#ff85c0');
     }
   }
 }
 
 /* ==========================================================================
-   10. UYKU SİSTEMİ
-   ========================================================================== */
-function startSleepSequence() {
-  if (state.roomData.sleeping) {
-    wakeCatUp(true);
-    return;
-  }
-  const bedX = window.innerWidth * 0.52;
-  cat.targetX = bedX;
-  cat.mode = 'walk_to_bed';
-  showSpeech('Yatağıma gidiyorum...');
-}
-
-function beginActualSleep() {
-  const missingEnergy = Math.max(8, 100 - state.stats.energy);
-  const rawSeconds = Math.round((missingEnergy / 100) * 300);
-  const clampedSeconds = Math.max(60, Math.min(300, rawSeconds));
-  state.roomData.sleeping = true;
-  state.roomData.sleepTotalMs = clampedSeconds * 1000;
-  state.roomData.sleepEndTime = Date.now() + state.roomData.sleepTotalMs;
-  cat.mode = 'sleeping';
-  cat.expr = 'normal';
-  activeTool = null;
-  if (realCatEngine.getBreed(state.breed).trait === 'warmth') state.roomData.lampOn = true;
-  renderBottomDocks();
-  saveGame();
-  showSpeech('Mrrr... Tatlı rüyalar...');
-}
-
-function wakeCatUp(byTap = false) {
-  if (!state.roomData.sleeping) return;
-  const total = Math.max(1000, state.roomData.sleepTotalMs || 300000);
-  const rem = Math.max(0, state.roomData.sleepEndTime - Date.now());
-  const ratioDone = Math.max(0.15, Math.min(1, 1 - rem / total));
-  state.stats.energy = Math.min(100, Math.round(state.stats.energy + (100 - state.stats.energy) * ratioDone));
-  state.roomData.sleeping = false;
-  state.roomData.sleepEndTime = 0;
-  cat.mode = 'idle';
-  cat.expr = 'normal';
-  cat.blink = 0;
-  cat.blinkTimer = 110;
-  cat.yawnTimer = 0;
-  cat.mouthOpen = 0;
-  cat.laserShield = 0;
-  cat.dizzyTime = 0;
-  cat.headTilt = 0;
-  addGrowthSlow(ratioDone * 1.5);
-  audio.meow('happy');
-  showSpeech(byTap ? 'Günaydın! Gözlerim açık, hazırım!' : 'Dinlendim, gözlerimi açtım!');
-  renderBottomDocks();
-  updateHUD();
-  saveGame();
-}
-
-function toggleSleepLamp() {
-  state.roomData.lampOn = !state.roomData.lampOn;
-  audio.sfx('bubble');
-  showSpeech(state.roomData.lampOn ? 'Lamba açıldı!' : 'Lamba kapatıldı!');
-  renderBottomDocks();
-  saveGame();
-}
-
-function formatSleepCountdown(ms) {
-  const sec = Math.max(0, Math.ceil(ms / 1000));
-  const h = Math.floor(sec / 3600);
-  const m = Math.floor((sec % 3600) / 60);
-  const s = sec % 60;
-  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-}
-
-/* ==========================================================================
-   11. OYUN FİZİK DÖNGÜSÜ
+   10. GÜNCELLEME DÖNGÜSÜ & REFLEKSİF AV/ZıPLAMA/TOP GİZLEME FİZİĞİ
    ========================================================================== */
 function updateSimulation() {
   const w = window.innerWidth;
@@ -4385,1058 +4364,1203 @@ function updateSimulation() {
   const floorY = h * 0.79;
   const st = getGrowthStage();
 
-  const tagEl = document.getElementById('sleepCountdownTag');
-  if (state.roomData.sleeping && state.room === 'sleep') {
-    const rem = state.roomData.sleepEndTime - Date.now();
-    if (rem <= 0) {
-      wakeCatUp(false);
-    } else {
-      state.stats.energy = Math.min(100, state.stats.energy + 0.015);
-      updateHUD();
-      document.getElementById('sleepTimerText').textContent = formatSleepCountdown(rem);
-      tagEl.style.left = `${cat.x}px`;
-      tagEl.style.top = `${cat.y - 68 * st.scale}px`;
-      tagEl.classList.add('show');
+  cat.blinkTimer--;
+  if (cat.blinkTimer <= 0) {
+    cat.blink = 1;
+    if (cat.blinkTimer < -6) { cat.blink = 0; cat.blinkTimer = 140 + Math.random() * 140; }
+  }
+  if (Math.random() < 0.008) cat.earTwitchL = 0.22;
+  if (Math.random() < 0.008) cat.earTwitchR = 0.22;
+  cat.earTwitchL *= 0.85;
+  cat.earTwitchR *= 0.85;
+
+  if (cat.pomJumpCooldown > 0) cat.pomJumpCooldown--;
+  if (cat.laserJumpCooldown > 0) cat.laserJumpCooldown--;
+  if (cat.swatCooldown > 0) cat.swatCooldown--;
+
+  if (cat.swatPawAnim > 0) {
+    cat.swatPawAnim = Math.max(0, cat.swatPawAnim - 0.085);
+    const wave = Math.sin(cat.swatPawAnim * Math.PI);
+    if (cat.swatPawSide === -1) {
+      cat.leftPawLift = wave;
+      cat.leftPawAngle = -1.45;
+    } else if (cat.swatPawSide === 1) {
+      cat.rightPawLift = wave;
+      cat.rightPawAngle = 1.45;
     }
-  } else {
-    tagEl.classList.remove('show');
+  } else if (featherPom.state === 'caught') {
+    cat.leftPawLift += (0.55 - cat.leftPawLift) * 0.2;
+    cat.rightPawLift += (0.55 - cat.rightPawLift) * 0.2;
+    cat.leftPawAngle = -0.65;
+    cat.rightPawAngle = 0.65;
   }
 
+  let desiredStand = 0;
+  let desiredPawL = 0;
+  let desiredPawR = 0;
+  let desiredAngL = 0;
+  let desiredAngR = 0;
+
+  if (!state.roomData.sleeping && !state.roomData.toiletDoorClosed && state.room === 'play') {
+    if (featherPom.state === 'held' || featherPom.state === 'air') {
+      const dxPom = featherPom.x - cat.x;
+      const dyPom = (cat.y - 60 * st.scale) - featherPom.y;
+      const distPom = Math.hypot(dxPom, featherPom.y - (cat.y - 100 * st.scale));
+      if (distPom < 290 && dyPom > 10) {
+        desiredStand = Math.min(1, dyPom / 145);
+        if (dxPom <= 0) {
+          desiredPawL = Math.min(1, desiredStand * 1.3);
+          desiredAngL = -1.35;
+          desiredPawR = Math.min(0.65, desiredStand * 0.8);
+          desiredAngR = 0.6;
+        } else {
+          desiredPawR = Math.min(1, desiredStand * 1.3);
+          desiredAngR = 1.35;
+          desiredPawL = Math.min(0.65, desiredStand * 0.8);
+          desiredAngL = -0.6;
+        }
+      }
+    } else if (activeTool === 'laser' && cat.laserShield <= 0.1) {
+      const dxLas = pointer.x - cat.x;
+      const dyLas = (cat.y - 60 * st.scale) - pointer.y;
+      if (Math.abs(dxLas) < 250 && dyLas > 15) {
+        desiredStand = Math.min(1, dyLas / 150);
+        if (dxLas <= 0) {
+          desiredPawL = Math.min(1, desiredStand * 1.25);
+          desiredAngL = -1.25;
+        } else {
+          desiredPawR = Math.min(1, desiredStand * 1.25);
+          desiredAngR = 1.25;
+        }
+      }
+    }
+  }
+
+  cat.standReach += (desiredStand - cat.standReach) * 0.18;
+  if (cat.swatPawAnim <= 0 && featherPom.state !== 'caught') {
+    cat.leftPawLift += (desiredPawL - cat.leftPawLift) * 0.2;
+    cat.rightPawLift += (desiredPawR - cat.rightPawLift) * 0.2;
+    cat.leftPawAngle += (desiredAngL - cat.leftPawAngle) * 0.2;
+    cat.rightPawAngle += (desiredAngR - cat.rightPawAngle) * 0.2;
+  }
+
+  if (cat.yawnTimer > 0) {
+    cat.yawnTimer--;
+    if (cat.yawnTimer === 0 && cat.expr === 'yawn') cat.expr = 'normal';
+  }
+  if (cat.swipeAnim > 0) {
+    cat.swipeAnim = Math.max(0, cat.swipeAnim - 0.055);
+    if (cat.swipeAnim === 0 && cat.expr === 'angry') cat.expr = 'normal';
+  }
+  for (let i = cat.scratchMarks.length - 1; i >= 0; i--) {
+    cat.scratchMarks[i].life -= 0.025;
+    if (cat.scratchMarks[i].life <= 0) cat.scratchMarks.splice(i, 1);
+  }
+
+  cat.squishX += (1 - cat.squishX) * 0.18;
+  cat.squishY += (1 - cat.squishY) * 0.18;
+
   if (state.room === 'play') {
-    // Top saklanma süresi kontrolü
     if (playBall.state === 'hidden') {
       playBall.hideTimer--;
       if (playBall.hideTimer <= 0) {
-        playBall.state = 'air';
-        playBall.x = 75 + Math.random() * Math.max(120, w - 150);
-        playBall.y = h * 0.34;
-        playBall.vx = (cat.x > playBall.x ? 1 : -1) * (4.5 + Math.random() * 4);
+        playBall.state = 'idle';
+        playBall.x = Math.max(70, Math.min(w - 70, cat.x + (Math.random() > 0.5 ? 75 : -75)));
+        playBall.y = floorY;
+        playBall.vx = (Math.random() - 0.5) * 4;
         playBall.vy = -5.5;
-        playBall.nextHideCooldown = 260 + Math.floor(Math.random() * 240);
-        cat.mode = 'chase_ball';
-        audio.sfx('bubble');
-        showSpeech('Hop! Saklandığım yerden çıktım!');
+        playBall.state = 'air';
+        showSpeech('Taa-daa! Sakladığım topumu çıkardım!');
       }
-    } else if (playBall.state === 'idle' || playBall.state === 'air') {
-      playBall.nextHideCooldown--;
-      if (playBall.nextHideCooldown <= 0 && playBall.state === 'idle' && Math.abs(playBall.x - cat.x) > 85) {
-        playBall.state = 'hidden';
-        playBall.hideTimer = 65 + Math.floor(Math.random() * 45);
-        playBall.trail = [];
-        cat.mode = 'idle';
-        audio.softFeatherTap();
-        showSpeech('Saklandım... Bir anda çıkacağım!');
-      }
-    }
-
-    if (playBall.state === 'air') {
-      playBall.vy += 0.56;
-      playBall.x += playBall.vx;
-      playBall.y += playBall.vy;
-      playBall.rot += playBall.vx * 0.035;
+    } else if (playBall.state === 'air') {
       playBall.trail.push({ x: playBall.x, y: playBall.y });
       if (playBall.trail.length > 7) playBall.trail.shift();
 
-      if (playBall.x < 24) { playBall.x = 24; playBall.vx *= -0.78; audio.sfx('bounce'); }
-      if (playBall.x > w - 24) { playBall.x = w - 24; playBall.vx *= -0.78; audio.sfx('bounce'); }
+      playBall.vy += 0.62;
+      playBall.x += playBall.vx;
+      playBall.y += playBall.vy;
+      playBall.rot += playBall.vx * 0.045;
+
+      if (playBall.x < 24) { playBall.x = 24; playBall.vx = Math.abs(playBall.vx) * 0.8; playBall.squish = 0.82; audio.sfx('bounce'); }
+      if (playBall.x > w - 24) { playBall.x = w - 24; playBall.vx = -Math.abs(playBall.vx) * 0.8; playBall.squish = 0.82; audio.sfx('bounce'); }
+      if (playBall.y < 68) { playBall.y = 68; playBall.vy = Math.abs(playBall.vy) * 0.72; }
 
       if (playBall.y >= floorY) {
         playBall.y = floorY;
-        playBall.squish = 0.72;
-        if (Math.abs(playBall.vy) > 3.2) {
-          playBall.vy = -playBall.vy * 0.62;
-          playBall.vx *= 0.84;
+        if (Math.abs(playBall.vy) > 2.4) {
+          playBall.vy = -playBall.vy * 0.72;
+          playBall.vx *= 0.88;
+          playBall.squish = 1.24;
           audio.sfx('bounce');
         } else {
           playBall.vy = 0;
-          playBall.vx *= 0.82;
-          if (Math.abs(playBall.vx) < 0.35) {
+          playBall.vx *= 0.92;
+          if (Math.abs(playBall.vx) < 0.25) {
             playBall.vx = 0;
             playBall.state = 'idle';
           }
         }
       }
 
-      if (cat.mode !== 'grabbed') {
-        cat.mode = 'chase_ball';
-        cat.targetX = Math.max(70, Math.min(w - 70, playBall.x));
-        if (Math.abs(playBall.x - cat.x) < 62 && playBall.y > floorY - 82) {
-          playBall.state = 'hogged';
-          playBall.vx = 0; playBall.vy = 0; playBall.trail = [];
-          cat.mode = 'idle';
-          cat.expr = 'happy';
-          state.stats.happy = Math.min(100, state.stats.happy + 5);
-          state.stats.energy = Math.max(0, state.stats.energy - 1.2);
-          const coinGain = realCatEngine.getBreed(state.breed).trait === 'hunter' ? 9 : 6;
-          state.coins += coinGain;
-          addGrowthSlow(0.5);
-          for (let i = 0; i < 6; i++) spawnEffect(cat.x, cat.y - 90, 'heart', '#ff5ca8');
-          showSpeech(`Topu patilerime aldım! +${coinGain} altın`);
-          updateHUD();
-          saveGame();
-        }
+      if (!state.roomData.sleeping && playBall.y < floorY - 35 && playBall.y > floorY - 190 && Math.abs(playBall.x - cat.x) < 130 && cat.mode !== 'airborne') {
+        cat.vy = -12.6;
+        cat.vx = (playBall.x - cat.x) * 0.1;
+        cat.mode = 'airborne';
+        audio.softFeatherTap();
       }
     } else if (playBall.state === 'hogged') {
       playBall.x = cat.x;
       playBall.y = cat.y;
-    } else if (playBall.state === 'idle') {
-      playBall.vx *= 0.85;
-      playBall.x += playBall.vx;
-      playBall.rot += playBall.vx * 0.03;
-      if (Math.abs(playBall.vx) < 0.2) playBall.vx = 0;
+      playBall.trail = [];
+    } else {
+      playBall.trail = [];
+      if (playBall.nextHideCooldown > 0) playBall.nextHideCooldown--;
+      if (!state.roomData.sleeping && playBall.state === 'idle' && playBall.nextHideCooldown <= 0 &&
+          Math.abs(cat.x - playBall.x) < 88 && cat.mode === 'idle' && Math.random() < 0.008) {
+        playBall.state = 'hidden';
+        playBall.hideTimer = 170;
+        playBall.nextHideCooldown = 520;
+        audio.meow('happy');
+        showSpeech('Topumu sakladım! Nereye gitti acaba?');
+      }
     }
+    playBall.squish += (1 - playBall.squish) * 0.2;
 
-    if (featherPom.state === 'air') {
+    if (featherPom.state === 'caught') {
+      featherPom.caughtTimer--;
+      featherPom.x = cat.x;
+      featherPom.y = cat.y - 68 * st.scale;
+      featherPom.rot = Math.sin(performance.now() * 0.025) * 0.35;
+      if (featherPom.caughtTimer <= 0) {
+        featherPom.state = 'idle';
+        featherPom.x = Math.max(55, Math.min(w - 55, cat.x + (Math.random() > 0.5 ? 58 : -58)));
+        featherPom.y = floorY;
+        featherPom.vx = 0; featherPom.vy = 0;
+        cat.expr = 'normal';
+        showSpeech('Tüy yumağını bıraktım, hadi tekrar salla!');
+      }
+    } else if (featherPom.state === 'air') {
       featherPom.vy += 0.36;
       featherPom.x += featherPom.vx;
       featherPom.y += featherPom.vy;
-      featherPom.rot += 0.04;
+      featherPom.rot += featherPom.vx * 0.05;
       if (featherPom.x < 28) { featherPom.x = 28; featherPom.vx *= -0.7; }
       if (featherPom.x > w - 28) { featherPom.x = w - 28; featherPom.vx *= -0.7; }
       if (featherPom.y >= floorY) {
         featherPom.y = floorY;
-        if (Math.abs(featherPom.vy) > 2.5) {
-          featherPom.vy = -featherPom.vy * 0.45;
-          featherPom.vx *= 0.8;
-        } else {
-          featherPom.vy = 0;
-          featherPom.vx = 0;
-          featherPom.state = 'idle';
-        }
+        featherPom.vy = 0;
+        featherPom.vx *= 0.85;
+        if (Math.abs(featherPom.vx) < 0.2) featherPom.state = 'idle';
       }
     }
 
-    // Tüy yumağına zıplayıp yetişirse yakalama
-    if ((featherPom.state === 'held' || featherPom.state === 'air') && cat.mode !== 'grabbed') {
-      const catFrontX = cat.x + (featherPom.x >= cat.x ? 28 : -28) * st.scale;
-      const catPawY = cat.y - 82 * st.scale;
-      const catchDist = Math.hypot(featherPom.x - catFrontX, featherPom.y - catPawY);
-      if (catchDist < 54 * st.scale) {
-        featherPom.state = 'caught';
-        featherPom.caughtTimer = 110;
-        featherPom.vx = 0;
-        featherPom.vy = 0;
-        cat.mode = 'idle';
-        cat.expr = 'happy';
-        activeTool = null;
-        renderBottomDocks();
-        state.stats.happy = Math.min(100, state.stats.happy + 4);
-        state.coins += 4;
-        addGrowthSlow(0.35);
-        for (let i = 0; i < 5; i++) spawnEffect(cat.x, cat.y - 95, 'sparkle', '#b48aff');
-        showSpeech('Zıpladım ve tüy yumağını yakaladım! +4 altın');
-        updateHUD();
-        saveGame();
-      }
-    } else if (featherPom.state === 'caught') {
-      featherPom.caughtTimer--;
-      if (featherPom.caughtTimer <= 0) {
-        featherPom.state = 'idle';
-        featherPom.x = Math.min(w - 55, cat.x + 50);
-        featherPom.y = floorY;
-        cat.expr = 'normal';
-        showSpeech('Tüy yumağını yere bıraktım, hadi tekrar salla!');
+    if (!state.roomData.sleeping && (featherPom.state === 'held' || featherPom.state === 'air')) {
+      const catHeadY = cat.y - 110 * st.scale;
+      const distPom = Math.hypot(featherPom.x - cat.x, featherPom.y - catHeadY);
+
+      if (distPom < 78 * st.scale + 22) {
+        if (cat.mode === 'airborne' || Math.random() < 0.35) {
+          featherPom.state = 'caught';
+          featherPom.caughtTimer = 115;
+          activeTool = null;
+          renderBottomDocks();
+          cat.expr = 'happy';
+          state.stats.happy = Math.min(100, state.stats.happy + 5);
+          state.coins += 3;
+          addGrowthSlow(1.0);
+          audio.meow('happy');
+          spawnEffect(cat.x, catHeadY - 20, 'heart', '#ff6bb5');
+          showSpeech('Yakalııımdıım! Tüy yumağı patilerimde! (+3 Altın)');
+          updateHUD();
+        } else if (cat.swatCooldown <= 0) {
+          cat.swatPawSide = featherPom.x <= cat.x ? -1 : 1;
+          cat.swatPawAnim = 1.0;
+          cat.swatCooldown = 14;
+          const pushDir = featherPom.x >= cat.x ? 1 : -1;
+          featherPom.vx = pushDir * (7.5 + Math.random() * 4.5);
+          featherPom.vy = -7.5 - Math.random() * 3.5;
+          featherPom.state = 'air';
+          activeTool = null;
+          renderBottomDocks();
+          audio.softFeatherTap();
+          spawnEffect(featherPom.x, featherPom.y, 'sparkle', '#ff85c0');
+          state.stats.happy = Math.min(100, state.stats.happy + 2);
+          updateHUD();
+        }
       }
     }
   }
 
-  playBall.squish += (1 - playBall.squish) * 0.16;
+  if (state.roomData.sleeping) {
+    cat.vx = 0; cat.vy = 0; cat.angle = 0;
+    const remMs = Math.max(0, state.roomData.sleepEndTime - Date.now());
+    const totalSec = Math.ceil(remMs / 1000);
+    const hrs = String(Math.floor(totalSec / 3600)).padStart(2, '0');
+    const mins = String(Math.floor((totalSec % 3600) / 60)).padStart(2, '0');
+    const secs = String(totalSec % 60).padStart(2, '0');
+    document.getElementById('sleepTimerText').textContent = `${hrs}:${mins}:${secs}`;
 
-  if (cat.pomJumpCooldown > 0) cat.pomJumpCooldown--;
-  if (cat.laserJumpCooldown > 0) cat.laserJumpCooldown--;
-  if (cat.swatCooldown > 0) cat.swatCooldown--;
-  if (cat.swatPawAnim > 0) cat.swatPawAnim = Math.max(0, cat.swatPawAnim - 0.08);
-  cat.leftPawLift += ((cat.swatPawSide === -1 && cat.swatPawAnim > 0) ? cat.swatPawAnim : 0 - cat.leftPawLift) * 0.25;
-  cat.rightPawLift += ((cat.swatPawSide === 1 && cat.swatPawAnim > 0) ? cat.swatPawAnim : 0 - cat.rightPawLift) * 0.25;
-  if (cat.swatPawSide === -1) cat.leftPawAngle = -0.95;
-  if (cat.swatPawSide === 1) cat.rightPawAngle = -0.95;
+    const prog = state.roomData.sleepTotalMs > 0 ? (1 - remMs / state.roomData.sleepTotalMs) : 1;
+    state.stats.energy = Math.min(100, Math.max(state.stats.energy, Math.round(prog * 100)));
 
-  const targetStand = (
-    (state.room === 'play' && (featherPom.state === 'held' || featherPom.state === 'air' || activeTool === 'laser')) ||
-    (state.room === 'bath' && activeTool === 'shower') ||
-    cat.y < floorY - 35
-  ) ? 1 : 0;
-  cat.standReach += (targetStand - cat.standReach) * 0.12;
-
-  cat.squishX += (1 - cat.squishX) * 0.14;
-  cat.squishY += (1 - cat.squishY) * 0.14;
-  if (cat.swipeAnim > 0) cat.swipeAnim = Math.max(0, cat.swipeAnim - 0.055);
-  if (cat.yawnTimer > 0) {
-    cat.yawnTimer--;
-    if (cat.yawnTimer === 0 && cat.expr === 'yawn') cat.expr = 'normal';
+    if (Math.random() < 0.04) spawnEffect(cat.x - 18, cat.y - 54 * st.scale, 'zzz', '#d8b8ff');
+    if (remMs <= 0) wakeCatUp(false);
+    updateHUD();
+    return;
   }
 
   if (cat.dizzyTime > 0) {
     cat.dizzyTime--;
-    cat.angle = Math.sin(performance.now() * 0.03) * 14;
-    if (cat.dizzyTime === 0) {
-      cat.expr = 'normal';
-      cat.angle = 0;
-    }
-  } else if (cat.mode !== 'grabbed') {
-    cat.angle *= 0.85;
+    cat.expr = 'dizzy';
+    if (cat.dizzyTime === 0) cat.expr = 'normal';
   }
 
-  if (cat.mode === 'hunt_crouch') {
-    cat.huntTimer--;
-    if (cat.huntTimer <= 0) {
-      cat.mode = 'chase_ball';
-      cat.vy = -10.5;
-    }
-  } else if (cat.mode === 'chase_ball' || cat.mode === 'stalk_laser' || cat.mode === 'walk_to_toilet' || cat.mode === 'walk_to_bed') {
-    if (cat.targetX !== null) {
-      const diff = cat.targetX - cat.x;
-      if (Math.abs(diff) > 8) {
-        const speed = cat.mode === 'walk_to_toilet' ? 3.8 : 6.2;
-        cat.x += Math.sign(diff) * Math.min(Math.abs(diff), speed);
-        cat.walkCycle += 0.34;
-      } else {
-        if (cat.mode === 'walk_to_toilet' && state.roomData.toiletPhase === 'going_in') {
-          state.roomData.toiletPhase = 'inside';
-          state.roomData.toiletDoorClosed = true;
-          cat.mode = 'idle';
-          cat.targetX = null;
-          renderBottomDocks();
-          showSpeech('Kapıyı kapattım, tuvaletimi yapıyorum...');
-          toiletTimerId = setTimeout(() => {
-            state.stats.toilet = 0;
-            state.digestion.foodLoad = 0;
-            state.digestion.waterLoad = 0;
-            state.roomData.litterDirty = true;
-            state.roomData.toiletDoorClosed = false;
-            state.roomData.toiletPhase = 'idle';
-            state.coins += 8;
-            addGrowthSlow(0.6);
-            audio.meow('happy');
-            showSpeech('İşimi bitirdim, çıktım! Kum kabını temizlersen sevinirim (+8 altın).');
-            updateHUD();
-            renderBottomDocks();
-            saveGame();
-          }, 3200);
-        } else if (cat.mode === 'walk_to_bed') {
-          cat.mode = 'sleeping';
-          cat.targetX = null;
-          beginActualSleep();
-        } else {
-          cat.mode = 'idle';
-          cat.targetX = null;
-        }
-      }
-    }
-  } else if (cat.mode === 'airborne') {
-    cat.vy += 0.62;
+  if (cat.mode === 'airborne') {
+    cat.vy += 0.65;
     cat.x += cat.vx;
     cat.y += cat.vy;
-    cat.vx *= 0.98;
-    cat.walkCycle += 0.25;
+    cat.angle += cat.vAngle;
 
-    if (cat.x < 70) { cat.x = 70; cat.vx *= -0.6; }
-    if (cat.x > w - 70) { cat.x = w - 70; cat.vx *= -0.6; }
+    if (cat.x < 68) { cat.x = 68; cat.vx = Math.abs(cat.vx) * 0.6; }
+    if (cat.x > w - 68) { cat.x = w - 68; cat.vx = -Math.abs(cat.vx) * 0.6; }
+    if (cat.y < 110) { cat.y = 110; cat.vy = Math.abs(cat.vy) * 0.5; }
 
     if (cat.y >= floorY) {
+      const impact = cat.vy;
       cat.y = floorY;
-      const impact = Math.abs(cat.vy);
-      if (impact > 21) {
-        cat.dizzyTime = 75;
-        cat.expr = 'dizzy';
-        cat.vy = 0;
-        cat.vx = 0;
-        cat.mode = 'idle';
+      cat.vy = 0;
+      cat.vx *= 0.45;
+      cat.vAngle = 0;
+      cat.angle = 0;
+      cat.mode = 'idle';
+      cat.squishX = 1.24;
+      cat.squishY = 0.78;
+      if (impact > 18) {
+        cat.dizzyTime = 60;
         audio.meow('surprised');
-        showSpeech('Başım döndü... Çok hızlı düştüm!');
-      } else if (impact > 5.5) {
-        cat.squishX = 1.24;
-        cat.squishY = 0.78;
-        cat.vy = -impact * 0.36;
-        cat.vx *= 0.65;
-        audio.sfx('bounce');
       } else {
-        cat.vy = 0;
+        cat.expr = 'normal';
+      }
+    }
+  } else if (cat.mode === 'walk_to_toilet') {
+    const litterPos = getLitterCenterPosition(w, h);
+    const dx = litterPos.x - cat.x;
+    if (Math.abs(dx) > 10) {
+      cat.vx = Math.sign(dx) * 4.4;
+      cat.x += cat.vx;
+      cat.walkCycle += 0.34;
+    } else {
+      cat.x = litterPos.x;
+      cat.vx = 0;
+      cat.mode = 'idle';
+      state.roomData.toiletPhase = 'inside';
+      state.roomData.toiletDoorClosed = true;
+      renderBottomDocks();
+      showSpeech('Kapıyı kapattım, tuvaletimi yapıyorum...');
+
+      clearPendingTimers();
+      toiletTimerId = setTimeout(() => {
+        toiletTimerId = null;
+        if (state.room === 'toilet' && state.roomData.toiletDoorClosed) {
+          state.roomData.toiletDoorClosed = false;
+          state.roomData.toiletPhase = 'idle';
+          state.roomData.litterDirty = true;
+          state.stats.toilet = 0;
+          state.stats.happy = Math.min(100, state.stats.happy + 14);
+          cat.x = getCatHomePosition().x;
+          cat.expr = 'happy';
+          audio.meow('happy');
+          showSpeech('Oh rahatladım! Şimdi kürekle kumumu temizleyebilirsin.');
+          renderBottomDocks();
+          updateHUD();
+        }
+      }, 3600);
+    }
+  } else if (cat.mode === 'hunt_crouch') {
+    cat.huntTimer--;
+    if (cat.huntTimer <= 0) cat.mode = 'chase_ball';
+  } else if (cat.mode === 'chase_ball') {
+    if (playBall.state === 'hidden' || playBall.state === 'hogged') {
+      cat.mode = 'idle';
+    } else {
+      const dx = playBall.x - cat.x;
+      const breed = realCatEngine.getBreed(state.breed);
+      const speedMult = breed.trait === 'hunter' ? 1.24 : 1.0;
+
+      if (Math.abs(dx) > 40) {
+        cat.vx = Math.sign(dx) * 7.8 * speedMult;
+        cat.x += cat.vx;
+        cat.walkCycle += 0.42;
+      } else if (playBall.y >= floorY - 35) {
         cat.vx = 0;
-        cat.squishX = 1.12;
-        cat.squishY = 0.90;
+        const coinBonus = breed.trait === 'hunter' ? 8 : 5;
+        state.coins += coinBonus;
+        state.stats.happy = Math.min(100, state.stats.happy + 11);
+        state.stats.energy = Math.max(0, state.stats.energy - 4);
+        addGrowthSlow(2.2);
+
+        if (Math.random() < 0.45) {
+          playBall.state = 'hogged';
+          playBall.vx = 0; playBall.vy = 0;
+          cat.mode = 'idle';
+          cat.expr = 'happy';
+          audio.meow('happy');
+          showSpeech(`Topu yakaladım ve patilerimin arasına aldım! Vermem ki! (+${coinBonus} Altın)`);
+        } else {
+          playBall.vx = (cat.x < w * 0.5 ? 1 : -1) * (8 + Math.random() * 5);
+          playBall.vy = -8.5 - Math.random() * 4;
+          playBall.state = 'air';
+          cat.mode = 'idle';
+          cat.expr = 'happy';
+          audio.meow('happy');
+          spawnEffect(cat.x, cat.y - 120 * st.scale, 'heart', '#ff6bb5');
+          showSpeech(`Topu yakaladım ve fırlattım! (+${coinBonus} Altın)`);
+        }
+        updateHUD();
+      }
+    }
+  } else if (cat.mode === 'stalk_laser') {
+    if (activeTool !== 'laser' || cat.targetX == null) {
+      cat.mode = 'idle';
+    } else {
+      const dx = cat.targetX - cat.x;
+      if (Math.abs(dx) > 22) {
+        cat.vx = Math.sign(dx) * 6.0;
+        cat.x += cat.vx;
+        cat.walkCycle += 0.36;
+        if (Math.random() < 0.03) {
+          state.stats.happy = Math.min(100, state.stats.happy + 1);
+          state.stats.energy = Math.max(0, state.stats.energy - 0.35);
+          addGrowthSlow(0.15);
+          updateHUD();
+        }
+      } else {
+        cat.vx = 0;
+      }
+    }
+  } else if (cat.mode === 'walk_to_bowl') {
+    const dx = cat.targetX - cat.x;
+    if (Math.abs(dx) > 12) {
+      cat.vx = Math.sign(dx) * 4.2;
+      cat.x += cat.vx;
+      cat.walkCycle += 0.32;
+    } else {
+      cat.vx = 0;
+      cat.mode = 'eating';
+      cat.expr = 'eat';
+      audio.sfx('eat');
+      setTimeout(() => {
+        const home = getCatHomePosition();
+        if (state.roomData.bowlFood) {
+          const item = state.roomData.bowlFood;
+          const breed = realCatEngine.getBreed(state.breed);
+          const extraHappy = breed.trait === 'sweet' ? 6 : 0;
+          state.stats.hunger = Math.min(100, state.stats.hunger + item.hunger);
+          state.stats.happy = Math.min(100, state.stats.happy + item.happy + extraHappy);
+          state.stats.toilet = Math.min(100, state.stats.toilet + Math.round((item.bladder + item.bowel) * 0.95));
+
+          state.weight = Math.min(14.0, Math.round((state.weight + (item.weightGain || 0.1)) * 100) / 100);
+          addGrowthSlow(item.growth);
+          state.roomData.bowlFood = null;
+          showSpeech(`Mmm ${item.name} nefis! (${state.weight.toFixed(1)} kg)`);
+        } else if (state.roomData.waterLevel > 0) {
+          state.roomData.waterLevel = Math.max(0, state.roomData.waterLevel - 35);
+          state.stats.hunger = Math.min(100, state.stats.hunger + 8);
+          state.stats.toilet = Math.min(100, state.stats.toilet + 26);
+          showSpeech('Su içtim, ferahladım!');
+        }
+        cat.x = home.x;
         cat.mode = 'idle';
-        if (cat.expr === 'surprised' || cat.expr === 'dizzy') cat.expr = 'normal';
+        cat.expr = 'happy';
+        updateHUD();
+        saveGame();
+      }, 1300);
+    }
+  } else {
+    cat.vx *= 0.82;
+    if (cat.mode === 'idle' && state.room !== 'toilet') {
+      const home = getCatHomePosition();
+      if (Math.abs(cat.x - home.x) > 3 && playBall.state !== 'hogged' && featherPom.state !== 'caught') {
+        cat.x += (home.x - cat.x) * 0.035;
+      }
+      if (Math.abs(cat.y - home.y) > 2) {
+        cat.y += (home.y - cat.y) * 0.12;
       }
     }
-  } else if (cat.mode === 'idle' && !state.roomData.sleeping && !state.roomData.toiletDoorClosed) {
-    const home = getCatHomePosition();
-    cat.y += (home.y - cat.y) * 0.2;
-    if (state.room === 'studio') {
-      cat.x += (home.x - cat.x) * 0.14;
-    }
-
-    if (cat.blinkTimer > 0) cat.blinkTimer--;
-    else {
-      cat.blink += 0.22;
-      if (cat.blink >= 1) {
-        cat.blink = 0;
-        cat.blinkTimer = 95 + Math.floor(Math.random() * 140);
-      }
-    }
-    if (Math.random() < 0.006) cat.earTwitchL = 0.22;
-    if (Math.random() < 0.006) cat.earTwitchR = 0.22;
-    cat.earTwitchL *= 0.85;
-    cat.earTwitchR *= 0.85;
-  }
-
-  for (let i = cat.scratchMarks.length - 1; i >= 0; i--) {
-    cat.scratchMarks[i].life -= 0.008;
-    if (cat.scratchMarks[i].life <= 0) cat.scratchMarks.splice(i, 1);
   }
 
   for (let i = cat.fxList.length - 1; i >= 0; i--) {
     const f = cat.fxList[i];
-    f.x += f.vx; f.y += f.vy; f.rot += f.vRot; f.life -= 0.022;
+    f.x += f.vx;
+    f.y += f.vy;
+    f.rot += f.vRot;
+    f.life -= 0.022;
     if (f.life <= 0) cat.fxList.splice(i, 1);
   }
 }
 
-function renderWorldFrame() {
-  const canvas = document.getElementById('worldCanvas');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const w = window.innerWidth;
-  const h = window.innerHeight;
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-  if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
-    canvas.width = Math.floor(w * dpr);
-    canvas.height = Math.floor(h * dpr);
-  }
-
-  ctx.save();
-  ctx.scale(dpr, dpr);
-
-  drawRoomScene(ctx, w, h);
-  drawCompanionKitten(ctx, w, h);
-
-  if (!state.roomData.toiletDoorClosed) {
-    renderPhotorealisticCat(ctx, cat.x, cat.y);
-  }
-
-  drawBathForegroundFixtures(ctx, w, h);
-  drawPlayToys(ctx);
-  drawActiveToolCursor(ctx);
-
-  cat.scratchMarks.forEach(m => {
-    ctx.save();
-    ctx.translate(m.x, m.y);
-    ctx.rotate(m.rot);
-    ctx.strokeStyle = `rgba(195, 35, 95, ${m.life * 0.72})`;
-    ctx.lineWidth = 2.6; ctx.lineCap = 'round';
-    [-8, 0, 8].forEach(ox => {
-      ctx.beginPath(); ctx.moveTo(ox, -13); ctx.lineTo(ox - 2, 13); ctx.stroke();
-    });
-    ctx.restore();
-  });
-
+function drawEffects(ctx) {
   cat.fxList.forEach(f => {
     ctx.save();
     ctx.globalAlpha = Math.max(0, f.life);
-    ctx.translate(f.x, f.y);
-    ctx.rotate(f.rot);
-    if (f.type === 'heart') drawVectorHeart(ctx, 0, 0, f.size, f.color);
-    else if (f.type === 'bubble') {
-      ctx.strokeStyle = '#ffffff'; ctx.fillStyle = 'rgba(255,255,255,0.45)'; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.arc(0, 0, f.size, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    } else if (f.type === 'drop') {
+    if (f.type === 'heart') {
+      drawVectorHeart(ctx, f.x, f.y, f.size, f.color);
+    } else if (f.type === 'sparkle') {
+      ctx.translate(f.x, f.y);
+      ctx.rotate(f.rot);
       ctx.fillStyle = f.color;
-      ctx.beginPath(); ctx.arc(0, 0, f.size * 0.55, 0, Math.PI * 2); ctx.fill();
-    } else {
-      drawVectorStar(ctx, 0, 0, f.size, f.color);
+      ctx.beginPath();
+      for (let i = 0; i < 4; i++) {
+        const a = (i * Math.PI) / 2;
+        ctx.lineTo(Math.cos(a) * f.size, Math.sin(a) * f.size);
+        ctx.lineTo(Math.cos(a + Math.PI / 4) * (f.size * 0.28), Math.sin(a + Math.PI / 4) * (f.size * 0.28));
+      }
+      ctx.closePath(); ctx.fill();
+    } else if (f.type === 'bubble') {
+      ctx.strokeStyle = '#ff9ee0'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(f.x, f.y, f.size * 0.7, 0, Math.PI * 2); ctx.stroke();
+    } else if (f.type === 'drop') {
+      ctx.fillStyle = '#7ad4ff';
+      ctx.beginPath(); ctx.arc(f.x, f.y, f.size * 0.45, 0, Math.PI * 2); ctx.fill();
+    } else if (f.type === 'zzz') {
+      ctx.font = `900 ${Math.round(f.size + 6)}px Nunito, sans-serif`;
+      ctx.fillStyle = f.color;
+      ctx.fillText('Z', f.x, f.y);
     }
     ctx.restore();
   });
 
-  ctx.restore();
+  cat.scratchMarks.forEach(sm => {
+    ctx.save();
+    ctx.translate(sm.x, sm.y);
+    ctx.rotate(sm.rot);
+    ctx.globalAlpha = Math.max(0, sm.life);
+    ctx.strokeStyle = '#ff3b7f';
+    ctx.lineWidth = 3.2;
+    ctx.lineCap = 'round';
+    [-12, 0, 12].forEach(ox => {
+      ctx.beginPath();
+      ctx.moveTo(ox, -18);
+      ctx.quadraticCurveTo(ox + 3, 0, ox - 2, 18);
+      ctx.stroke();
+    });
+    ctx.restore();
+  });
+}
 
-  const bEl = document.getElementById('speechBubble');
-  if (bEl && bEl.classList.contains('show')) {
-    bEl.style.left = `${Math.max(95, Math.min(w - 95, cat.x))}px`;
-    bEl.style.top = `${Math.max(88, cat.y - 170 * getGrowthStage().scale)}px`;
+function renderLoop() {
+  drawBannerPawTrail();
+
+  const previewCanvas = document.getElementById('previewCatCanvas');
+  if (!document.getElementById('startScreen').classList.contains('hidden')) {
+    const pctx = previewCanvas.getContext('2d');
+    pctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+    renderPhotorealisticCat(pctx, previewCanvas.width * 0.5, previewCanvas.height * 0.88, {
+      stage: { label: 'Yavru', scale: 0.76, headBoost: 1.08 },
+      breed: adoptDraft.breed,
+      leftEye: adoptDraft.leftEye,
+      rightEye: adoptDraft.rightEye,
+      fatFactor: 0
+    });
   }
+
+  const world = document.getElementById('worldCanvas');
+  if (world.width !== window.innerWidth || world.height !== window.innerHeight) {
+    world.width = window.innerWidth;
+    world.height = window.innerHeight;
+  }
+  const ctx = world.getContext('2d');
+  ctx.clearRect(0, 0, world.width, world.height);
+
+  drawRoomScene(ctx, world.width, world.height);
+  updateSimulation();
+
+  if (!state.roomData.toiletDoorClosed) {
+    drawCompanionKitten(ctx, world.width, world.height);
+    renderPhotorealisticCat(ctx, cat.x, cat.y);
+  }
+
+  drawBathForegroundFixtures(ctx, world.width, world.height);
+  drawPlayToys(ctx);
+  drawEffects(ctx);
+  drawActiveToolCursor(ctx);
+
+  const st = getGrowthStage();
+  const bubble = document.getElementById('speechBubble');
+  bubble.style.left = `${Math.max(95, Math.min(world.width - 95, cat.x))}px`;
+  bubble.style.top = `${Math.max(92, cat.y - 236 * st.scale)}px`;
+
+  const sleepTag = document.getElementById('sleepCountdownTag');
+  if (state.roomData.sleeping) {
+    sleepTag.classList.add('show');
+    sleepTag.style.left = `${cat.x}px`;
+    sleepTag.style.top = `${Math.max(94, cat.y - 125 * st.scale)}px`;
+  } else {
+    sleepTag.classList.remove('show');
+  }
+
+  requestAnimationFrame(renderLoop);
 }
 
 /* ==========================================================================
-   12. YEMEK, BANYO, TUVALET, UYKU & GÜZELLİK ODASI AKSİYONLARI
+   11. ODA DEĞİŞİMİ, KOZMETİK/TAKILAR/ELBİSE LİSTESİ & UYKU
    ========================================================================== */
-function openFoodShop() {
-  document.getElementById('shopCoinsText').textContent = state.coins;
-  const grid = document.getElementById('foodCardsGrid');
-  grid.innerHTML = '';
+const ROOM_DEFS = [
+  { id: 'play', tip: 'Oyun Odası', icon: 'ball' },
+  { id: 'food', tip: 'Yemek Odası', icon: 'foodRoom' },
+  { id: 'bath', tip: 'Banyo', icon: 'bathRoom' },
+  { id: 'toilet', tip: 'Tuvalet', icon: 'litter' },
+  { id: 'sleep', tip: 'Uyku Odası', icon: 'bed' },
+  { id: 'studio', tip: 'Güzellik Odası', icon: 'studioRoom' }
+];
 
-  FOOD_ITEMS.forEach(f => {
-    const owned = state.foodInventory[f.id] || 0;
-    const card = document.createElement('div');
-    card.className = 'item-card';
-    card.innerHTML = `
-      <span class="owned-tag">${owned} adet</span>
-      <div class="svg-wrap">${SVG_ICONS[f.icon] || SVG_ICONS.foodRoom}</div>
-      <b>${f.name}</b>
-      <small>${f.desc}</small>
-      <button type="button" onclick="buyFood('${f.id}')">Satın Al • ${f.price} Altın</button>
-    `;
-    grid.appendChild(card);
-  });
-
-  openModal('foodShopModal');
-}
-
-function buyFood(id) {
-  const item = FOOD_ITEMS.find(f => f.id === id);
-  if (!item) return;
-  if (state.coins < item.price) {
-    showSpeech('Yeterli altın yok!');
-    return;
-  }
-  state.coins -= item.price;
-  state.foodInventory[id] = (state.foodInventory[id] || 0) + 1;
-  state.roomData.bowlFood = item;
-  audio.sfx('coin');
-  document.getElementById('shopCoinsText').textContent = state.coins;
-  updateHUD();
-  openFoodShop();
-  saveGame();
-}
-
-function openFoodPantry() {
-  const box = document.getElementById('foodPantryContent');
-  const ownedEntries = Object.entries(state.foodInventory).filter(([, qty]) => qty > 0);
-
-  if (ownedEntries.length === 0) {
-    box.innerHTML = `
-      <p style="font-size:12px; color:var(--muted); text-align:center;">Dolabında hiç mama yok. Marketten alabilirsin!</p>
-      <button type="button" class="candy-btn" onclick="closeModal('foodPantryModal'); openFoodShop();">Markete Git</button>
-    `;
-  } else {
-    box.innerHTML = `<div class="shop-cards" id="pantryCardsGrid"></div>`;
-    const grid = document.getElementById('pantryCardsGrid');
-    ownedEntries.forEach(([id, qty]) => {
-      const item = FOOD_ITEMS.find(f => f.id === id);
-      if (!item) return;
-      const card = document.createElement('div');
-      card.className = 'item-card';
-      card.innerHTML = `
-        <span class="owned-tag">${qty} adet</span>
-        <div class="svg-wrap">${SVG_ICONS[item.icon] || SVG_ICONS.foodRoom}</div>
-        <b>${item.name}</b>
-        <small>${item.desc}</small>
-        <button type="button" onclick="feedFromPantry('${item.id}')">Yedir</button>
-      `;
-      grid.appendChild(card);
-    });
-  }
-  openModal('foodPantryModal');
-}
-
-function feedFromPantry(id) {
-  const item = FOOD_ITEMS.find(f => f.id === id);
-  if (!item || (state.foodInventory[id] || 0) <= 0) return;
-
-  state.foodInventory[id]--;
-  state.roomData.bowlFood = item;
-  closeModal('foodPantryModal');
-
-  const breed = realCatEngine.getBreed(state.breed);
-  let hGain = item.hunger;
-  let hpGain = item.happy;
-  if (breed.trait === 'sweet' && (id === 'strawberry_milk' || id === 'heart_cookie' || id === 'macaron' || id === 'cat_icecream')) {
-    hpGain += 8;
-  }
-
-  state.stats.hunger = Math.min(100, state.stats.hunger + hGain);
-  state.stats.happy = Math.min(100, state.stats.happy + hpGain);
-  state.weight = Math.min(14.0, +(state.weight + (item.weightGain || 0.1)).toFixed(2));
-  addGrowthSlow(item.growth);
-
-  // Çok yiyip çok içtiğinde tuvalet ihtiyacı yükselir
-  state.digestion.foodLoad += (item.bowel || 16);
-  state.digestion.waterLoad += (item.bladder || 14);
-  if (state.digestion.foodLoad >= 28 || state.digestion.waterLoad >= 28 || state.stats.hunger >= 90) {
-    state.stats.toilet = Math.min(100, Math.max(state.stats.toilet + 34, 45));
-  }
-
-  cat.expr = 'eat';
-  audio.sfx('eat');
-  audio.purr('chin', 1);
-  for (let i = 0; i < 5; i++) spawnEffect(cat.x, cat.y - 110, 'heart', '#ff6bb5');
-  showSpeech(`${item.name} yedim! Kilo: ${state.weight.toFixed(1)}kg`);
-  setTimeout(() => { if (cat.expr === 'eat') cat.expr = 'normal'; }, 1350);
-
-  updateHUD();
-  renderBottomDocks();
-  saveGame();
-}
-
-function refillWaterBowl() {
-  state.roomData.waterLevel = 100;
-  state.stats.happy = Math.min(100, state.stats.happy + 5);
-  state.weight = Math.min(14.0, +(state.weight + 0.03).toFixed(2));
-  state.digestion.waterLoad += 24;
-  if (state.digestion.waterLoad >= 28) {
-    state.stats.toilet = Math.min(100, Math.max(state.stats.toilet + 32, 42));
-  }
-  audio.sfx('water');
-  spawnEffect(window.innerWidth * 0.28 + 78, window.innerHeight * 0.76, 'drop', '#74d0ff');
-  showSpeech('Taze su içtim! Çok içince tuvaletim gelebilir.');
-  updateHUD();
-  saveGame();
-}
-
-function cleanLitterBox() {
-  if (!state.roomData.litterDirty) {
-    showSpeech('Kum kabı zaten tertemiz!');
-    return;
-  }
-  state.roomData.litterDirty = false;
-  state.stats.clean = Math.min(100, state.stats.clean + 14);
-  state.stats.happy = Math.min(100, state.stats.happy + 6);
-  state.coins += 8;
-  audio.sfx('bubble');
-  for (let i = 0; i < 5; i++) spawnEffect(getLitterCenterPosition().x, getLitterCenterPosition().y - 14, 'sparkle', '#8ce99a');
-  showSpeech('Kum kabını temizlediğin için teşekkürler! +8 altın');
-  updateHUD();
-  saveGame();
-}
-
-function selectStudioTool(toolId) {
+function switchRoom(roomId) {
   if (state.roomData.sleeping) {
-    showSpeech('Uyurken güzellik stüdyosunu kullanamayız!');
+    showSpeech('Şşşt! Uyurken odadan ayrılamayız, önce beni uyandır.');
     return;
   }
-  activeTool = toolId;
-  renderBottomDocks();
-
-  if (toolId === 'dress_picker') {
-    studioPanelMode = studioPanelMode === 'dress' ? null : 'dress';
-  } else if (toolId === 'jewelry_picker') {
-    studioPanelMode = studioPanelMode === 'jewelry' ? null : 'jewelry';
-  } else if (COSMETIC_TOOLS[toolId]) {
-    studioPanelMode = COSMETIC_TOOLS[toolId].swatches.length > 0 ? 'cosmetic' : null;
-  } else {
-    studioPanelMode = null;
+  if (state.roomData.toiletDoorClosed) {
+    showSpeech('Tuvalet bitmeden çıkamayız!');
+    return;
   }
-  renderCosmeticListPanel();
+
+  state.room = roomId;
+  activeTool = null;
+  studioPanelMode = null;
+
+  const home = getCatHomePosition();
+  cat.x = home.x;
+  cat.y = home.y;
+  cat.mode = 'idle';
+
+  if (roomId !== 'bath') {
+    state.roomData.bubbles = [];
+    state.roomData.drops = [];
+  }
+  if (roomId === 'play') {
+    if (playBall.state !== 'hogged' && playBall.state !== 'hidden') {
+      playBall.x = window.innerWidth * 0.22;
+      playBall.y = window.innerHeight * 0.79;
+      playBall.state = 'idle';
+    }
+    if (featherPom.state !== 'caught') {
+      featherPom.x = window.innerWidth * 0.78;
+      featherPom.y = window.innerHeight * 0.79;
+      featherPom.state = 'idle';
+    }
+  }
+  updateCosmeticPanel();
+  renderBottomDocks();
+  saveGame();
 }
 
-function renderCosmeticListPanel() {
+function toggleTool(toolId) {
+  if (state.roomData.sleeping) {
+    showSpeech('Şşşt! Uyurken bu aracı kullanamayız.');
+    return;
+  }
+  if (state.roomData.toiletDoorClosed) {
+    showSpeech('Önce tuvaletim bitsin!');
+    return;
+  }
+
+  activeTool = (activeTool === toolId) ? null : toolId;
+
+  if (state.room === 'studio') {
+    if (activeTool && COSMETIC_TOOLS[activeTool]) {
+      studioPanelMode = 'makeup';
+    } else if (!activeTool && studioPanelMode === 'makeup') {
+      studioPanelMode = null;
+    }
+    updateCosmeticPanel();
+  }
+
+  if (activeTool === 'ball') {
+    playBall.state = 'idle';
+    playBall.x = window.innerWidth * 0.5;
+    playBall.y = window.innerHeight * 0.54;
+    showSpeech('Topu tutup fırlat! Bazen saklayabilirim!');
+  } else if (activeTool === 'pom') {
+    featherPom.state = 'idle';
+    featherPom.x = window.innerWidth * 0.5;
+    featherPom.y = window.innerHeight * 0.50;
+    showSpeech('Tüy yumağını tutup salla! Zıplayıp yakalayacağım!');
+  } else if (activeTool === 'laser') {
+    showSpeech('Lazer noktasını gezdir! Ama gözüme tutma!');
+  } else if (activeTool === 'loofah') {
+    showSpeech('Pembe lifle kedini köpürt!');
+  } else if (activeTool === 'shower') {
+    showSpeech('Duş başlığını kedinin üzerinde gezdir!');
+  } else if (activeTool === 'towel') {
+    showSpeech('Havluyla ıslak tüyleri kurula!');
+  } else if (activeTool === 'cotton_pad') {
+    state.makeup = { blush: null, eyeshadow: null, eyeliner: null, gloss: null, gem: null };
+    activeTool = null;
+    studioPanelMode = null;
+    updateCosmeticPanel();
+    showSpeech('Makyajım tertemiz silindi!');
+    saveGame();
+  }
+  renderBottomDocks();
+}
+
+function toggleStudioCatalog(mode) {
+  if (state.roomData.sleeping) {
+    showSpeech('Şşşt! Uyurken kıyafet/takı değiştiremeyiz.');
+    return;
+  }
+  activeTool = null;
+  studioPanelMode = (studioPanelMode === mode) ? null : mode;
+  updateCosmeticPanel();
+  renderBottomDocks();
+}
+
+function updateCosmeticPanel() {
   const panel = document.getElementById('cosmeticListPanel');
   const titleEl = document.getElementById('cosmeticPanelTitle');
-  const listEl = document.getElementById('cosmeticListScroll');
+  const scrollEl = document.getElementById('cosmeticListScroll');
 
-  if (state.room !== 'studio' || !studioPanelMode) {
+  if (state.room !== 'studio') {
     panel.classList.remove('show');
     return;
   }
 
-  panel.classList.add('show');
-  listEl.innerHTML = '';
-
-  if (studioPanelMode === 'cosmetic') {
-    const cfg = COSMETIC_TOOLS[activeTool];
-    if (!cfg || cfg.swatches.length === 0) {
-      panel.classList.remove('show');
-      return;
-    }
-    titleEl.textContent = cfg.label;
-    const curSw = selectedSwatch[activeTool];
-
-    cfg.swatches.forEach(sw => {
-      const row = document.createElement('button');
-      row.type = 'button';
-      row.className = `swatch-list-row ${curSw === sw.id ? 'active' : ''}`;
-      row.innerHTML = `<span class="swatch-dot" style="background:${sw.color}"></span><span>${sw.name}</span>`;
-      row.onclick = () => {
-        selectedSwatch[activeTool] = sw.id;
-        renderCosmeticListPanel();
-      };
-      listEl.appendChild(row);
-    });
-  } else if (studioPanelMode === 'dress') {
-    titleEl.textContent = 'Elbise Seç';
-    DRESS_CATALOG.forEach(d => {
-      const isAct = state.accessories.dress === d.id;
-      const row = document.createElement('button');
-      row.type = 'button';
-      row.className = `swatch-list-row ${isAct ? 'active' : ''}`;
-      row.innerHTML = `<span class="swatch-dot" style="background:#ff85c0"></span><span>${d.name}</span>`;
-      row.onclick = () => {
-        state.accessories.dress = d.id;
-        saveGame();
-        renderCosmeticListPanel();
-      };
-      listEl.appendChild(row);
-    });
-  } else if (studioPanelMode === 'jewelry') {
-    titleEl.textContent = 'Takı & Gözlük Seç';
-    Object.entries(JEWELRY_CATALOG).forEach(([slot, catObj]) => {
-      const hdr = document.createElement('div');
-      hdr.className = 'jewelry-cat-title';
-      hdr.textContent = catObj.title;
-      listEl.appendChild(hdr);
-
-      catObj.items.forEach(it => {
-        const isAct = state.accessories[slot] === it.id;
-        const row = document.createElement('button');
-        row.type = 'button';
-        row.className = `swatch-list-row ${isAct ? 'active' : ''}`;
-        row.innerHTML = `<span class="swatch-dot" style="background:#b48aff"></span><span>${it.name}</span>`;
-        row.onclick = () => {
-          state.accessories[slot] = it.id;
-          saveGame();
-          renderCosmeticListPanel();
-        };
-        listEl.appendChild(row);
-      });
-    });
-  }
-}
-
-/* ==========================================================================
-   13. ODA DEĞİŞİMİ, HUD & MODALLAR
-   ========================================================================== */
-const ROOMS = [
-  { id: 'play', label: 'Oyun', icon: 'ball' },
-  { id: 'food', label: 'Yemek', icon: 'foodRoom' },
-  { id: 'bath', label: 'Banyo', icon: 'bathRoom' },
-  { id: 'toilet', label: 'Tuvalet', icon: 'toilet' },
-  { id: 'sleep', label: 'Uyku', icon: 'bed' },
-  { id: 'studio', label: 'Güzellik', icon: 'studioRoom' }
-];
-
-function switchRoom(roomId) {
-  if (state.roomData.toiletDoorClosed) {
-    showSpeech('Tuvalet işimi bitirmeden çıkamam!');
+  if (studioPanelMode === 'dress') {
+    titleEl.textContent = 'Kedi Elbiseleri';
+    scrollEl.innerHTML = DRESS_CATALOG.map(d => {
+      const isAct = (state.accessories.dress || 'none') === d.id;
+      return `
+        <button type="button" class="swatch-list-row ${isAct ? 'active' : ''}" onclick="selectDressItem('${d.id}')">
+          <span>${d.name}</span>
+        </button>
+      `;
+    }).join('');
+    panel.classList.add('show');
     return;
   }
-  state.room = roomId;
+
+  if (studioPanelMode === 'jewelry') {
+    titleEl.textContent = 'Takı & Gözlükler';
+    let html = '';
+    Object.keys(JEWELRY_CATALOG).forEach(slotKey => {
+      const catGroup = JEWELRY_CATALOG[slotKey];
+      html += `<div class="jewelry-cat-title">${catGroup.title}</div>`;
+      catGroup.items.forEach(item => {
+        const isAct = state.accessories[slotKey] === item.id;
+        html += `
+          <button type="button" class="swatch-list-row ${isAct ? 'active' : ''}" onclick="selectJewelryItem('${slotKey}', '${item.id}')">
+            <span>${item.name}</span>
+          </button>
+        `;
+      });
+    });
+    scrollEl.innerHTML = html;
+    panel.classList.add('show');
+    return;
+  }
+
+  if (!activeTool || !COSMETIC_TOOLS[activeTool] || COSMETIC_TOOLS[activeTool].swatches.length === 0) {
+    panel.classList.remove('show');
+    return;
+  }
+
+  const cfg = COSMETIC_TOOLS[activeTool];
+  titleEl.textContent = cfg.label;
+  scrollEl.innerHTML = cfg.swatches.map(sw => `
+    <button type="button" class="swatch-list-row ${selectedSwatch[activeTool] === sw.id ? 'active' : ''}" onclick="selectCosmeticSwatch('${activeTool}', '${sw.id}')">
+      <span class="swatch-dot" style="background:${sw.color}"></span>
+      <span>${sw.name}</span>
+    </button>
+  `).join('');
+  panel.classList.add('show');
+}
+
+function selectCosmeticSwatch(toolId, swatchId) {
+  selectedSwatch[toolId] = swatchId;
+  const sw = COSMETIC_TOOLS[toolId].swatches.find(s => s.id === swatchId);
+  if (sw) {
+    if (toolId === 'blush_brush') state.makeup.blush = sw.color;
+    else if (toolId === 'eyeshadow_brush') state.makeup.eyeshadow = sw.color;
+    else if (toolId === 'eyeliner_pen') state.makeup.eyeliner = sw.color;
+    else if (toolId === 'gloss_wand') state.makeup.gloss = sw.color;
+    else if (toolId === 'gem_applicator') state.makeup.gem = sw.id;
+    audio.sfx('bubble');
+    spawnEffect(cat.x, cat.y - 140 * getGrowthStage().scale, 'sparkle', '#ff7ec0');
+    saveGame();
+  }
+  updateCosmeticPanel();
+}
+
+function selectDressItem(dressId) {
+  state.accessories.dress = dressId;
+  cat.expr = 'happy';
+  audio.sfx('coin');
+  spawnEffect(cat.x, cat.y - 95 * getGrowthStage().scale, 'heart', '#ff6bb5');
+  showSpeech(dressId === 'none' ? 'Elbiseyi çıkardım!' : 'Elbisem çok yakıştı! Mrrr...');
+  updateCosmeticPanel();
+  saveGame();
+}
+
+function selectJewelryItem(slot, itemId) {
+  state.accessories[slot] = itemId;
+  cat.expr = 'happy';
+  audio.sfx('coin');
+  spawnEffect(cat.x, cat.y - 140 * getGrowthStage().scale, 'sparkle', '#ffd447');
+  showSpeech(itemId === 'none' ? 'Takıyı çıkardım!' : 'Çok şık oldum! Mrrr...');
+  updateCosmeticPanel();
+  saveGame();
+}
+
+function refillWater() {
+  if (state.roomData.sleeping) { showSpeech('Şşşt! Uyuyorum!'); return; }
+  state.roomData.waterLevel = 100;
+  audio.sfx('water');
+  cat.targetX = window.innerWidth * 0.28 + 78;
+  cat.mode = 'walk_to_bowl';
+  showSpeech('Taze su dolduruldu, içiyorum!');
+}
+
+function cleanLitter() {
+  if (state.roomData.sleeping) { showSpeech('Şşşt! Uyuyorum!'); return; }
+  if (state.roomData.toiletDoorClosed) {
+    showSpeech('Önce içerideki işim bitsin!');
+    return;
+  }
+  if (!state.roomData.litterDirty) {
+    showSpeech('Kum kabım zaten tertemiz!');
+    return;
+  }
+  state.roomData.litterDirty = false;
+  state.stats.clean = Math.min(100, state.stats.clean + 15);
+  state.coins += 8;
+  audio.sfx('coin');
+  showSpeech('Kum kabı tertemiz oldu! (+8 Altın)');
+  updateHUD();
+  saveGame();
+}
+
+function startSleepTimer() {
+  if (state.roomData.sleeping) {
+    wakeCatUp(true);
+    return;
+  }
+  const missing = Math.max(0, 100 - state.stats.energy);
+  if (missing < 4) {
+    showSpeech('Uykum yok, enerjim tamamen dolu!');
+    return;
+  }
+  const durationMs = Math.max(15000, Math.round((missing / 100) * 600000));
+  state.roomData.sleeping = true;
+  state.roomData.sleepTotalMs = durationMs;
+  state.roomData.sleepEndTime = Date.now() + durationMs;
+  cat.x = window.innerWidth * 0.52;
+  cat.y = window.innerHeight * 0.79;
+  cat.mode = 'sleeping';
   activeTool = null;
-  studioPanelMode = null;
-  renderCosmeticListPanel();
+  renderBottomDocks();
+  saveGame();
+}
 
-  if (roomId !== 'play') {
-    playBall.state = 'idle';
-    featherPom.state = 'idle';
-    playBall.trail = [];
-  }
-  if (roomId !== 'sleep' && state.roomData.sleeping) {
-    wakeCatUp(false);
-  }
-
-  const w = window.innerWidth, h = window.innerHeight;
-  const home = getCatHomePosition();
-  cat.x = home.x;
-  cat.y = home.y;
-  cat.vx = 0; cat.vy = 0; cat.mode = 'idle';
-
-  if (roomId === 'play') {
-    playBall.x = w * 0.22;
-    playBall.y = h * 0.79;
-    playBall.vx = 0;
-    playBall.vy = 0;
-    featherPom.x = w * 0.78;
-    featherPom.y = h * 0.79;
-    featherPom.vx = 0;
-    featherPom.vy = 0;
-  }
-
+function wakeCatUp(early) {
+  state.roomData.sleeping = false;
+  state.roomData.sleepEndTime = 0;
+  cat.mode = 'idle';
+  cat.expr = early ? 'surprised' : 'happy';
+  audio.meow(early ? 'surprised' : 'happy');
+  showSpeech(early ? 'Miyav? Uyandım!' : 'Harika uyudum, enerjim %100!');
   renderBottomDocks();
   updateHUD();
   saveGame();
+}
+
+function toggleSleepLamp() {
+  state.roomData.lampOn = !state.roomData.lampOn;
+  const breed = realCatEngine.getBreed(state.breed);
+  if (breed.trait === 'warmth' && state.roomData.lampOn) {
+    state.stats.happy = Math.min(100, state.stats.happy + 6);
+    showSpeech('Sıcak lamba Sfenks cildime çok iyi geldi!');
+  } else {
+    showSpeech(state.roomData.lampOn ? 'Gece lambası açıldı!' : 'Gece lambası kapatıldı!');
+  }
+  renderBottomDocks();
+  updateHUD();
 }
 
 function renderBottomDocks() {
   const left = document.getElementById('bottomLeftDock');
   const right = document.getElementById('bottomRightDock');
-  left.innerHTML = '';
-  right.innerHTML = '';
+  const r = state.room;
+  const isSleeping = state.roomData.sleeping;
 
-  const addToolBtn = (id, label, iconKey, onClick, isActive = false, badgeVal = null, extraClass = '') => {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = `glossy-tool-btn ${isActive ? 'active' : ''} ${extraClass}`;
-    btn.innerHTML = `${SVG_ICONS[iconKey] || ''}<span>${label}</span>${badgeVal !== null ? `<span class="inv-badge">${badgeVal}</span>` : ''}`;
-    btn.onclick = onClick;
-    left.appendChild(btn);
-  };
-
-  if (state.roomData.sleeping) {
-    addToolBtn('lamp_toggle', state.roomData.lampOn ? 'Işığı Kapat' : 'Işığı Aç', 'lamp', toggleSleepLamp, state.roomData.lampOn);
-    addToolBtn('wake_now', 'Uyandır', 'energy', () => wakeCatUp(true));
-  } else if (state.room === 'play') {
-    addToolBtn('ball', 'Top', 'ball', () => {
-      activeTool = activeTool === 'ball' ? null : 'ball';
-      if (activeTool === 'ball') {
-        playBall.state = 'held';
-        playBall.x = cat.x;
-        playBall.y = cat.y - 120 * getGrowthStage().scale;
-      } else if (playBall.state === 'held') {
-        playBall.state = 'idle';
-        playBall.x = Math.min(window.innerWidth - 55, cat.x + 55);
-        playBall.y = window.innerHeight * 0.79;
-      }
-      renderBottomDocks();
-    }, activeTool === 'ball');
-
-    addToolBtn('pom', 'Tüy Yumağı', 'pom', () => {
-      activeTool = activeTool === 'pom' ? null : 'pom';
-      if (activeTool === 'pom') {
-        featherPom.state = 'held';
-        featherPom.x = cat.x + 48;
-        featherPom.y = cat.y - 125 * getGrowthStage().scale;
-        triggerFeatherPomShakeJump(1.1);
-      } else if (featherPom.state === 'held') {
-        featherPom.state = 'idle';
-        featherPom.x = Math.min(window.innerWidth - 55, cat.x + 55);
-        featherPom.y = window.innerHeight * 0.79;
-      }
-      renderBottomDocks();
-    }, activeTool === 'pom');
-
-    addToolBtn('wand', 'Oltayı Salla', 'wand', () => {
-      activeTool = activeTool === 'wand' ? null : 'wand';
-      renderBottomDocks();
-    }, activeTool === 'wand');
-
-    addToolBtn('laser', 'Lazer', 'laser', () => {
-      activeTool = activeTool === 'laser' ? null : 'laser';
-      renderBottomDocks();
-    }, activeTool === 'laser');
-  } else if (state.room === 'food') {
+  let html = '';
+  if (r === 'play') {
+    html = `
+      <button type="button" class="glossy-tool-btn ${activeTool === 'ball' ? 'active' : ''}" onclick="toggleTool('ball')">${SVG_ICONS.ball}<span>Top</span></button>
+      <button type="button" class="glossy-tool-btn ${activeTool === 'pom' ? 'active' : ''}" onclick="toggleTool('pom')">${SVG_ICONS.pom}<span>Tüy</span></button>
+      <button type="button" class="glossy-tool-btn ${activeTool === 'wand' ? 'active' : ''}" onclick="toggleTool('wand')">${SVG_ICONS.wand}<span>Olta</span></button>
+      <button type="button" class="glossy-tool-btn ${activeTool === 'laser' ? 'active' : ''}" onclick="toggleTool('laser')">${SVG_ICONS.laser}<span>Lazer</span></button>
+    `;
+  } else if (r === 'food') {
     const totalFood = Object.values(state.foodInventory).reduce((a, b) => a + b, 0);
-    addToolBtn('pantry', 'Dolap', 'pantry', openFoodPantry, false, totalFood);
-    addToolBtn('shop', 'Market', 'shop', openFoodShop, false);
-    addToolBtn('water', 'Su Ver', 'water', refillWaterBowl, false);
-  } else if (state.room === 'bath') {
-    addToolBtn('loofah', 'Köpük Lif', 'loofah', () => { activeTool = activeTool === 'loofah' ? null : 'loofah'; renderBottomDocks(); }, activeTool === 'loofah');
-    addToolBtn('shower', 'Duş', 'shower', () => { activeTool = activeTool === 'shower' ? null : 'shower'; renderBottomDocks(); }, activeTool === 'shower');
-    addToolBtn('towel', 'Havlu', 'towel', () => { activeTool = activeTool === 'towel' ? null : 'towel'; renderBottomDocks(); }, activeTool === 'towel');
-  } else if (state.room === 'toilet') {
-    addToolBtn('enter_toilet', state.stats.toilet >= 35 ? 'Tuvalete Gir' : 'Tuvaleti Yok', 'toilet', enterToiletAndUse, state.stats.toilet >= 35);
-    addToolBtn('scoop', 'Kum Temizle', 'scoop', cleanLitterBox, false);
-  } else if (state.room === 'sleep') {
-    addToolBtn('sleep_btn', 'Yatağa Yat', 'bed', startSleepSequence, false);
-    addToolBtn('lamp_btn', state.roomData.lampOn ? 'Işık Açık' : 'Işık Kapalı', 'lamp', toggleSleepLamp, state.roomData.lampOn);
-  } else if (state.room === 'studio') {
-    addToolBtn('blush_brush', 'Allık', 'brush', () => selectStudioTool('blush_brush'), activeTool === 'blush_brush');
-    addToolBtn('eyeshadow_brush', 'Far', 'palette', () => selectStudioTool('eyeshadow_brush'), activeTool === 'eyeshadow_brush');
-    addToolBtn('eyeliner_pen', 'Eyeliner', 'liner', () => selectStudioTool('eyeliner_pen'), activeTool === 'eyeliner_pen');
-    addToolBtn('gloss_wand', 'Parlatıcı', 'gloss', () => selectStudioTool('gloss_wand'), activeTool === 'gloss_wand');
-    addToolBtn('gem_applicator', 'Taşlar', 'gem', () => selectStudioTool('gem_applicator'), activeTool === 'gem_applicator');
-    addToolBtn('dress_picker', 'Elbise', 'dress', () => selectStudioTool('dress_picker'), activeTool === 'dress_picker', null, 'jewelry-special');
-    addToolBtn('jewelry_picker', 'Takı & Gözlük', 'crown', () => selectStudioTool('jewelry_picker'), activeTool === 'jewelry_picker', null, 'jewelry-special');
-    addToolBtn('cotton_pad', 'Sil', 'cotton', () => selectStudioTool('cotton_pad'), activeTool === 'cotton_pad');
+    html = `
+      <button type="button" class="glossy-tool-btn" onclick="openFoodShop()">${SVG_ICONS.shop}<span>Market</span></button>
+      <button type="button" class="glossy-tool-btn" onclick="openFoodPantry()">${SVG_ICONS.pantry}<span>Dolap</span><span class="inv-badge">${totalFood}</span></button>
+      <button type="button" class="glossy-tool-btn" onclick="refillWater()">${SVG_ICONS.water}<span>Su</span></button>
+    `;
+  } else if (r === 'bath') {
+    html = `
+      <button type="button" class="glossy-tool-btn ${activeTool === 'loofah' ? 'active' : ''}" onclick="toggleTool('loofah')">${SVG_ICONS.loofah}<span>Lif</span></button>
+      <button type="button" class="glossy-tool-btn ${activeTool === 'shower' ? 'active' : ''}" onclick="toggleTool('shower')">${SVG_ICONS.shower}<span>Duş</span></button>
+      <button type="button" class="glossy-tool-btn ${activeTool === 'towel' ? 'active' : ''}" onclick="toggleTool('towel')">${SVG_ICONS.towel}<span>Havlu</span></button>
+    `;
+  } else if (r === 'toilet') {
+    const inToilet = state.roomData.toiletDoorClosed || state.roomData.toiletPhase !== 'idle';
+    html = `
+      <button type="button" class="glossy-tool-btn ${inToilet ? 'active' : ''}" onclick="enterToiletAndUse()">${SVG_ICONS.litter}<span>Tuvalete Gir</span></button>
+      <button type="button" class="glossy-tool-btn" onclick="cleanLitter()">${SVG_ICONS.scoop}<span>Kumu Temizle</span></button>
+    `;
+  } else if (r === 'sleep') {
+    html = `
+      <button type="button" class="glossy-tool-btn ${isSleeping ? 'active' : ''}" onclick="startSleepTimer()">${SVG_ICONS.bed}<span>${isSleeping ? 'Uyandır' : 'Uyu'}</span></button>
+      <button type="button" class="glossy-tool-btn ${state.roomData.lampOn ? 'active' : ''}" onclick="toggleSleepLamp()">${SVG_ICONS.lamp}<span>Işık</span></button>
+    `;
+  } else if (r === 'studio') {
+    html = `
+      <button type="button" class="glossy-tool-btn ${activeTool === 'blush_brush' ? 'active' : ''}" onclick="toggleTool('blush_brush')">${SVG_ICONS.brush}<span>Allık</span></button>
+      <button type="button" class="glossy-tool-btn ${activeTool === 'eyeshadow_brush' ? 'active' : ''}" onclick="toggleTool('eyeshadow_brush')">${SVG_ICONS.palette}<span>Far</span></button>
+      <button type="button" class="glossy-tool-btn ${activeTool === 'eyeliner_pen' ? 'active' : ''}" onclick="toggleTool('eyeliner_pen')">${SVG_ICONS.liner}<span>Eyeliner</span></button>
+      <button type="button" class="glossy-tool-btn ${activeTool === 'gloss_wand' ? 'active' : ''}" onclick="toggleTool('gloss_wand')">${SVG_ICONS.gloss}<span>Parlatıcı</span></button>
+      <button type="button" class="glossy-tool-btn ${activeTool === 'gem_applicator' ? 'active' : ''}" onclick="toggleTool('gem_applicator')">${SVG_ICONS.gem}<span>Taşlar</span></button>
+      <button type="button" class="glossy-tool-btn jewelry-special ${studioPanelMode === 'dress' ? 'active' : ''}" onclick="toggleStudioCatalog('dress')">${SVG_ICONS.dress}<span>Elbise</span></button>
+      <button type="button" class="glossy-tool-btn jewelry-special ${studioPanelMode === 'jewelry' ? 'active' : ''}" onclick="toggleStudioCatalog('jewelry')">${SVG_ICONS.crown}<span>Takılar</span></button>
+      <button type="button" class="glossy-tool-btn" onclick="toggleTool('cotton_pad')">${SVG_ICONS.cotton}<span>Sil</span></button>
+    `;
   }
+  left.innerHTML = html;
 
-  ROOMS.forEach(r => {
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.className = `room-orb ${state.room === r.id ? 'active' : ''}`;
-    b.setAttribute('data-tip', r.label);
-    b.innerHTML = SVG_ICONS[r.icon] || '';
-    b.onclick = () => switchRoom(r.id);
-    right.appendChild(b);
-  });
+  right.innerHTML = ROOM_DEFS.map(rm => `
+    <button type="button" class="room-orb ${state.room === rm.id ? 'active' : ''}" data-tip="${rm.tip}" onclick="switchRoom('${rm.id}')">
+      ${SVG_ICONS[rm.icon]}
+    </button>
+  `).join('');
 }
 
-function showStatLabelToast(el, labelText, pctVal) {
+/* ==========================================================================
+   12. YEMEK MARKETİ, DOLAP, 24 ODA TEMASI & YENİ YAVRU SAHİPLENME
+   ========================================================================== */
+function openFoodShop() {
+  if (state.roomData.sleeping) { showSpeech('Şşşt! Uyuyorum!'); return; }
+  document.getElementById('shopCoinsText').textContent = state.coins;
+  document.getElementById('foodCardsGrid').innerHTML = FOOD_ITEMS.map(item => {
+    const owned = state.foodInventory[item.id] || 0;
+    return `
+      <div class="item-card">
+        <span class="owned-tag">Dolapta: ${owned}</span>
+        <div class="svg-wrap">${SVG_ICONS[item.icon]}</div>
+        <b>${item.name}</b>
+        <small>${item.desc}</small>
+        <button type="button" onclick="buyFoodToPantry('${item.id}')">Satın Al (${item.price} Altın)</button>
+      </div>
+    `;
+  }).join('');
+  openModal('foodShopModal');
+}
+
+function buyFoodToPantry(id) {
+  const item = FOOD_ITEMS.find(x => x.id === id);
+  if (!item) return;
+  if (state.coins < item.price) {
+    showSpeech('Yeterli altının yok! Top veya tüyle oynayıp altın kazan.');
+    return;
+  }
+  state.coins -= item.price;
+  state.foodInventory[id] = (state.foodInventory[id] || 0) + 1;
+  audio.sfx('coin');
+  document.getElementById('shopCoinsText').textContent = state.coins;
+  openFoodShop();
+  renderBottomDocks();
+  updateHUD();
+  saveGame();
+}
+
+function openFoodPantry() {
+  if (state.roomData.sleeping) { showSpeech('Şşşt! Uyuyorum!'); return; }
+  const entries = Object.entries(state.foodInventory).filter(([, qty]) => qty > 0);
+  const box = document.getElementById('foodPantryContent');
+  if (!entries.length) {
+    box.innerHTML = `<p style="font-size:12px; color:var(--muted); text-align:center;">Yemek dolabın boş. Marketten yiyecek satın alabilirsin!</p>`;
+  } else {
+    box.innerHTML = `<div class="shop-cards">` + entries.map(([id, qty]) => {
+      const item = FOOD_ITEMS.find(x => x.id === id) || FOOD_ITEMS[0];
+      return `
+        <div class="item-card">
+          <span class="owned-tag">Adet: ${qty}</span>
+          <div class="svg-wrap">${SVG_ICONS[item.icon]}</div>
+          <b>${item.name}</b>
+          <small>${item.desc}</small>
+          <button type="button" onclick="feedFromPantry('${id}')">Kaba Koy & Yedir</button>
+        </div>
+      `;
+    }).join('') + `</div>`;
+  }
+  openModal('foodPantryModal');
+}
+
+function feedFromPantry(id) {
+  if ((state.foodInventory[id] || 0) <= 0) return;
+  if (state.stats.hunger >= 98) {
+    showSpeech('Karnım tamamen tok! Biraz oyun oynayalım.');
+    closeModal('foodPantryModal');
+    return;
+  }
+  const item = FOOD_ITEMS.find(x => x.id === id);
+  state.foodInventory[id]--;
+  state.roomData.bowlFood = item;
+  closeModal('foodPantryModal');
+  renderBottomDocks();
+  cat.targetX = window.innerWidth * 0.28 + 38;
+  cat.mode = 'walk_to_bowl';
+  showSpeech(`${item.name} kaba kondu, yiyorum!`);
+}
+
+function openThemeModal() {
+  closeModal('gameSettingsModal');
+  document.getElementById('roomThemeGrid').innerHTML = GIRL_ROOM_THEMES.map(th => `
+    <button type="button" class="theme-card ${state.roomTheme === th.id ? 'active' : ''}" onclick="selectRoomTheme('${th.id}')">
+      <span class="theme-swatch" style="background:linear-gradient(135deg, ${th.w2}, ${th.accent})"></span>
+      <span>${th.name}</span>
+    </button>
+  `).join('');
+  openModal('roomThemesModal');
+}
+
+function selectRoomTheme(themeId) {
+  state.roomTheme = themeId;
+  const th = getCurrentTheme();
+  document.getElementById('lblCurrentTheme').textContent = th.name;
+  openThemeModal();
+  showSpeech(`Oda teması: ${th.name}!`);
+  saveGame();
+}
+
+/* ==========================================================================
+   13. HUD & STAT TOAST BİLDİRİMİ & YENİ YAVRU SAHİPLENME
+   ========================================================================== */
+let speechTimeout = null;
+function showSpeech(text) {
+  const el = document.getElementById('speechBubble');
+  el.textContent = text;
+  el.classList.add('show');
+  clearTimeout(speechTimeout);
+  speechTimeout = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+let toastTimeout = null;
+function showStatLabelToast(el, labelText) {
   const toast = document.getElementById('statLabelToast');
   const rect = el.getBoundingClientRect();
-  toast.textContent = `${labelText}: %${Math.round(pctVal)}`;
-  toast.style.left = `${Math.max(58, Math.min(window.innerWidth - 58, rect.left + rect.width * 0.5))}px`;
-  toast.style.top = `${rect.bottom + 7}px`;
+  toast.textContent = labelText;
+  toast.style.left = `${Math.max(46, Math.min(window.innerWidth - 46, rect.left + rect.width * 0.5))}px`;
+  toast.style.top = `${rect.bottom + 6}px`;
   toast.classList.add('show');
-  clearTimeout(window.__statToastTimer);
-  window.__statToastTimer = setTimeout(() => toast.classList.remove('show'), 1450);
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => toast.classList.remove('show'), 1400);
 }
 
 function updateHUD() {
   const st = getGrowthStage();
-  const breed = realCatEngine.getBreed(state.breed);
   document.getElementById('hudBadge').textContent = st.label[0];
   document.getElementById('hudName').textContent = state.name;
   document.getElementById('hudAge').textContent = `${st.label} • ${state.weight.toFixed(1)}kg`;
-  document.getElementById('hudCoinBox').innerHTML = `${SVG_ICONS.coin}<span>${state.coins}</span>`;
-  document.getElementById('btnTopSettings').innerHTML = SVG_ICONS.settings;
+  document.getElementById('hudCoinBox').innerHTML = `${SVG_ICONS.coin}<b>${state.coins}</b>`;
+  document.getElementById('lblNameEdit').textContent = state.name;
+  document.getElementById('lblCurrentTheme').textContent = getCurrentTheme().name;
 
-  const bar = document.getElementById('statsPctBar');
-  const items = [
-    { key: 'hunger', label: 'Tokluk', val: state.stats.hunger, icon: 'hunger' },
-    { key: 'happy', label: 'Mutluluk', val: state.stats.happy, icon: 'happy' },
-    { key: 'energy', label: 'Enerji', val: state.stats.energy, icon: 'energy' },
-    { key: 'clean', label: 'Temizlik', val: state.stats.clean, icon: 'clean' },
-    { key: 'toilet', label: 'Tuvalet', val: state.stats.toilet, icon: 'toilet' }
+  const statsList = [
+    { key: 'hunger', label: 'Tokluk', val: Math.round(state.stats.hunger), low: state.stats.hunger < 25 },
+    { key: 'happy', label: 'Mutluluk', val: Math.round(state.stats.happy), low: state.stats.happy < 25 },
+    { key: 'energy', label: 'Enerji', val: Math.round(state.stats.energy), low: state.stats.energy < 20 },
+    { key: 'clean', label: 'Temizlik', val: Math.round(state.stats.clean), low: state.stats.clean < 25 },
+    { key: 'toilet', label: 'Tuvalet İhtiyacı', val: Math.round(state.stats.toilet), low: state.stats.toilet > 75 }
   ];
 
-  bar.innerHTML = '';
-  items.forEach(it => {
-    const v = Math.round(it.val);
-    const chip = document.createElement('div');
-    chip.className = `stat-chip ${v < 28 ? 'low' : ''}`;
-    chip.innerHTML = `${SVG_ICONS[it.icon]}<span>${v}%</span>`;
-    chip.onclick = () => showStatLabelToast(chip, it.label, v);
-    bar.appendChild(chip);
-  });
-
-  if (state.stats.hunger < 25 && Math.random() < 0.015 && !state.roomData.sleeping) {
-    showSpeech('Karnım acıktı, mama ister misin?');
-  }
-  if (state.stats.toilet >= 60 && Math.random() < 0.02 && !state.roomData.sleeping && state.roomData.toiletPhase === 'idle') {
-    showSpeech('Çok yiyip içtim, tuvaletim geldi! Tuvalete girelim.');
-  }
-  if (breed.trait === 'warmth' && state.room === 'sleep' && !state.roomData.lampOn && Math.random() < 0.015) {
-    showSpeech('Tüysüz olduğum için üşüyorum, ışığı açar mısın?');
-  }
-}
-
-let speechTimer = null;
-function showSpeech(msg) {
-  const el = document.getElementById('speechBubble');
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(speechTimer);
-  speechTimer = setTimeout(() => el.classList.remove('show'), 2500);
-}
-
-function openModal(id) { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-function openThemeModal() {
-  const grid = document.getElementById('roomThemeGrid');
-  grid.innerHTML = '';
-  GIRL_ROOM_THEMES.forEach(th => {
-    const card = document.createElement('button');
-    card.type = 'button';
-    card.className = `theme-card ${state.roomTheme === th.id ? 'active' : ''}`;
-    card.innerHTML = `<span class="theme-swatch" style="background:linear-gradient(135deg, ${th.w2} 0%, ${th.accent} 100%)"></span><span>${th.name}</span>`;
-    card.onclick = () => {
-      state.roomTheme = th.id;
-      document.getElementById('lblCurrentTheme').textContent = th.name;
-      saveGame();
-      openThemeModal();
-    };
-    grid.appendChild(card);
-  });
-  openModal('roomThemesModal');
-}
-
-function toggleRenameBox() {
-  const box = document.getElementById('inlineRenameBox');
-  const inp = document.getElementById('renameInput');
-  box.classList.toggle('open');
-  if (box.classList.contains('open')) {
-    inp.value = state.name;
-    setTimeout(() => inp.focus(), 60);
-  }
-}
-
-function confirmRename() {
-  const inp = document.getElementById('renameInput');
-  const val = (inp.value || '').trim();
-  if (!val) return;
-  state.name = val.slice(0, 14);
-  document.getElementById('lblNameEdit').textContent = state.name;
-  document.getElementById('inlineRenameBox').classList.remove('open');
-  updateHUD();
-  saveGame();
-  showSpeech(`Yeni adım ${state.name}!`);
+  document.getElementById('statsPctBar').innerHTML = statsList.map(s => `
+    <button type="button" class="stat-chip ${s.low ? 'low' : ''}" onclick="showStatLabelToast(this, '${s.label}: %${s.val}')">
+      ${SVG_ICONS[s.key]}<span>%${s.val}</span>
+    </button>
+  `).join('');
 }
 
 function openGrowthModal() {
   const st = getGrowthStage();
-  const breed = realCatEngine.getBreed(state.breed);
-  const lEye = EYE_PALETTE.find(e => e.id === state.leftEye);
-  const rEye = EYE_PALETTE.find(e => e.id === state.rightEye);
-  const fatPct = Math.round(getFatFactor(state.weight) * 100);
+  const b = realCatEngine.getBreed(state.breed);
+  const weightDesc = state.weight < 2.8 ? 'Minik Yavru' : state.weight < 4.5 ? 'İdeal Fit' : state.weight < 6.5 ? 'Tombik & Pofuduk' : 'Büyük & Heybetli';
 
   document.getElementById('growthDetailsBox').innerHTML = `
-    <div><b>Adı:</b> ${state.name}</div>
-    <div><b>Cins:</b> ${breed.name} (${breed.traitTitle})</div>
-    <div><b>Kilo:</b> ${state.weight.toFixed(1)} kg ${fatPct > 8 ? `(Tombul +${fatPct}%)` : '(İdeal)'}</div>
-    <div><b>Göz Renkleri:</b> Sol ${lEye.name} / Sağ ${rEye.name}</div>
-    <div><b>Gelişim Aşaması:</b> ${st.label} (Büyüme: ${Math.floor(state.growth)} / ${st.next})</div>
-    <div><b>Güven Seviyesi:</b> %${Math.round(state.trust)}</div>
+    <p><b>İsim:</b> ${state.name}</p>
+    <p><b>Cins:</b> ${b.name} (${b.traitTitle})</p>
+    <p><b>Özellik:</b> ${b.traitDesc}</p>
+    <p><b>Aşama:</b> ${st.label} (${st.days} Oyun Günü)</p>
+    <p><b>Güncel Kilo:</b> <b>${state.weight.toFixed(2)} kg</b> (${weightDesc})</p>
+    <p><b>Güven Bağı:</b> %${Math.round(state.trust)}</p>
   `;
 
   const adoptBox = document.getElementById('newKittenAdoptBox');
   if (state.companionKitten) {
-    const ckBreed = realCatEngine.getBreed(state.companionKitten.breed);
+    const cb = realCatEngine.getBreed(state.companionKitten.breed);
     adoptBox.innerHTML = `
-      <b>Yanındaki Yavru Kedi:</b> ${state.companionKitten.name} (${ckBreed.name})<br>
-      <small style="color:var(--muted);">Odalarda seninle birlikte dolaşıyor!</small>
+      <p style="margin:0 0 8px;"><b>Arkadaş Yavru:</b> ${state.companionKitten.name} (${cb.name})</p>
+      <button type="button" class="candy-btn pearl" style="padding:8px 12px; font-size:12px;" onclick="releaseCompanionKitten()">Yeni Yavruyu Değiştir / Kaldır</button>
     `;
   } else if (st.canAdoptKitten) {
     adoptBox.innerHTML = `
-      <b>Yeni Bir Yavru Sahiplen!</b><br>
-      <small style="color:var(--muted);">Kediniz büyüdü (${st.label}). Yanına tatlı bir yavru kedi alabilirsin.</small>
-      <div style="display:flex; gap:6px; margin-top:8px;">
-        <input type="text" class="name-inp" id="companionNameInp" maxlength="12" placeholder="Yavrunun adı (ör. Pamuk)">
-        <button type="button" class="gem-chip active" onclick="adoptCompanionKitten()">Sahiplen</button>
-      </div>
+      <p style="margin:0 0 8px; color:#6b2d82;"><b>Tebrikler!</b> ${state.name} artık ${st.label} oldu. Yanına sevimli bir yavru kedi alabilirsin!</p>
+      <input type="text" class="name-inp" id="compKittenName" maxlength="12" value="Minnoş" placeholder="Yavruya isim ver..." style="margin-bottom:6px;">
+      <select class="name-inp" id="compKittenBreed" style="margin-bottom:8px;">
+        ${CAT_BREEDS.map(br => `<option value="${br.id}">${br.name}</option>`).join('')}
+      </select>
+      <button type="button" class="candy-btn" style="padding:9px 12px; font-size:12px;" onclick="adoptCompanionKitten()">Yanına Yavru Sahiplen (100 Altın)</button>
     `;
   } else {
-    adoptBox.innerHTML = `<small style="color:var(--muted);">Kediniz "Genç" aşamasına ulaştığında yanına yeni bir yavru kedi sahiplenebileceksin.</small>`;
+    adoptBox.innerHTML = `
+      <p style="margin:0; font-size:12px; color:var(--muted);"><b>Yeni Yavru Sahiplenme:</b> Kedin büyüyüp <b>Genç</b> aşamasına (${st.next} Büyüme Puanı, şu an ${Math.round(state.growth)}) ulaştığında yanına yeni bir yavru alabilirsin!</p>
+    `;
   }
 
   openModal('growthModal');
 }
 
 function adoptCompanionKitten() {
-  const inp = document.getElementById('companionNameInp');
-  const kName = ((inp && inp.value) || 'Pamuk').trim().slice(0, 12);
-  const randomBreed = CAT_BREEDS[Math.floor(Math.random() * CAT_BREEDS.length)];
-  const e1 = EYE_PALETTE[Math.floor(Math.random() * EYE_PALETTE.length)];
-  const e2 = EYE_PALETTE[Math.floor(Math.random() * EYE_PALETTE.length)];
-
+  if (state.coins < 100) {
+    showSpeech('Yeni yavru sahiplenmek için 100 Altın gerekiyor!');
+    closeModal('growthModal');
+    return;
+  }
+  const kName = (document.getElementById('compKittenName').value || 'Minnoş').trim();
+  const kBreed = document.getElementById('compKittenBreed').value || 'persian_white';
+  state.coins -= 100;
   state.companionKitten = {
     name: kName,
-    breed: randomBreed.id,
-    leftEye: e1.id,
-    rightEye: e2.id
+    breed: kBreed,
+    leftEye: 'sky',
+    rightEye: 'emerald'
   };
-  companionCat.x = cat.x + 56;
-  companionCat.y = cat.y;
+  companionCat.x = Math.min(window.innerWidth - 90, cat.x + 95);
+  closeModal('growthModal');
   audio.meow('happy');
+  showSpeech(`Hoş geldin küçük ${kName}! Artık oyun arkadaşım var!`);
+  updateHUD();
   saveGame();
+}
+
+function releaseCompanionKitten() {
+  state.companionKitten = null;
   openGrowthModal();
-  showSpeech(`${kName} aramıza katıldı!`);
+  saveGame();
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function toggleRenameBox() {
+  const box = document.getElementById('inlineRenameBox');
+  box.classList.toggle('open');
+  if (box.classList.contains('open')) {
+    const inp = document.getElementById('renameInput');
+    inp.value = state.name;
+    inp.focus();
+  }
+}
+
+function confirmRename() {
+  const val = document.getElementById('renameInput').value.trim();
+  if (val) {
+    state.name = val;
+    updateHUD();
+    saveGame();
+  }
+  document.getElementById('inlineRenameBox').classList.remove('open');
 }
 
 function toggleAudio() {
   state.settings.sound = !state.settings.sound;
-  syncSettingsUI();
+  document.getElementById('swStartAudio').classList.toggle('on', state.settings.sound);
+  document.getElementById('swGameAudio').classList.toggle('on', state.settings.sound);
+  if (state.settings.sound) audio.purr('head', 1);
   saveGame();
 }
 
 function cyclePurrMode() {
   const modes = ['soft', 'deep', 'trill'];
-  state.settings.purrMode = modes[(modes.indexOf(state.settings.purrMode) + 1) % modes.length];
-  syncSettingsUI();
+  const names = { soft: 'Yumuşak Yavru', deep: 'Derin Rahatlama', trill: 'Keyifli Gurultu' };
+  const next = modes[(modes.indexOf(state.settings.purrMode) + 1) % modes.length];
+  state.settings.purrMode = next;
+  document.getElementById('btnPurrMode').textContent = names[next];
   audio.purr('chin', 1);
   saveGame();
 }
 
-function syncSettingsUI() {
-  const on = state.settings.sound;
-  document.getElementById('swStartAudio').classList.toggle('on', on);
-  document.getElementById('swGameAudio').classList.toggle('on', on);
-  const mMap = { soft: 'Yumuşak Yavru', deep: 'Derin Kadife', trill: 'Keyifli Cıvıltı' };
-  document.getElementById('btnPurrMode').textContent = mMap[state.settings.purrMode] || 'Yumuşak Yavru';
-  document.getElementById('lblCurrentTheme').textContent = getCurrentTheme().name;
-  document.getElementById('lblNameEdit').textContent = state.name;
-}
-
-/* ==========================================================================
-   14. GİRİŞ EKRANI & ÖNİZLEME
-   ========================================================================== */
 function openAdoptCard(show) {
-  const card = document.getElementById('adoptCard');
-  const menu = document.getElementById('mainMenuBox');
-  const startScr = document.getElementById('startScreen');
-  if (show) {
-    card.classList.add('active');
-    menu.style.display = 'none';
-    startScr.classList.add('adopting');
-    buildAdoptSelectors();
-    startScr.scrollTop = 0;
-  } else {
-    card.classList.remove('active');
-    menu.style.display = 'flex';
-    startScr.classList.remove('adopting');
-    startScr.scrollTop = 0;
-  }
-  updatePreviewPill();
+  document.getElementById('adoptCard').classList.toggle('active', show);
+  document.getElementById('mainMenuBox').style.display = show ? 'none' : 'flex';
+  document.getElementById('startScreen').classList.toggle('adopting', show);
 }
 
-function updatePreviewPill() {
-  const b = realCatEngine.getBreed(adoptDraft.breed);
-  const pill = document.getElementById('previewTraitPill');
-  if (pill) pill.textContent = `${b.name} • ${b.traitTitle}`;
-  const note = document.getElementById('adoptTraitDesc');
-  if (note) note.textContent = `${b.traitTitle}: ${b.traitDesc}`;
-}
+function renderAdoptSelectors() {
+  const selBreed = realCatEngine.getBreed(adoptDraft.breed);
+  document.getElementById('previewTraitPill').textContent = `${selBreed.name} • ${selBreed.traitTitle}`;
+  document.getElementById('adoptTraitDesc').textContent = selBreed.traitDesc;
 
-function buildAdoptSelectors() {
-  const breedBox = document.getElementById('breedChips');
-  breedBox.innerHTML = '';
-  CAT_BREEDS.forEach(b => {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = `gem-chip ${adoptDraft.breed === b.id ? 'active' : ''}`;
-    btn.textContent = b.name;
-    btn.onclick = () => {
-      adoptDraft.breed = b.id;
-      buildAdoptSelectors();
-      updatePreviewPill();
-    };
-    breedBox.appendChild(btn);
-  });
+  document.getElementById('breedChips').innerHTML = CAT_BREEDS.map(b => `
+    <button type="button" class="gem-chip ${adoptDraft.breed === b.id ? 'active' : ''}" onclick="adoptDraft.breed='${b.id}'; renderAdoptSelectors()">${b.name}</button>
+  `).join('');
 
-  const renderEyeRow = (containerId, side) => {
-    const box = document.getElementById(containerId);
-    box.innerHTML = '';
-    const cur = adoptDraft[side];
-    EYE_PALETTE.forEach(ep => {
-      const d = document.createElement('button');
-      d.type = 'button';
-      d.className = `eye-orb ${cur === ep.id ? 'active' : ''}`;
-      d.style.background = `radial-gradient(circle at 35% 35%, ${ep.inner}, ${ep.iris} 60%, ${ep.rim})`;
-      d.title = ep.name;
-      d.onclick = () => {
-        adoptDraft[side] = ep.id;
-        buildAdoptSelectors();
-      };
-      box.appendChild(d);
-    });
-  };
+  document.getElementById('leftEyeDots').innerHTML = EYE_PALETTE.map(e => `
+    <button type="button" class="eye-orb ${adoptDraft.leftEye === e.id ? 'active' : ''}" style="background:${e.iris}" onclick="adoptDraft.leftEye='${e.id}'; renderAdoptSelectors()"></button>
+  `).join('');
 
-  renderEyeRow('leftEyeDots', 'leftEye');
-  renderEyeRow('rightEyeDots', 'rightEye');
+  document.getElementById('rightEyeDots').innerHTML = EYE_PALETTE.map(e => `
+    <button type="button" class="eye-orb ${adoptDraft.rightEye === e.id ? 'active' : ''}" style="background:${e.iris}" onclick="adoptDraft.rightEye='${e.id}'; renderAdoptSelectors()"></button>
+  `).join('');
 }
 
 function confirmAdopt() {
   clearPendingTimers();
-  const nameVal = (document.getElementById('catNameInput').value || 'Bulut').trim().slice(0, 14) || 'Bulut';
-  const prevSettings = { ...state.settings };
+  const prevSound = state.settings.sound;
+  const prevPurr = state.settings.purrMode;
   state = defaultState();
-  state.settings = prevSettings;
-  state.name = nameVal;
+  state.settings.sound = prevSound;
+  state.settings.purrMode = prevPurr;
+  state.name = (document.getElementById('catNameInput').value || 'Bulut').trim();
   state.breed = adoptDraft.breed;
   state.leftEye = adoptDraft.leftEye;
   state.rightEye = adoptDraft.rightEye;
-  state.weight = 2.2;
-  enterGameScreen();
-  showSpeech(`Merhaba! Ben ${state.name}!`);
   saveGame();
+  enterWorld();
 }
 
 function resumeGame() {
-  enterGameScreen();
-  showSpeech(`Tekrar hoş geldin! Ben ${state.name}!`);
+  if (loadSaved()) enterWorld();
 }
 
-function enterGameScreen() {
+function enterWorld() {
+  audio.ensure();
   document.getElementById('startScreen').classList.add('hidden');
-  const home = getCatHomePosition();
-  cat.x = home.x; cat.y = home.y; cat.vx = 0; cat.vy = 0; cat.mode = 'idle';
-  cat.expr = 'normal'; cat.blink = 0; cat.yawnTimer = 0; cat.mouthOpen = 0; cat.laserShield = 0;
-  playBall.state = 'idle';
-  featherPom.state = 'idle';
-  playBall.x = window.innerWidth * 0.22;
-  playBall.y = window.innerHeight * 0.79;
-  featherPom.x = window.innerWidth * 0.78;
-  featherPom.y = window.innerHeight * 0.79;
-  syncSettingsUI();
+  cat.x = window.innerWidth * 0.5;
+  cat.y = window.innerHeight * 0.79;
+  updateCosmeticPanel();
   renderBottomDocks();
   updateHUD();
+  audio.meow('happy');
+  showSpeech(`Merhaba! Ben ${state.name}!`);
 }
 
 function returnMenu() {
-  clearPendingTimers();
   closeModal('gameSettingsModal');
   saveGame();
-  refreshStartScreen();
+  document.getElementById('btnResume').style.display = 'inline-flex';
+  document.getElementById('resumeLabel').textContent = state.name;
+  openAdoptCard(false);
   document.getElementById('startScreen').classList.remove('hidden');
 }
 
@@ -5445,87 +5569,62 @@ function restartNewKitten() {
   closeModal('gameSettingsModal');
   localStorage.removeItem(STORAGE_KEY);
   state = defaultState();
-  refreshStartScreen();
-  document.getElementById('startScreen').classList.remove('hidden');
+  document.getElementById('btnResume').style.display = 'none';
   openAdoptCard(true);
+  document.getElementById('startScreen').classList.remove('hidden');
 }
 
 function wipeSaveData() {
   clearPendingTimers();
   localStorage.removeItem(STORAGE_KEY);
   state = defaultState();
-  refreshStartScreen();
+  document.getElementById('btnResume').style.display = 'none';
   closeModal('startSettingsModal');
 }
 
-function refreshStartScreen() {
-  const hasSave = loadSaved();
-  const btnResume = document.getElementById('btnResume');
-  if (hasSave) {
-    btnResume.style.display = 'inline-flex';
-    document.getElementById('resumeLabel').textContent = state.name;
-    adoptDraft.breed = state.breed;
-    adoptDraft.leftEye = state.leftEye;
-    adoptDraft.rightEye = state.rightEye;
-  } else {
-    btnResume.style.display = 'none';
-  }
-  updatePreviewPill();
-  syncSettingsUI();
-}
-
-function drawPreviewCat() {
-  const c = document.getElementById('previewCatCanvas');
-  if (!c) return;
-  const ctx = c.getContext('2d');
-  ctx.clearRect(0, 0, c.width, c.height);
-
-  const adopting = document.getElementById('startScreen').classList.contains('adopting');
-  const bId = adopting ? adoptDraft.breed : state.breed;
-  const lId = adopting ? adoptDraft.leftEye : state.leftEye;
-  const rId = adopting ? adoptDraft.rightEye : state.rightEye;
-
-  renderPhotorealisticCat(ctx, c.width * 0.5, c.height * 0.88, {
-    stage: { label: 'Yavru', scale: 0.72, headBoost: 1.12 },
-    breed: bId,
-    leftEye: lId,
-    rightEye: rId,
-    fatFactor: 0
-  });
-}
-
 /* ==========================================================================
-   15. ZAMANLI DÖNGÜLER
+   14. BAŞLATMA VE ZAMANLAYICI DÖNGÜSÜ
    ========================================================================== */
 setInterval(() => {
   if (document.getElementById('startScreen').classList.contains('hidden') && !state.roomData.sleeping && !state.roomData.toiletDoorClosed) {
-    state.stats.hunger = Math.max(0, state.stats.hunger - 0.35);
-    state.stats.energy = Math.max(0, state.stats.energy - 0.25);
-    state.stats.clean = Math.max(0, state.stats.clean - 0.2);
+    state.stats.hunger = Math.max(0, state.stats.hunger - 0.14);
+    state.stats.happy = Math.max(0, state.stats.happy - 0.1);
+    state.stats.energy = Math.max(0, state.stats.energy - 0.1);
+    state.stats.clean = Math.max(0, state.stats.clean - 0.07);
+    state.stats.toilet = Math.min(100, state.stats.toilet + 0.15);
 
-    if (state.stats.energy < 22 && Math.random() < 0.35) {
+    if (state.stats.hunger > 30) {
+      state.weight = Math.max(1.8, Math.round((state.weight - 0.002) * 1000) / 1000);
+    }
+
+    if (state.stats.energy < 28 && cat.mode === 'idle' && cat.yawnTimer <= 0 && Math.random() < 0.08) {
       triggerYawn();
     }
 
+    if (state.stats.toilet > 80 && state.room !== 'toilet' && Math.random() < 0.08) {
+      showSpeech('Tuvaletim çok geldi! Beni tuvalete götür!');
+    }
     updateHUD();
+  }
+}, 4000);
+
+setInterval(() => {
+  if (document.getElementById('startScreen').classList.contains('hidden')) {
     saveGame();
   }
-}, 5000);
+}, 15000);
 
-function masterLoop() {
-  drawBannerPawTrail();
-  if (!document.getElementById('startScreen').classList.contains('hidden')) {
-    drawPreviewCat();
-  } else {
-    updateSimulation();
-    renderWorldFrame();
-  }
-  requestAnimationFrame(masterLoop);
+generateHomeScreenPawIcon();
+document.getElementById('btnTopSettings').innerHTML = SVG_ICONS.settings;
+if (loadSaved()) {
+  document.getElementById('btnResume').style.display = 'inline-flex';
+  document.getElementById('resumeLabel').textContent = state.name;
+  document.getElementById('swStartAudio').classList.toggle('on', state.settings.sound);
+  document.getElementById('swGameAudio').classList.toggle('on', state.settings.sound);
 }
-
+renderAdoptSelectors();
 initInteractions();
-refreshStartScreen();
-requestAnimationFrame(masterLoop);
+requestAnimationFrame(renderLoop);
 </script>
 </body>
 </html>
